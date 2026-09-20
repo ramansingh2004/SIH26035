@@ -1,0 +1,46 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #182d3a;
+  background: #f3f6f7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  width: min(100% - 3rem, 46rem);
+  margin: 16vh auto;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  background: #fff;
+  border: 1px solid #d4dfe4;
+  border-radius: 1rem;
+}
+
+.eyebrow {
+  color: #176355;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+h1 {
+  margin: 1rem 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+}
+
+.intro {
+  font-size: 1.25rem;
+}
+
+.note {
+  max-width: 35rem;
+  color: #435b69;
+  line-height: 1.6;
+}
