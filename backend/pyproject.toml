@@ -38,6 +38,6 @@ line-length = 100
 select = ["E", "F", "I", "UP", "B", "ASYNC"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "domain_tests"]
 pythonpath = ["."]
 addopts = "-ra"

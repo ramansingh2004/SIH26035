@@ -131,9 +131,9 @@ def test_yaml_duplicate_key_and_unknown_version(tmp_path):
         load_ruleset(tmp_path)
 
 
-def test_engine_package_has_no_framework_or_evaluator():
+def test_engine_package_has_no_framework_imports():
     for path in Path("app/compliance").rglob("*.py"):
         source = path.read_text()
         assert "import sqlalchemy" not in source
         assert "from fastapi" not in source
-        assert "def evaluate(" not in source
+        assert "from starlette" not in source

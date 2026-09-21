@@ -1,0 +1,356 @@
+{
+  "input": {
+    "hash_schema_version": "v1",
+    "instrument_snapshot": {
+      "min_capacity_g": "0",
+      "max_capacity_g": "20000",
+      "verification_interval_e_g": "10",
+      "scale_interval_d_g": "10",
+      "verification_intervals_n": "2000",
+      "accuracy_class": "III",
+      "ranges": [
+        {
+          "min_capacity_g": "0",
+          "max_capacity_g": "20000",
+          "verification_interval_e_g": "10",
+          "scale_interval_d_g": "10",
+          "verification_intervals_n": "2000",
+          "range_no": 1
+        }
+      ],
+      "range_type": "SINGLE",
+      "indication_type": null,
+      "is_self_indicating": null,
+      "is_electronic": true,
+      "is_software_controlled": null,
+      "is_portable": null,
+      "is_mobile": null,
+      "load_receptor_type": null,
+      "support_point_count": null,
+      "geometry": null,
+      "tare_type": null,
+      "maximum_tare_g": null,
+      "zero_setting_type": null,
+      "zero_tracking_available": null,
+      "level_indicator_available": null,
+      "automatic_tilt_sensor": null,
+      "power_supply_type": null,
+      "nominal_voltage": null,
+      "min_voltage": null,
+      "max_voltage": null,
+      "declared_temp_min_c": null,
+      "declared_temp_max_c": null,
+      "software_identifier": null,
+      "is_direct_sales": null,
+      "is_price_computing": null,
+      "is_labeling": null,
+      "data_storage_device_present": null,
+      "interfaces": null,
+      "peripherals": null,
+      "components": null,
+      "battery_charging_during_operation": null,
+      "vehicle_powered": null,
+      "vehicle_power_details": null,
+      "declared_operating_conditions": null,
+      "declared_installation": null
+    },
+    "test_code": "WEIGHING_PERFORMANCE",
+    "procedure_context": {
+      "test_code": "WEIGHING_PERFORMANCE",
+      "procedure_variant": "SYNTHETIC",
+      "procedure_schema_version": "v1",
+      "evaluation_context": "SYNTHETIC",
+      "protocol": "SYNTHETIC",
+      "range_no": 1,
+      "scenario": "fixture",
+      "stages": [
+        "ZERO",
+        "LOAD"
+      ],
+      "environment": {
+        "measured_at": "2000-01-01T00:00:00.000000Z",
+        "temperature_c": "20",
+        "relative_humidity_percent": null,
+        "pressure_hpa": null,
+        "voltage_v": null
+      },
+      "equipment": [
+        {
+          "reference": "FIXTURE-WEIGHT",
+          "category": "SYNTHETIC",
+          "manufacturer": null,
+          "model": null,
+          "serial_number": null,
+          "calibration_certificate_no": "SYNTHETIC",
+          "calibration_date": null,
+          "calibration_due_date": null,
+          "accuracy_or_class": null
+        }
+      ],
+      "evidence_hashes": [
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ],
+      "protocol_note": "SYNTHETIC TEST FIXTURE ONLY",
+      "zero_error_g": "0"
+    },
+    "observations": [
+      {
+        "test_code": "WEIGHING_PERFORMANCE",
+        "protocol": "SYNTHETIC",
+        "observation_schema_version": "v1",
+        "sequence_no": 1,
+        "stage": "ZERO",
+        "indication_g": "0",
+        "delta_load_g": "5",
+        "load_g": "0",
+        "elapsed_s": "1",
+        "measured_at": "2000-01-01T00:00:00.000000Z"
+      },
+      {
+        "test_code": "WEIGHING_PERFORMANCE",
+        "protocol": "SYNTHETIC",
+        "observation_schema_version": "v1",
+        "sequence_no": 2,
+        "stage": "LOAD",
+        "indication_g": "10020",
+        "delta_load_g": "5",
+        "load_g": "10000",
+        "elapsed_s": "2",
+        "measured_at": "2000-01-01T00:00:02.000000Z"
+      }
+    ],
+    "ruleset_configuration_hash": "6a2bb36a21b49f22f2c950ac21dcf2163e4ee33228ccf89e2389b572faef78ed",
+    "observation_schema_version": "v1",
+    "engine_version": "r76-domain-0.4.0|WEIGHING_PERFORMANCE@synthetic-v1"
+  },
+  "result": {
+    "test_code": "WEIGHING_PERFORMANCE",
+    "applicability": {
+      "applicability": "REQUIRED",
+      "reason": "Synthetic verified branch",
+      "rule_references": [
+        {
+          "rule_id": "APP",
+          "part": "SYNTHETIC",
+          "edition": "TEST-v1",
+          "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+          "clause": "fixture-1",
+          "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "rule_id": "BASE",
+          "part": "SYNTHETIC",
+          "edition": "TEST-v1",
+          "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+          "clause": "fixture-1",
+          "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "rule_id": "MPE",
+          "part": "SYNTHETIC",
+          "edition": "TEST-v1",
+          "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+          "clause": "fixture-1",
+          "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "rule_id": "PROCEDURE",
+          "part": "SYNTHETIC",
+          "edition": "TEST-v1",
+          "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+          "clause": "fixture-1",
+          "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "unresolved_rule_ids": [],
+      "feature": null,
+      "range_no": 1,
+      "scenario": "fixture"
+    },
+    "evaluation_status": "COMPLETE",
+    "compliance_outcome": "NONCOMPLIANT",
+    "calculations": [
+      {
+        "name": "1:P",
+        "expression": "I + 0.5e - delta_load",
+        "value": "0",
+        "unit": "g",
+        "rule_references": []
+      },
+      {
+        "name": "1:E",
+        "expression": "P - L",
+        "value": "0",
+        "unit": "g",
+        "rule_references": []
+      },
+      {
+        "name": "1:Ec",
+        "expression": "E - E0",
+        "value": "0",
+        "unit": "g",
+        "rule_references": []
+      },
+      {
+        "name": "2:P",
+        "expression": "I + 0.5e - delta_load",
+        "value": "10020",
+        "unit": "g",
+        "rule_references": []
+      },
+      {
+        "name": "2:E",
+        "expression": "P - L",
+        "value": "20",
+        "unit": "g",
+        "rule_references": []
+      },
+      {
+        "name": "2:Ec",
+        "expression": "E - E0",
+        "value": "20",
+        "unit": "g",
+        "rule_references": []
+      }
+    ],
+    "acceptance_limits": [
+      {
+        "name": "mpe",
+        "value": "10",
+        "unit": "g",
+        "operator": "<=",
+        "semantics": "ABSOLUTE",
+        "rule_references": [
+          {
+            "rule_id": "BASE",
+            "part": "SYNTHETIC",
+            "edition": "TEST-v1",
+            "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+            "clause": "fixture-1",
+            "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "rule_id": "MPE",
+            "part": "SYNTHETIC",
+            "edition": "TEST-v1",
+            "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+            "clause": "fixture-1",
+            "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ]
+      },
+      {
+        "name": "mpe",
+        "value": "10",
+        "unit": "g",
+        "operator": "<=",
+        "semantics": "ABSOLUTE",
+        "rule_references": [
+          {
+            "rule_id": "BASE",
+            "part": "SYNTHETIC",
+            "edition": "TEST-v1",
+            "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+            "clause": "fixture-1",
+            "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "rule_id": "MPE",
+            "part": "SYNTHETIC",
+            "edition": "TEST-v1",
+            "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+            "clause": "fixture-1",
+            "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ]
+      }
+    ],
+    "failed_conditions": [
+      {
+        "code": "SYNTHETIC_LIMIT",
+        "reason": "Synthetic boundary",
+        "actual": "20",
+        "limit": {
+          "name": "mpe",
+          "value": "10",
+          "unit": "g",
+          "operator": "<=",
+          "semantics": "ABSOLUTE",
+          "rule_references": [
+            {
+              "rule_id": "BASE",
+              "part": "SYNTHETIC",
+              "edition": "TEST-v1",
+              "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+              "clause": "fixture-1",
+              "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            {
+              "rule_id": "MPE",
+              "part": "SYNTHETIC",
+              "edition": "TEST-v1",
+              "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+              "clause": "fixture-1",
+              "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ]
+        }
+      }
+    ],
+    "procedure_issues": [],
+    "reasons": [
+      "SYNTHETIC TEST FIXTURE ONLY; no regulatory authority"
+    ],
+    "issue_code": null,
+    "unresolved_rule_ids": [],
+    "rule_references": [
+      {
+        "rule_id": "APP",
+        "part": "SYNTHETIC",
+        "edition": "TEST-v1",
+        "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+        "clause": "fixture-1",
+        "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "rule_id": "BASE",
+        "part": "SYNTHETIC",
+        "edition": "TEST-v1",
+        "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+        "clause": "fixture-1",
+        "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "rule_id": "MPE",
+        "part": "SYNTHETIC",
+        "edition": "TEST-v1",
+        "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+        "clause": "fixture-1",
+        "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "rule_id": "PROCEDURE",
+        "part": "SYNTHETIC",
+        "edition": "TEST-v1",
+        "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+        "clause": "fixture-1",
+        "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "rule_id": "WEIGHING_PERFORMANCE",
+        "part": "SYNTHETIC",
+        "edition": "TEST-v1",
+        "source_identity": "SYNTHETIC TEST FIXTURE ONLY",
+        "clause": "fixture-1",
+        "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "ruleset_version": "SYNTHETIC_TEST_V1",
+    "ruleset_configuration_hash": "6a2bb36a21b49f22f2c950ac21dcf2163e4ee33228ccf89e2389b572faef78ed",
+    "engine_version": "r76-domain-0.4.0|WEIGHING_PERFORMANCE@synthetic-v1",
+    "input_hash": "46f50f62de7c0f1aa1853e9e4d10ff32e29932cac3fc8121e1cbc03d9c2dacc7",
+    "synthetic_fixture": true
+  },
+  "input_hash": "46f50f62de7c0f1aa1853e9e4d10ff32e29932cac3fc8121e1cbc03d9c2dacc7",
+  "result_hash": "912a2fc9d9b2ec9dc3ae79b2a1853dfc40e3c909087487a830116014a377ba35"
+}
