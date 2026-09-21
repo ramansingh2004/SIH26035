@@ -1,4 +1,4 @@
-"""Async Alembic environment; no feature revisions are included in Phase 0."""
+"""Alembic environment for SIH26035 database migrations."""
 
 import asyncio
 from logging.config import fileConfig
@@ -7,6 +7,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 
+import app.models  # noqa: F401
 from alembic import context
 from app.core.config import get_settings
 from app.db.base import Base

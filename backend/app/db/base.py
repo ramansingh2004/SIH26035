@@ -1,4 +1,4 @@
-"""Empty metadata for future, explicitly authorized migrations."""
+"""Shared SQLAlchemy declarative base."""
 
 from sqlalchemy.orm import DeclarativeBase
 

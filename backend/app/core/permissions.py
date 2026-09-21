@@ -1,0 +1,113 @@
+"""Frozen permission catalog and scope masks, not route role shortcuts."""
+
+READ = {
+    "approval:read",
+    "attachment:read",
+    "checklist:read",
+    "construction:read",
+    "dashboard:read",
+    "equipment:read",
+    "instrument:read",
+    "laboratory:read",
+    "manufacturer:read",
+    "observation:read",
+    "report:read",
+    "ruleset:read",
+    "session:read",
+    "test:read",
+}
+MASTER = {
+    "equipment:archive",
+    "equipment:create",
+    "equipment:update",
+    "instrument:archive",
+    "instrument:create",
+    "instrument:manage_components",
+    "instrument:manage_ranges",
+    "instrument:update",
+    "manufacturer:archive",
+    "manufacturer:create",
+    "manufacturer:update",
+}
+ENTRY = {
+    "attachment:create",
+    "attachment:delete",
+    "checklist:update",
+    "construction:update",
+    "observation:create",
+    "observation:delete",
+    "observation:update",
+    "session:cancel",
+    "session:create",
+    "session:update",
+    "test:execute",
+}
+ENGINEER = {
+    "checklist:complete",
+    "construction:complete",
+    "report:create_revision",
+    "report:generate",
+    "report:preview",
+    "review:submit",
+    "session:create_revision",
+    "session:reopen",
+    "test:complete",
+    "test:evaluate",
+    "test:retest",
+    "test:select_run",
+}
+REVIEW = {
+    "audit:read",
+    "report:create_revision",
+    "report:generate",
+    "report:preview",
+    "review:perform",
+    "review:return_correction",
+    "session:create_revision",
+    "session:reopen",
+}
+APPROVE = {
+    "approval:finalize",
+    "audit:read",
+    "report:create_revision",
+    "report:generate",
+    "report:issue",
+    "report:preview",
+    "session:create_revision",
+}
+LAB_ADMIN = {
+    "audit:read",
+    "laboratory:update",
+    "role:read",
+    "user:create",
+    "user:deactivate",
+    "user:manage_roles",
+    "user:read",
+    "user:update",
+}
+GLOBAL_ADMIN = {
+    "audit:read",
+    "laboratory:create",
+    "laboratory:read",
+    "laboratory:update",
+    "role:read",
+    "ruleset:activate",
+    "ruleset:create",
+    "ruleset:read",
+    "ruleset:retire",
+    "ruleset:validate",
+    "user:create",
+    "user:deactivate",
+    "user:manage_roles",
+    "user:read",
+    "user:update",
+}
+LAB_PERMISSIONS = READ | MASTER | ENTRY | ENGINEER | REVIEW | APPROVE | LAB_ADMIN
+ROLE_PERMISSIONS = {
+    "ADMIN": READ | MASTER | LAB_ADMIN | GLOBAL_ADMIN,
+    "LAB_TECHNICIAN": READ | MASTER | ENTRY,
+    "LAB_ENGINEER": READ | MASTER | ENTRY | ENGINEER,
+    "REVIEWER": READ | REVIEW,
+    "APPROVING_OFFICER": READ | APPROVE,
+    "VIEWER": READ,
+}
