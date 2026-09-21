@@ -1,0 +1,339 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "key": "CHECKLIST_PENDING",
+      "kind": "checklist",
+      "description": "Candidate dependency; exact regulatory requirements must be verified before use.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "blockers": [
+        "REG-01:TODO_REGULATORY_VALIDATION",
+        "REG-02:TODO_REGULATORY_VALIDATION",
+        "REG-03:TODO_REGULATORY_VALIDATION",
+        "REG-04:TODO_REGULATORY_VALIDATION",
+        "REG-05:TODO_REGULATORY_VALIDATION",
+        "REG-06:TODO_REGULATORY_VALIDATION",
+        "REG-07:TODO_REGULATORY_VALIDATION",
+        "REG-08:TODO_REGULATORY_VALIDATION",
+        "REG-09:TODO_REGULATORY_VALIDATION",
+        "REG-10:TODO_REGULATORY_VALIDATION",
+        "REG-11:TODO_REGULATORY_VALIDATION",
+        "REG-12:TODO_REGULATORY_VALIDATION",
+        "REG-13:TODO_REGULATORY_VALIDATION",
+        "REG-14:TODO_REGULATORY_VALIDATION",
+        "REG-15:TODO_REGULATORY_VALIDATION",
+        "REG-16:TODO_REGULATORY_VALIDATION",
+        "REG-17:TODO_REGULATORY_VALIDATION"
+      ],
+      "parameters": [
+        {
+          "name": "VERIFIED_REQUIREMENTS",
+          "value": null
+        }
+      ]
+    }
+  ],
+  "checklist": [
+    {
+      "key": "GENERAL_MARKINGS",
+      "group": "GENERAL",
+      "text": "Candidate domain: markings. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "GENERAL_SEALING",
+      "group": "GENERAL",
+      "text": "Candidate domain: sealing. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "GENERAL_DOCUMENTATION",
+      "group": "GENERAL",
+      "text": "Candidate domain: documentation. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "GENERAL_INDICATION",
+      "group": "GENERAL",
+      "text": "Candidate domain: indication. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "GENERAL_PRINTING",
+      "group": "GENERAL",
+      "text": "Candidate domain: printing. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "GENERAL_ZERO_SETTING",
+      "group": "GENERAL",
+      "text": "Candidate domain: zero setting. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "GENERAL_TARE",
+      "group": "GENERAL",
+      "text": "Candidate domain: tare. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "GENERAL_RANGES",
+      "group": "GENERAL",
+      "text": "Candidate domain: ranges. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "GENERAL_EXTENDED_INDICATION",
+      "group": "GENERAL",
+      "text": "Candidate domain: extended indication. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "GENERAL_INTERFACES",
+      "group": "GENERAL",
+      "text": "Candidate domain: interfaces. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "DIRECT_SALES_CUSTOMER_VISIBILITY",
+      "group": "DIRECT_SALES",
+      "text": "Candidate domain: customer visibility. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "DIRECT_SALES_PRICE_DISPLAY",
+      "group": "DIRECT_SALES",
+      "text": "Candidate domain: price display. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "DIRECT_SALES_TARE_RESTRICTIONS",
+      "group": "DIRECT_SALES",
+      "text": "Candidate domain: tare restrictions. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "DIRECT_SALES_AUTOMATIC_FUNCTIONS",
+      "group": "DIRECT_SALES",
+      "text": "Candidate domain: automatic functions. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "DIRECT_SALES_LABELING",
+      "group": "DIRECT_SALES",
+      "text": "Candidate domain: labeling. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "DIRECT_SALES_TRANSACTIONS",
+      "group": "DIRECT_SALES",
+      "text": "Candidate domain: transactions. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "ELECTRONIC_FAULT_HANDLING",
+      "group": "ELECTRONIC",
+      "text": "Candidate domain: fault handling. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "ELECTRONIC_POWER_UP",
+      "group": "ELECTRONIC",
+      "text": "Candidate domain: power up. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "ELECTRONIC_DISPLAY_TEST",
+      "group": "ELECTRONIC",
+      "text": "Candidate domain: display test. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "ELECTRONIC_INTERFACES",
+      "group": "ELECTRONIC",
+      "text": "Candidate domain: interfaces. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "ELECTRONIC_PERIPHERALS",
+      "group": "ELECTRONIC",
+      "text": "Candidate domain: peripherals. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "ELECTRONIC_BATTERY",
+      "group": "ELECTRONIC",
+      "text": "Candidate domain: battery. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "ELECTRONIC_FUNCTIONAL_INTEGRITY",
+      "group": "ELECTRONIC",
+      "text": "Candidate domain: functional integrity. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "SOFTWARE_CONTROLLED_EMBEDDED_SOFTWARE",
+      "group": "SOFTWARE_CONTROLLED",
+      "text": "Candidate domain: embedded software. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "SOFTWARE_CONTROLLED_LOADABLE_SOFTWARE",
+      "group": "SOFTWARE_CONTROLLED",
+      "text": "Candidate domain: loadable software. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "SOFTWARE_CONTROLLED_SOFTWARE_IDENTIFICATION",
+      "group": "SOFTWARE_CONTROLLED",
+      "text": "Candidate domain: software identification. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    },
+    {
+      "key": "SOFTWARE_CONTROLLED_DATA_STORAGE",
+      "group": "SOFTWARE_CONTROLLED",
+      "text": "Candidate domain: data storage. Exact clause, wording, applicability and evidence requirements await regulatory verification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "evidence_required": null
+    }
+  ]
+}

@@ -18,6 +18,10 @@ async def run(args):
             service = ProvisioningService(session)
             if args.command == "seed":
                 print(f"Inserted catalog rows: {await service.seed()}")
+            elif args.command == "seed-phase3":
+                from app.services.rulesets import seed_phase3
+
+                print(f"Candidate ruleset: {await seed_phase3(session)}")
             else:
                 email = str(
                     TypeAdapter(EmailStr).validate_python(
@@ -40,7 +44,7 @@ async def run(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["seed", "bootstrap-admin"])
+    parser.add_argument("command", choices=["seed", "seed-phase3", "bootstrap-admin"])
     asyncio.run(run(parser.parse_args()))
 
 

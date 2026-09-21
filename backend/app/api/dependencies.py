@@ -96,3 +96,33 @@ Instruments = Annotated[InstrumentService, Depends(instrument_service)]
 Admin = Annotated[AdministrationService, Depends(admin_service)]
 Actor = Annotated[Principal, Depends(principal)]
 Match = Annotated[str | None, Header(alias="If-Match")]
+
+
+def equipment_service(request: Request, session: Annotated[AsyncSession, Depends(database)]):
+    from app.services.equipment import EquipmentService
+
+    return EquipmentService(session, context(request))
+
+
+def ruleset_service(request: Request, session: Annotated[AsyncSession, Depends(database)]):
+    from app.services.rulesets import RulesetService
+
+    return RulesetService(session, context(request))
+
+
+def object_storage(request: Request):
+    from app.storage.objects import create_storage
+
+    return create_storage(request.app.state.settings)
+
+
+def attachment_service(
+    request: Request,
+    session: Annotated[AsyncSession, Depends(database)],
+    storage: Annotated[object, Depends(object_storage)],
+):
+    from app.services.attachments import AttachmentService
+
+    return AttachmentService(
+        session, context(request), storage, request.app.state.settings.storage_url_seconds
+    )

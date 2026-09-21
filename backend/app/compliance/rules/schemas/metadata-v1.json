@@ -1,0 +1,110 @@
+{
+  "$defs": {
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "part": {
+          "title": "Part",
+          "type": "string"
+        },
+        "edition": {
+          "title": "Edition",
+          "type": "string"
+        },
+        "identity": {
+          "title": "Identity",
+          "type": "string"
+        },
+        "clause": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Clause"
+        },
+        "digest": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Digest"
+        }
+      },
+      "required": [
+        "part",
+        "edition",
+        "identity"
+      ],
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "standard_code": {
+      "const": "OIML_R76",
+      "title": "Standard Code",
+      "type": "string"
+    },
+    "standard_name": {
+      "title": "Standard Name",
+      "type": "string"
+    },
+    "edition": {
+      "title": "Edition",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    },
+    "standard_parts": {
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "title": "Standard Parts",
+      "type": "array"
+    },
+    "supported_test_codes": {
+      "items": {
+        "maxLength": 100,
+        "pattern": "^[A-Z][A-Z0-9_]*$",
+        "type": "string"
+      },
+      "title": "Supported Test Codes",
+      "type": "array"
+    },
+    "source_reference": {
+      "title": "Source Reference",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "standard_code",
+    "standard_name",
+    "edition",
+    "version",
+    "standard_parts",
+    "supported_test_codes",
+    "source_reference"
+  ],
+  "title": "Metadata",
+  "type": "object"
+}

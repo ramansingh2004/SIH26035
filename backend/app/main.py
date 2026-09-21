@@ -14,6 +14,7 @@ from starlette.exceptions import HTTPException
 from app.api.health import router as health_router
 from app.api.v1.administration import router as administration_router
 from app.api.v1.auth import router as auth_router
+from app.api.v1.foundations import router as foundations_router
 from app.api.v1.master_data import router as master_data_router
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError
@@ -57,6 +58,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(auth_router, prefix="/api/v1")
     application.include_router(administration_router, prefix="/api/v1")
     application.include_router(master_data_router, prefix="/api/v1")
+    application.include_router(foundations_router, prefix="/api/v1")
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_origins,

@@ -1,0 +1,436 @@
+{
+  "schema_version": 1,
+  "tests": [
+    {
+      "code": "WEIGHING_PERFORMANCE",
+      "section": 1,
+      "name": "WEIGHING PERFORMANCE",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "TEMPERATURE_ZERO",
+      "section": 2,
+      "name": "TEMPERATURE ZERO",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "ECCENTRICITY",
+      "section": 3,
+      "name": "ECCENTRICITY",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "DISCRIMINATION_SENSITIVITY",
+      "section": 4,
+      "name": "DISCRIMINATION SENSITIVITY",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "DISCRIMINATION",
+      "section": 4,
+      "name": "DISCRIMINATION",
+      "family": "DISCRIMINATION",
+      "parent": "DISCRIMINATION_SENSITIVITY",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "SENSITIVITY",
+      "section": 4,
+      "name": "SENSITIVITY",
+      "family": "SENSITIVITY",
+      "parent": "DISCRIMINATION_SENSITIVITY",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "REPEATABILITY",
+      "section": 5,
+      "name": "REPEATABILITY",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "TIME_DEPENDENCE",
+      "section": 6,
+      "name": "TIME DEPENDENCE",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "ZERO_RETURN",
+      "section": 6,
+      "name": "ZERO RETURN",
+      "family": "ZERO_RETURN",
+      "parent": "TIME_DEPENDENCE",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "CREEP",
+      "section": 6,
+      "name": "CREEP",
+      "family": "CREEP",
+      "parent": "TIME_DEPENDENCE",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "STABILITY_EQUILIBRIUM",
+      "section": 7,
+      "name": "STABILITY EQUILIBRIUM",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "TILTING",
+      "section": 8,
+      "name": "TILTING",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "TARE",
+      "section": 9,
+      "name": "TARE",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "WARM_UP",
+      "section": 10,
+      "name": "WARM UP",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "VOLTAGE_VARIATION",
+      "section": 11,
+      "name": "VOLTAGE VARIATION",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "VOLTAGE_PENDING"
+      ]
+    },
+    {
+      "code": "ELECTRICAL_DISTURBANCES",
+      "section": 12,
+      "name": "ELECTRICAL DISTURBANCES",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "DISTURBANCES_PENDING"
+      ]
+    },
+    {
+      "code": "DISTURBANCE_VOLTAGE_DIP",
+      "section": 12,
+      "name": "DISTURBANCE VOLTAGE DIP",
+      "family": "DISTURBANCE_VOLTAGE_DIP",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "DISTURBANCES_PENDING"
+      ]
+    },
+    {
+      "code": "DISTURBANCE_BURST",
+      "section": 12,
+      "name": "DISTURBANCE BURST",
+      "family": "DISTURBANCE_BURST",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "DISTURBANCES_PENDING"
+      ]
+    },
+    {
+      "code": "DISTURBANCE_SURGE",
+      "section": 12,
+      "name": "DISTURBANCE SURGE",
+      "family": "DISTURBANCE_SURGE",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "DISTURBANCES_PENDING"
+      ]
+    },
+    {
+      "code": "DISTURBANCE_ESD",
+      "section": 12,
+      "name": "DISTURBANCE ESD",
+      "family": "DISTURBANCE_ESD",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "DISTURBANCES_PENDING"
+      ]
+    },
+    {
+      "code": "DISTURBANCE_RADIATED_RF",
+      "section": 12,
+      "name": "DISTURBANCE RADIATED RF",
+      "family": "DISTURBANCE_RADIATED_RF",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "DISTURBANCES_PENDING"
+      ]
+    },
+    {
+      "code": "DISTURBANCE_CONDUCTED_RF",
+      "section": 12,
+      "name": "DISTURBANCE CONDUCTED RF",
+      "family": "DISTURBANCE_CONDUCTED_RF",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "DISTURBANCES_PENDING"
+      ]
+    },
+    {
+      "code": "DISTURBANCE_VEHICLE_SUPPLY",
+      "section": 12,
+      "name": "DISTURBANCE VEHICLE SUPPLY",
+      "family": "DISTURBANCE_VEHICLE_SUPPLY",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "APPLICABILITY_PENDING",
+        "DISTURBANCES_PENDING"
+      ]
+    },
+    {
+      "code": "DAMP_HEAT",
+      "section": 13,
+      "name": "DAMP HEAT",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "SPAN_STABILITY",
+      "section": 14,
+      "name": "SPAN STABILITY",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "MPE_PENDING"
+      ]
+    },
+    {
+      "code": "ENDURANCE",
+      "section": 15,
+      "name": "ENDURANCE",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "ENDURANCE_PENDING"
+      ]
+    },
+    {
+      "code": "CONSTRUCTION_EXAMINATION",
+      "section": 16,
+      "name": "CONSTRUCTION EXAMINATION",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "CHECKLIST_PENDING"
+      ]
+    },
+    {
+      "code": "CHECKLIST",
+      "section": 17,
+      "name": "CHECKLIST",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007; source digest and clauses pending verification"
+      },
+      "dependencies": [
+        "CLASSES_PENDING",
+        "APPLICABILITY_PENDING",
+        "CHECKLIST_PENDING"
+      ]
+    }
+  ]
+}

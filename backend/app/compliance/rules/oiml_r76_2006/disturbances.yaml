@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "key": "DISTURBANCES_PENDING",
+      "kind": "disturbances",
+      "description": "Candidate dependency; exact regulatory requirements must be verified before use.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006; source digest and clauses pending verification"
+      },
+      "blockers": [
+        "REG-01:TODO_REGULATORY_VALIDATION",
+        "REG-02:TODO_REGULATORY_VALIDATION",
+        "REG-03:TODO_REGULATORY_VALIDATION",
+        "REG-04:TODO_REGULATORY_VALIDATION",
+        "REG-05:TODO_REGULATORY_VALIDATION",
+        "REG-06:TODO_REGULATORY_VALIDATION",
+        "REG-07:TODO_REGULATORY_VALIDATION",
+        "REG-08:TODO_REGULATORY_VALIDATION",
+        "REG-09:TODO_REGULATORY_VALIDATION",
+        "REG-10:TODO_REGULATORY_VALIDATION",
+        "REG-11:TODO_REGULATORY_VALIDATION",
+        "REG-12:TODO_REGULATORY_VALIDATION",
+        "REG-13:TODO_REGULATORY_VALIDATION",
+        "REG-14:TODO_REGULATORY_VALIDATION",
+        "REG-15:TODO_REGULATORY_VALIDATION",
+        "REG-16:TODO_REGULATORY_VALIDATION",
+        "REG-17:TODO_REGULATORY_VALIDATION"
+      ],
+      "parameters": [
+        {
+          "name": "VERIFIED_REQUIREMENTS",
+          "value": null
+        }
+      ]
+    }
+  ]
+}

@@ -33,6 +33,35 @@ class Settings(BaseSettings):
     allowed_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
     login_limit: int = Field(default=10, ge=1, le=1000)
     login_window_seconds: int = Field(default=300, ge=1, le=3600)
+    storage_provider: Literal["minio", "s3"] = "minio"
+    storage_endpoint: str | None = None
+    storage_bucket: str | None = None
+    storage_region: str = "us-east-1"
+    storage_access_key: SecretStr | None = None
+    storage_secret_key: SecretStr | None = None
+    storage_url_seconds: int = Field(default=300, ge=30, le=900)
+
+    @model_validator(mode="after")
+    def storage_security(self):
+        if self.storage_endpoint:
+            from urllib.parse import urlsplit
+
+            url = urlsplit(self.storage_endpoint)
+            if (
+                url.username
+                or url.password
+                or url.query
+                or url.fragment
+                or url.path not in ("", "/")
+            ):
+                raise ValueError("Storage endpoint must be an origin without credentials")
+            if url.scheme != "https" and not (
+                self.environment != "production"
+                and url.scheme == "http"
+                and url.hostname in ("localhost", "127.0.0.1", "::1")
+            ):
+                raise ValueError("Storage requires HTTPS except development loopback")
+        return self
 
     def signing_key(self) -> str:
         if self.jwt_secret is None:

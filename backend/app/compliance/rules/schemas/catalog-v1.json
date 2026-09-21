@@ -1,0 +1,216 @@
+{
+  "$defs": {
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "part": {
+          "title": "Part",
+          "type": "string"
+        },
+        "edition": {
+          "title": "Edition",
+          "type": "string"
+        },
+        "identity": {
+          "title": "Identity",
+          "type": "string"
+        },
+        "clause": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Clause"
+        },
+        "digest": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Digest"
+        }
+      },
+      "required": [
+        "part",
+        "edition",
+        "identity"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "TestDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 100,
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "title": "Code",
+          "type": "string"
+        },
+        "section": {
+          "maximum": 17,
+          "minimum": 1,
+          "title": "Section",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "pattern": "^[A-Z][A-Z0-9_]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent"
+        },
+        "family": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Family"
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "dependencies": {
+          "items": {
+            "maxLength": 100,
+            "pattern": "^[A-Z][A-Z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Dependencies",
+          "type": "array"
+        },
+        "applicability": {
+          "const": "TODO_REGULATORY_VALIDATION",
+          "default": "TODO_REGULATORY_VALIDATION",
+          "title": "Applicability",
+          "type": "string"
+        },
+        "implemented": {
+          "const": false,
+          "default": false,
+          "title": "Implemented",
+          "type": "boolean"
+        },
+        "verification": {
+          "$ref": "#/$defs/Verification",
+          "default": {
+            "status": "TODO_REGULATORY_VALIDATION",
+            "verified_by": null,
+            "verified_at": null,
+            "evidence": null
+          }
+        }
+      },
+      "required": [
+        "code",
+        "section",
+        "name",
+        "source",
+        "dependencies"
+      ],
+      "title": "TestDefinition",
+      "type": "object"
+    },
+    "Verification": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "default": "TODO_REGULATORY_VALIDATION",
+          "enum": [
+            "TODO_REGULATORY_VALIDATION",
+            "VERIFIED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "verified_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verified By"
+        },
+        "verified_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verified At"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence"
+        }
+      },
+      "title": "Verification",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "tests": {
+      "items": {
+        "$ref": "#/$defs/TestDefinition"
+      },
+      "title": "Tests",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "tests"
+  ],
+  "title": "CatalogFile",
+  "type": "object"
+}

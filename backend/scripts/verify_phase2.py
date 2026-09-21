@@ -40,7 +40,7 @@ async def check_schema(settings):
             } <= tables
             assert (
                 await connection.execute(text("SELECT version_num FROM alembic_version"))
-            ).scalar() == "0002_phase2"
+            ).scalar() in {"0002_phase2", "0003_phase3"}
         print("Phase 2 PostgreSQL tables and migration revision: PASS")
     finally:
         await engine.dispose()
