@@ -22,13 +22,15 @@ def test_health_is_public_and_starts_without_database(monkeypatch: pytest.Monkey
     assert response.json() == {"status": "ok"}
 
 
-def test_health_preserved_and_no_phase_two_endpoints() -> None:
+def test_health_preserved_and_no_phase_three_endpoints() -> None:
     settings = Settings(_env_file=None, environment="test", database_url=None)
     paths = set(create_app(settings).openapi()["paths"])
     assert "/health" in paths
     assert "/api/v1/auth/me" in paths
-    assert not any("instrument" in path or "test-session" in path for path in paths)
-    assert "instruments" not in Base.metadata.tables
+    assert "/api/v1/instruments" in paths
+    assert not any("test-session" in path or "rulesets" in path for path in paths)
+    assert "instruments" in Base.metadata.tables
+    assert "test_sessions" not in Base.metadata.tables
 
 
 def test_settings_read_environment(monkeypatch: pytest.MonkeyPatch) -> None:

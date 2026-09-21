@@ -14,6 +14,7 @@ from starlette.exceptions import HTTPException
 from app.api.health import router as health_router
 from app.api.v1.administration import router as administration_router
 from app.api.v1.auth import router as auth_router
+from app.api.v1.master_data import router as master_data_router
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError
 from app.db.session import create_database_engine, create_session_factory
@@ -37,13 +38,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if application.state.engine is not None:
             await application.state.engine.dispose()
 
+    is_development = settings.environment == "development"
+
     application = FastAPI(
         title=settings.app_name,
         version="0.2.0",
         lifespan=lifespan,
-        docs_url=None,
-        redoc_url=None,
-        openapi_url=None,
+        docs_url="/docs" if is_development else None,
+        redoc_url="/redoc" if is_development else None,
+        openapi_url="/openapi.json" if is_development else None,
     )
     application.state.settings = settings
     application.state.engine = create_database_engine(settings) if settings.database_url else None
@@ -53,6 +56,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(health_router)
     application.include_router(auth_router, prefix="/api/v1")
     application.include_router(administration_router, prefix="/api/v1")
+    application.include_router(master_data_router, prefix="/api/v1")
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_origins,
@@ -65,7 +69,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "If-Match",
             "Idempotency-Key",
         ],
-        expose_headers=["ETag", "X-Request-ID"],
+        expose_headers=["ETag", "X-Request-ID", "X-Instrument-ETag"],
     )
 
     def error_response(request, status, code, message, details=None):

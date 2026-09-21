@@ -29,7 +29,7 @@ async def prepare(settings, email, password):
                     )
                 ).scalars()
             )
-            assert tables == {
+            assert tables >= {
                 "alembic_version",
                 "users",
                 "roles",

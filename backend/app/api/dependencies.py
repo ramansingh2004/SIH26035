@@ -14,6 +14,7 @@ from app.services.administration import AdministrationService
 from app.services.audit import RequestContext
 from app.services.auth import AuthService
 from app.services.authorization import Principal
+from app.services.master_data import InstrumentService, ManufacturerService
 
 bearer = HTTPBearer(auto_error=False)
 REFRESH_COOKIE = "sih_refresh"
@@ -80,6 +81,18 @@ def logout_csrf(request: Request, x_csrf_token: Annotated[str | None, Header()] 
 
 
 Auth = Annotated[AuthService, Depends(auth_service)]
+
+
+def manufacturer_service(request: Request, session: Annotated[AsyncSession, Depends(database)]):
+    return ManufacturerService(session, context(request))
+
+
+def instrument_service(request: Request, session: Annotated[AsyncSession, Depends(database)]):
+    return InstrumentService(session, context(request))
+
+
+Manufacturers = Annotated[ManufacturerService, Depends(manufacturer_service)]
+Instruments = Annotated[InstrumentService, Depends(instrument_service)]
 Admin = Annotated[AdministrationService, Depends(admin_service)]
 Actor = Annotated[Principal, Depends(principal)]
 Match = Annotated[str | None, Header(alias="If-Match")]
