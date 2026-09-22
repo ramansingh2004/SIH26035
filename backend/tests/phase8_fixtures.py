@@ -1,8 +1,8 @@
-"""SYNTHETIC Phase 7 PostgreSQL/API integration fixtures only.
+"""SYNTHETIC Phase 8 PostgreSQL/API integration fixtures only.
 
-This artifact is isolated to pytest and a *_test PostgreSQL database.  It
-combines the already-tested Phase 5/6 mechanics with Phase 7 synthetic rules;
-no production configuration or regulatory authority is created.
+This artifact is isolated to pytest and an isolated *_test PostgreSQL database.
+It extends the accepted Phase 7 synthetic artifact with Phase 8 influence-test
+mechanics.  No production regulatory rule or official authority is created.
 """
 
 from dataclasses import replace
@@ -13,51 +13,39 @@ from fastapi import Request
 from app.api.dependencies import context, testing_service
 from app.compliance.engine import R76Engine, synthetic_artifact
 from app.compliance.evaluators import EvaluatorRegistry
-from app.compliance.phase7 import (
-    CREEP,
-    DISCRIMINATION,
-    SENSITIVITY,
-    STABILITY_EQUILIBRIUM,
-    ZERO_RETURN,
+from app.compliance.phase8 import (
+    TEMPERATURE_ZERO,
+    TILTING,
+    VOLTAGE_VARIATION,
+    WARM_UP,
 )
 from app.compliance.ruleset import RuleSet
-from app.compliance.suite import implemented_registry
+from app.compliance.suite import IMPLEMENTED_TEST_CODES, implemented_registry
 from app.services.rulesets import RulesetService
 from app.services.testing import TestingService
-from domain_tests.fixtures.phase7_functional_time import (
-    creep_context,
-    creep_observations,
-    creep_rules,
-    discrimination_context,
-    discrimination_observations,
-    discrimination_rules,
-    sensitivity_context,
-    sensitivity_observations,
-    sensitivity_rules,
-    stability_context,
-    stability_observations,
-    stability_rules,
-    zero_return_context,
-    zero_return_observations,
-    zero_return_rules,
+from domain_tests.fixtures.phase8_influence import (
+    temperature_context,
+    temperature_observations,
+    temperature_rules,
+    tilting_context,
+    tilting_observations,
+    tilting_rules,
+    voltage_context,
+    voltage_observations,
+    voltage_rules,
+    warm_up_context,
+    warm_up_observations,
+    warm_up_rules,
 )
 from domain_tests.fixtures.synthetic import instrument
 from tests.phase5_fixtures import create_session, prepare_world, seed_evidence
-from tests.phase6_fixtures import (
-    PHASE6_IMPLEMENTED_CODES,
-    phase6_fixture_rules,
-)
+from tests.phase7_fixtures import phase7_fixture_rules
 
-PHASE7_CODES = (
-    DISCRIMINATION,
-    SENSITIVITY,
-    ZERO_RETURN,
-    CREEP,
-    STABILITY_EQUILIBRIUM,
-)
-PHASE7_IMPLEMENTED_CODES = (
-    *PHASE6_IMPLEMENTED_CODES,
-    *PHASE7_CODES,
+PHASE8_CODES = (
+    TEMPERATURE_ZERO,
+    TILTING,
+    WARM_UP,
+    VOLTAGE_VARIATION,
 )
 
 
@@ -68,25 +56,30 @@ def _rename_rule(rule: dict, mapping: dict[str, str]) -> dict:
     return result
 
 
-def phase7_fixture_rules() -> RuleSet:
-    """One labelled synthetic artifact through Phase 7."""
+def phase8_fixture_rules() -> RuleSet:
+    """One labelled synthetic artifact through Phase 8."""
 
-    payload = phase6_fixture_rules().model_dump(mode="json")
-    payload["metadata"]["version"] = "SYNTHETIC_TEST_PHASE7_INTEGRATION"
-    payload["metadata"]["edition"] = "TEST-PHASE7-v1"
-    payload["metadata"]["supported_test_codes"] = list(PHASE7_IMPLEMENTED_CODES)
+    payload = phase7_fixture_rules().model_dump(mode="json")
+    payload["metadata"]["version"] = "SYNTHETIC_TEST_PHASE8_INTEGRATION"
+    payload["metadata"]["edition"] = "TEST-PHASE8-v1"
+    payload["metadata"]["supported_test_codes"] = list(IMPLEMENTED_TEST_CODES)
     tests = {item["code"]: item for item in payload["tests"]}
     existing_rule_keys = {rule["key"] for rule in payload["rules"]}
 
     factories = (
         (
-            lambda: discrimination_rules(mode="DIGITAL"),
-            DISCRIMINATION,
+            lambda: temperature_rules(accuracy_class="III"),
+            TEMPERATURE_ZERO,
         ),
-        (sensitivity_rules, SENSITIVITY),
-        (zero_return_rules, ZERO_RETURN),
-        (lambda: creep_rules(mode="SHORT"), CREEP),
-        (stability_rules, STABILITY_EQUILIBRIUM),
+        (
+            lambda: tilting_rules(mode="NO_LEVEL_DEVICE"),
+            TILTING,
+        ),
+        (warm_up_rules, WARM_UP),
+        (
+            lambda: voltage_rules(profile="AC_MAINS"),
+            VOLTAGE_VARIATION,
+        ),
     )
 
     for factory, code in factories:
@@ -116,21 +109,19 @@ def phase7_fixture_rules() -> RuleSet:
     return RuleSet.model_validate(payload)
 
 
-def phase7_fixture_engine() -> R76Engine:
+def phase8_fixture_engine() -> R76Engine:
     registrations = tuple(
-        replace(item, synthetic_fixture=True)
-        for item in implemented_registry().registrations
-        if item.test_code in PHASE7_IMPLEMENTED_CODES
+        replace(item, synthetic_fixture=True) for item in implemented_registry().registrations
     )
     return R76Engine(EvaluatorRegistry(registrations))
 
 
-class SyntheticPhase7TestingService(TestingService):
+class SyntheticPhase8TestingService(TestingService):
     __test__ = False
 
     def __init__(self, session, request_context):
         super().__init__(session, request_context)
-        self.engine = phase7_fixture_engine()
+        self.engine = phase8_fixture_engine()
 
     def artifact_is_production(self, rules):
         assert synthetic_artifact(rules)
@@ -140,13 +131,17 @@ class SyntheticPhase7TestingService(TestingService):
         assert synthetic is True
 
 
-async def install_phase7_synthetic(world, monkeypatch):
+async def install_phase8_synthetic(world, monkeypatch):
     from app.services import rulesets as service_module
     from app.services.audit import RequestContext
 
-    fixture = phase7_fixture_rules()
+    fixture = phase8_fixture_rules()
     with monkeypatch.context() as patch:
-        patch.setattr(service_module, "load_ruleset", lambda: fixture)
+        patch.setattr(
+            service_module,
+            "load_ruleset",
+            lambda: fixture,
+        )
         async with world.factory() as session, session.begin():
             row = await RulesetService(
                 session,
@@ -161,7 +156,7 @@ async def install_phase7_synthetic(world, monkeypatch):
 
     async def service(request: Request):
         async with world.factory() as session:
-            yield SyntheticPhase7TestingService(
+            yield SyntheticPhase8TestingService(
                 session,
                 context(request),
             )
@@ -169,8 +164,12 @@ async def install_phase7_synthetic(world, monkeypatch):
     world.app.dependency_overrides[testing_service] = service
 
 
-async def configured_phase7(client, world):
-    response, _, _ = await create_session(client, world, synthetic=True)
+async def configured_phase8(client, world):
+    response, _, _ = await create_session(
+        client,
+        world,
+        synthetic=True,
+    )
     path = "/api/v1/test-sessions/" + response.json()["id"]
     snapshot = instrument(
         indication_type="DIGITAL",
@@ -179,6 +178,17 @@ async def configured_phase7(client, world):
         support_point_count=4,
         tare_type="SUBTRACTIVE",
         maximum_tare_g="5000",
+        zero_tracking_available=True,
+        level_indicator_available=False,
+        automatic_tilt_sensor=False,
+        is_portable=False,
+        is_mobile=False,
+        power_supply_type="AC",
+        nominal_voltage="230",
+        min_voltage="200",
+        max_voltage="250",
+        declared_temp_min_c="-10",
+        declared_temp_max_c="40",
     )
     response = await client.post(
         path + "/configure",
@@ -189,8 +199,8 @@ async def configured_phase7(client, world):
     return response, path
 
 
-async def started_phase7_runs(client, world):
-    response, session_path = await configured_phase7(client, world)
+async def started_phase8_runs(client, world):
+    response, session_path = await configured_phase8(client, world)
     preview = await client.post(session_path + "/applicability")
     assert preview.status_code == 200, preview.text
     assert preview.json()["confirmable"] is True
@@ -206,9 +216,9 @@ async def started_phase7_runs(client, world):
     selected = {
         item["slot_snapshot"]["test_code"]: item
         for item in requirements
-        if item["slot_snapshot"]["test_code"] in PHASE7_IMPLEMENTED_CODES
+        if item["slot_snapshot"]["test_code"] in IMPLEMENTED_TEST_CODES
     }
-    assert set(selected) == set(PHASE7_IMPLEMENTED_CODES)
+    assert set(selected) == set(IMPLEMENTED_TEST_CODES)
 
     response = await client.post(
         session_path + "/start-testing",
@@ -230,27 +240,38 @@ async def started_phase7_runs(client, world):
 
 
 CONTEXTS = {
-    DISCRIMINATION: discrimination_context,
-    SENSITIVITY: sensitivity_context,
-    ZERO_RETURN: zero_return_context,
-    CREEP: creep_context,
-    STABILITY_EQUILIBRIUM: stability_context,
+    TEMPERATURE_ZERO: temperature_context,
+    TILTING: tilting_context,
+    WARM_UP: warm_up_context,
+    VOLTAGE_VARIATION: voltage_context,
 }
 OBSERVATIONS = {
-    DISCRIMINATION: discrimination_observations,
-    SENSITIVITY: sensitivity_observations,
-    ZERO_RETURN: zero_return_observations,
-    CREEP: creep_observations,
-    STABILITY_EQUILIBRIUM: stability_observations,
+    TEMPERATURE_ZERO: temperature_observations,
+    TILTING: tilting_observations,
+    WARM_UP: warm_up_observations,
+    VOLTAGE_VARIATION: voltage_observations,
 }
 
 
-async def populate_phase7_run(client, world, code, run_path):
+async def populate_phase8_run(
+    client,
+    world,
+    code,
+    run_path,
+    *,
+    procedure=None,
+    observations=None,
+):
     current = await client.get(run_path)
-    procedure = CONTEXTS[code](
-        environment=(),
-        equipment=(),
-        evidence_hashes=(),
+    if procedure is None:
+        procedure = CONTEXTS[code]()
+    procedure = type(procedure).model_validate(
+        procedure.model_dump(mode="python")
+        | {
+            "environment": (),
+            "equipment": (),
+            "evidence_hashes": (),
+        }
     )
     response = await client.patch(
         run_path + "/procedure-context",
@@ -259,7 +280,8 @@ async def populate_phase7_run(client, world, code, run_path):
     )
     assert response.status_code == 200, response.text
 
-    for row in OBSERVATIONS[code]().rows:
+    batch = observations or OBSERVATIONS[code]()
+    for row in batch.rows:
         current = await client.get(run_path)
         response = await client.post(
             run_path + "/observations",
@@ -289,7 +311,7 @@ async def populate_phase7_run(client, world, code, run_path):
         json={
             "laboratory_id": str(world.labs[0].id),
             "category": "SYNTHETIC",
-            "reference_number": (f"SYNTHETIC_PHASE7_{code}_{uuid4().hex}"),
+            "reference_number": (f"SYNTHETIC_PHASE8_{code}_{uuid4().hex}"),
         },
     )
     assert equipment.status_code == 201, equipment.text
@@ -301,10 +323,13 @@ async def populate_phase7_run(client, world, code, run_path):
         json={},
     )
     assert response.status_code == 201, response.text
-    await seed_evidence(world, run_path.rsplit("/", 1)[1])
+    await seed_evidence(
+        world,
+        run_path.rsplit("/", 1)[1],
+    )
 
 
-async def prepare_phase7_world(world, monkeypatch):
+async def prepare_phase8_world(world, monkeypatch):
     world = await prepare_world(world)
-    await install_phase7_synthetic(world, monkeypatch)
+    await install_phase8_synthetic(world, monkeypatch)
     return world

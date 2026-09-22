@@ -29,6 +29,10 @@ SUPPORTED_KINDS = (
     "zero_return_procedure_v1",
     "creep_procedure_v1",
     "stability_equilibrium_procedure_v1",
+    "temperature_zero_procedure_v1",
+    "tilting_procedure_v1",
+    "warm_up_procedure_v1",
+    "voltage_variation_procedure_v1",
     "run_selection_v1",
 )
 

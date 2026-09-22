@@ -27,6 +27,16 @@ from app.compliance.phase7 import (
     ZeroReturnContext,
     ZeroReturnObservation,
 )
+from app.compliance.phase8 import (
+    TemperatureZeroContext,
+    TemperatureZeroObservation,
+    TiltingContext,
+    TiltingObservation,
+    VoltageVariationContext,
+    VoltageVariationObservation,
+    WarmUpContext,
+    WarmUpObservation,
+)
 from app.compliance.planning import RequirementPlan
 from app.compliance.repeatability import RepeatabilityContext, RepeatabilityObservation
 from app.compliance.tare import TareContext, TareObservation
@@ -68,6 +78,7 @@ class SelectRun(ReasonRequest):
 
 ObservationPayload = Annotated[
     WeighingObservation
+    | TemperatureZeroObservation
     | EccentricityObservation
     | RepeatabilityObservation
     | DiscriminationObservation
@@ -75,7 +86,10 @@ ObservationPayload = Annotated[
     | ZeroReturnObservation
     | CreepObservation
     | StabilityObservation
-    | TareObservation,
+    | TiltingObservation
+    | TareObservation
+    | WarmUpObservation
+    | VoltageVariationObservation,
     Field(discriminator="test_code"),
 ]
 
@@ -84,6 +98,7 @@ class ObservationData(Schema):
     sequence_no: int = Field(gt=0, strict=True)
     observation_type: Literal[
         "WEIGHING_PERFORMANCE",
+        "TEMPERATURE_ZERO",
         "ECCENTRICITY",
         "REPEATABILITY",
         "DISCRIMINATION",
@@ -91,7 +106,10 @@ class ObservationData(Schema):
         "ZERO_RETURN",
         "CREEP",
         "STABILITY_EQUILIBRIUM",
+        "TILTING",
         "TARE",
+        "WARM_UP",
+        "VOLTAGE_VARIATION",
     ]
     payload_schema_version: Literal["v1"]
     payload: ObservationPayload
@@ -271,6 +289,7 @@ class ApplicabilityView(Schema):
 
 ProcedurePayload = Annotated[
     WeighingContext
+    | TemperatureZeroContext
     | EccentricityContext
     | RepeatabilityContext
     | DiscriminationContext
@@ -278,7 +297,10 @@ ProcedurePayload = Annotated[
     | ZeroReturnContext
     | CreepContext
     | StabilityContext
-    | TareContext,
+    | TiltingContext
+    | TareContext
+    | WarmUpContext
+    | VoltageVariationContext,
     Field(discriminator="test_code"),
 ]
 

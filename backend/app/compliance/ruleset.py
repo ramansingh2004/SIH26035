@@ -114,6 +114,10 @@ class TestDefinition(Frozen):
             "ZERO_RETURN",
             "CREEP",
             "STABILITY_EQUILIBRIUM",
+            "TEMPERATURE_ZERO",
+            "TILTING",
+            "WARM_UP",
+            "VOLTAGE_VARIATION",
             "TARE",
         }
         if self.implemented and self.code not in implemented_codes:
