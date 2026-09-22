@@ -1,4 +1,4 @@
-"""Registered evaluator mechanics implemented through Phase 8.
+"""Registered evaluator mechanics implemented through Phase 9.
 
 Registration does not make candidate regulatory configuration authoritative.  The
 engine still applies the RuleSet verification/implementation gates before any
@@ -20,6 +20,10 @@ from app.compliance.phase8 import (
     voltage_variation_registration,
     warm_up_registration,
 )
+from app.compliance.phase9 import (
+    damp_heat_registration,
+    span_stability_registration,
+)
 from app.compliance.repeatability import section5_registration
 from app.compliance.tare import section9_registration
 from app.compliance.weighing import section1_registration
@@ -38,6 +42,8 @@ IMPLEMENTED_TEST_CODES = (
     "TARE",
     "WARM_UP",
     "VOLTAGE_VARIATION",
+    "DAMP_HEAT",
+    "SPAN_STABILITY",
 )
 
 
@@ -57,5 +63,7 @@ def implemented_registry() -> EvaluatorRegistry:
             section9_registration(),
             warm_up_registration(),
             voltage_variation_registration(),
+            damp_heat_registration(),
+            span_stability_registration(),
         )
     )

@@ -118,6 +118,8 @@ class TestDefinition(Frozen):
             "TILTING",
             "WARM_UP",
             "VOLTAGE_VARIATION",
+            "DAMP_HEAT",
+            "SPAN_STABILITY",
             "TARE",
         }
         if self.implemented and self.code not in implemented_codes:

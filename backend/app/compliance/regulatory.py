@@ -33,6 +33,8 @@ SUPPORTED_KINDS = (
     "tilting_procedure_v1",
     "warm_up_procedure_v1",
     "voltage_variation_procedure_v1",
+    "damp_heat_procedure_v1",
+    "span_stability_procedure_v1",
     "run_selection_v1",
 )
 

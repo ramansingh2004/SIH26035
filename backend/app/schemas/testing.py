@@ -37,6 +37,12 @@ from app.compliance.phase8 import (
     WarmUpContext,
     WarmUpObservation,
 )
+from app.compliance.phase9 import (
+    DampHeatContext,
+    DampHeatObservation,
+    SpanStabilityContext,
+    SpanStabilityObservation,
+)
 from app.compliance.planning import RequirementPlan
 from app.compliance.repeatability import RepeatabilityContext, RepeatabilityObservation
 from app.compliance.tare import TareContext, TareObservation
@@ -89,7 +95,9 @@ ObservationPayload = Annotated[
     | TiltingObservation
     | TareObservation
     | WarmUpObservation
-    | VoltageVariationObservation,
+    | VoltageVariationObservation
+    | DampHeatObservation
+    | SpanStabilityObservation,
     Field(discriminator="test_code"),
 ]
 
@@ -110,6 +118,8 @@ class ObservationData(Schema):
         "TARE",
         "WARM_UP",
         "VOLTAGE_VARIATION",
+        "DAMP_HEAT",
+        "SPAN_STABILITY",
     ]
     payload_schema_version: Literal["v1"]
     payload: ObservationPayload
@@ -300,7 +310,9 @@ ProcedurePayload = Annotated[
     | TiltingContext
     | TareContext
     | WarmUpContext
-    | VoltageVariationContext,
+    | VoltageVariationContext
+    | DampHeatContext
+    | SpanStabilityContext,
     Field(discriminator="test_code"),
 ]
 
