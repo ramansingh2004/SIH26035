@@ -17,7 +17,9 @@ from app.compliance.domain import InstrumentSnapshot
 from app.compliance.engine import R76Engine, synthetic_artifact
 from app.compliance.planning import RequirementPlanner
 from app.compliance.ruleset import RuleSet
-from app.compliance.weighing import CODE, WeighingContext, section1_registry
+from app.compliance.suite import implemented_registry
+from app.compliance.weighing import CODE as WEIGHING_CODE
+from app.compliance.weighing import WeighingContext
 from app.core.concurrency import etag, require_match
 from app.core.errors import AppError, denied, missing
 from app.models import (
@@ -85,7 +87,7 @@ class TestingService:
         self.authz = AuthorizationService(self.repo)
         self.audit = AuditService(self.repo, context)
         self.idempotency = IdempotencyService(session)
-        self.engine = R76Engine(section1_registry())
+        self.engine = R76Engine(implemented_registry())
 
     def artifact_is_production(self, rules):
         """Production boundary; no HTTP/settings switch admits synthetic fixtures."""
@@ -444,7 +446,7 @@ class TestingService:
                     and slot.test_code not in groups
                 ):
                     context = {}
-                    if slot.test_code == CODE:
+                    if slot.test_code == WEIGHING_CODE:
                         if slot.range_no is None:
                             reject(
                                 "INVALID_RANGE_PLAN",
@@ -459,6 +461,28 @@ class TestingService:
                                 stages=(),
                             )
                         )
+                    registration = self.engine.registry.find(slot.test_code)
+                    if registration is None:
+                        observation_version = procedure_version = "UNIMPLEMENTED"
+                    else:
+                        contexts = [
+                            item
+                            for item in registration.contexts.registrations
+                            if item.procedure_variant == slot.procedure_variant
+                        ]
+                        observation_versions = {
+                            item.observation_schema_version
+                            for item in registration.observations.registrations
+                        }
+                        if len(contexts) != 1 or len(observation_versions) != 1:
+                            reject(
+                                "EVALUATOR_SCHEMA_AMBIGUOUS",
+                                "Implemented evaluator must resolve one schema version "
+                                "for the slot",
+                                500,
+                            )
+                        procedure_version = contexts[0].procedure_schema_version
+                        observation_version = next(iter(observation_versions))
                     run = TestRun(
                         id=uuid4(),
                         test_session_id=row.id,
@@ -466,12 +490,8 @@ class TestingService:
                         requirement_id=requirement.id,
                         test_definition_id=definition.id,
                         run_no=1,
-                        observation_schema_version="v1"
-                        if slot.test_code == CODE
-                        else "UNIMPLEMENTED",
-                        procedure_schema_version="v1"
-                        if slot.test_code == CODE
-                        else "UNIMPLEMENTED",
+                        observation_schema_version=observation_version,
+                        procedure_schema_version=procedure_version,
                         procedure_context=context,
                     )
                     self.repo.add(run)
@@ -635,8 +655,11 @@ class TestingService:
                 definition = await self.repo.get(TestDefinitionRecord, run.test_definition_id)
                 context = data.procedure_context
                 req = await self.repo.get(SessionTestRequirement, run.requirement_id)
+                registration = self.engine.registry.find(definition.code)
                 if (
-                    definition.code != CODE
+                    registration is None
+                    or context.test_code != definition.code
+                    or context.procedure_schema_version != run.procedure_schema_version
                     or context.range_no != req.slot_snapshot["range_no"]
                     or context.scenario != req.slot_snapshot["scenario"]
                     or context.procedure_variant != req.slot_snapshot["procedure_variant"]
@@ -722,10 +745,14 @@ class TestingService:
             else:
                 if kind == "observations":
                     definition = await self.repo.get(TestDefinitionRecord, run.test_definition_id)
+                    registration = self.engine.registry.find(definition.code)
                     if (
-                        definition.code != CODE
+                        registration is None
+                        or data.observation_type != definition.code
+                        or data.payload.test_code != definition.code
                         or data.sequence_no != data.payload.sequence_no
                         or data.payload_schema_version != run.observation_schema_version
+                        or data.payload.observation_schema_version != run.observation_schema_version
                     ):
                         reject(
                             "INCOMPATIBLE_OBSERVATION",
@@ -765,9 +792,9 @@ class TestingService:
 
     async def capture(self, session, run):
         definition = await self.repo.get(TestDefinitionRecord, run.test_definition_id)
-        if definition.code != CODE:
+        registration = self.engine.registry.find(definition.code)
+        if registration is None:
             reject("TODO_REGULATORY_VALIDATION", "Evaluator not implemented in this phase")
-        registration = self.engine.registry.resolve(CODE)
         context = registration.contexts.parse(run.procedure_context)
         observations = await self.repo.rows(TestObservation, test_run_id=run.id)
         equipment = await self.repo.rows(TestRunEquipment, test_run_id=run.id)
@@ -837,14 +864,14 @@ class TestingService:
             )
         )
         batch = registration.observations.parse(
-            test_code=CODE,
+            test_code=definition.code,
             protocol=context.protocol,
             version=run.observation_schema_version,
             rows=[r.payload for r in observations],
         )
         rules = RuleSet.model_validate(session.ruleset_snapshot)
         arguments = dict(
-            test_code=CODE,
+            test_code=definition.code,
             instrument_snapshot=InstrumentSnapshot.model_validate(session.instrument_snapshot),
             procedure_context=context,
             observations=batch,
@@ -886,7 +913,7 @@ class TestingService:
             revision, regulatory_revision = run.input_revision, parent.regulatory_revision
             try:
                 arguments, snapshot, links = await self.capture(parent, run)
-            except ValidationError as exc:
+            except (ValidationError, ValueError) as exc:
                 reject("INVALID_EVALUATION_INPUT", str(exc), 422)
         result = await asyncio.to_thread(self.engine.evaluate, **arguments)
         self.require_production_output(result.synthetic_fixture)

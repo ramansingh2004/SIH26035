@@ -21,6 +21,9 @@ SUPPORTED_KINDS = (
     "procedure_v1",
     "dependency_v1",
     "weighing_procedure_v1",
+    "eccentricity_procedure_v1",
+    "repeatability_procedure_v1",
+    "tare_procedure_v1",
     "run_selection_v1",
 )
 

@@ -142,7 +142,7 @@ class RulesetService:
                     default_observation_schema_version="v1" if test.implemented else None,
                     default_procedure_schema_version="v1" if test.implemented else None,
                     description=(
-                        "Section 1 evaluator declared; regulatory gate applies."
+                        "Deterministic evaluator declared; regulatory gate applies."
                         if test.implemented
                         else "Candidate catalog definition; evaluator not implemented."
                     ),

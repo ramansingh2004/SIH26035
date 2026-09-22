@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import Field, JsonValue, StrictBool
+from pydantic import Field, JsonValue, StrictBool, model_validator
 
 from app.compliance.domain import (
     Applicability,
@@ -14,7 +14,10 @@ from app.compliance.domain import (
     Number,
     WorkflowStatus,
 )
+from app.compliance.eccentricity import EccentricityContext, EccentricityObservation
 from app.compliance.planning import RequirementPlan
+from app.compliance.repeatability import RepeatabilityContext, RepeatabilityObservation
+from app.compliance.tare import TareContext, TareObservation
 from app.compliance.weighing import MeasurementTime, WeighingContext, WeighingObservation
 from app.schemas.identity import Schema
 
@@ -51,11 +54,29 @@ class SelectRun(ReasonRequest):
     run_id: UUID
 
 
+ObservationPayload = Annotated[
+    WeighingObservation | EccentricityObservation | RepeatabilityObservation | TareObservation,
+    Field(discriminator="test_code"),
+]
+
+
 class ObservationData(Schema):
     sequence_no: int = Field(gt=0, strict=True)
-    observation_type: Literal["WEIGHING_PERFORMANCE"]
+    observation_type: Literal[
+        "WEIGHING_PERFORMANCE", "ECCENTRICITY", "REPEATABILITY", "TARE"
+    ]
     payload_schema_version: Literal["v1"]
-    payload: WeighingObservation
+    payload: ObservationPayload
+
+    @model_validator(mode="after")
+    def envelope_matches_payload(self):
+        if (
+            self.observation_type != self.payload.test_code
+            or self.sequence_no != self.payload.sequence_no
+            or self.payload_schema_version != self.payload.observation_schema_version
+        ):
+            raise ValueError("Observation envelope must match its typed payload")
+        return self
 
 
 class EnvironmentData(Schema):
@@ -220,8 +241,14 @@ class ApplicabilityView(Schema):
     confirmable: bool
 
 
+ProcedurePayload = Annotated[
+    WeighingContext | EccentricityContext | RepeatabilityContext | TareContext,
+    Field(discriminator="test_code"),
+]
+
+
 class ProcedureUpdate(Schema):
-    procedure_context: WeighingContext
+    procedure_context: ProcedurePayload
 
 
 class ResultEventView(Schema):

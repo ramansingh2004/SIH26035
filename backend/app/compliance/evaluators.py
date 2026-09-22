@@ -1,4 +1,4 @@
-"""Evaluator protocol and immutable dispatch registry. No production evaluator yet."""
+"""Evaluator protocol and immutable dispatch registry for implemented mechanics."""
 
 from dataclasses import dataclass, is_dataclass
 from re import fullmatch

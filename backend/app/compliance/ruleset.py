@@ -105,8 +105,14 @@ class TestDefinition(Frozen):
 
     @model_validator(mode="after")
     def implementation_scope(self):
-        if self.implemented and self.code != "WEIGHING_PERFORMANCE":
-            raise ValueError("Only Section 1 implementation is available in Phase 5")
+        implemented_codes = {
+            "WEIGHING_PERFORMANCE",
+            "ECCENTRICITY",
+            "REPEATABILITY",
+            "TARE",
+        }
+        if self.implemented and self.code not in implemented_codes:
+            raise ValueError("Evaluator implementation is not available for this test code")
         return self
 
 
