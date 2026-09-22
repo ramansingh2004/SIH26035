@@ -7,6 +7,18 @@ from app.repositories.identity import IdentityRepository
 
 
 class FoundationRepository(IdentityRepository):
+    async def calibration_reference_exists(self, attachment_id):
+        from app.models.testing import TestRunEquipment
+
+        return (
+            await self.session.scalar(
+                select(TestRunEquipment.id)
+                .where(TestRunEquipment.calibration_attachment_id == attachment_id)
+                .limit(1)
+            )
+            is not None
+        )
+
     async def get(self, model, identifier, *, lock=False):
         stmt = select(model).where(model.id == identifier).execution_options(populate_existing=True)
         return await self.session.scalar(stmt.with_for_update() if lock else stmt)

@@ -78,11 +78,14 @@ print('PURE_IMPORT_AND_EVALUATION_OK: frameworks blocked; evaluation file/networ
     assert "PURE_IMPORT_AND_EVALUATION_OK" in result.stdout
 
 
-def test_no_phase5_tables_routes_or_production_evaluators_introduced():
+def test_phase5_boundary_only_one_production_evaluator_and_no_route_engine_import():
     migrations = {p.stem for p in Path("alembic/versions").glob("*.py")}
-    assert migrations == {"0001_phase1", "0002_phase2", "0003_phase3"}
+    assert migrations == {"0001_phase1", "0002_phase2", "0003_phase3", "0004_phase5"}
     from app.compliance.evaluators import EvaluatorRegistry
 
     assert EvaluatorRegistry().registrations == ()
+    from app.compliance.weighing import section1_registry
+
+    assert [r.test_code for r in section1_registry().registrations] == ["WEIGHING_PERFORMANCE"]
     for path in Path("app/api").rglob("*.py"):
         assert "R76Engine" not in path.read_text()

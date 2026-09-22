@@ -354,7 +354,7 @@ class ProcedureValidationIssue(Frozen):
 
 class EvaluationOutput(Frozen):
     compliance_outcome: Literal[ComplianceOutcome.COMPLIANT, ComplianceOutcome.NONCOMPLIANT]
-    calculations: tuple[CalculationTraceEntry, ...]
+    calculations: tuple[SerializeAsAny[CalculationTraceEntry], ...]
     acceptance_limits: tuple[AcceptanceLimit, ...]
     failed_conditions: tuple[FailedCondition, ...]
     reasons: tuple[Text, ...]
@@ -375,7 +375,7 @@ class ComplianceResult(Frozen):
         EvaluationStatus.INCOMPLETE, EvaluationStatus.REVIEW_REQUIRED, EvaluationStatus.COMPLETE
     ]
     compliance_outcome: ComplianceOutcome
-    calculations: tuple[CalculationTraceEntry, ...] = ()
+    calculations: tuple[SerializeAsAny[CalculationTraceEntry], ...] = ()
     acceptance_limits: tuple[AcceptanceLimit, ...] = ()
     failed_conditions: tuple[FailedCondition, ...] = ()
     procedure_issues: tuple[ProcedureValidationIssue, ...] = ()

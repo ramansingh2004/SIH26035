@@ -54,8 +54,21 @@ class AttachmentService:
         self.repo = FoundationRepository(session)
         self.authz = AuthorizationService(self.repo)
         self.audit = AuditService(self.repo, context)
+        self.context = context
 
     async def target(self, actor, target, permission, match):
+        if target.entity_type in {
+            "test_sessions",
+            "test_runs",
+            "test_observations",
+            "test_run_equipment",
+            "test_run_results",
+        }:
+            from app.services.testing import TestingService
+
+            return await TestingService(self.session, self.context).evidence_target(
+                actor, target, permission, match
+            )
         _, grants = await self.authz.current(actor, lock=True)
         labs = grants.labs_for(permission)
         if not labs:
@@ -90,7 +103,18 @@ class AttachmentService:
         require_match(match, etag(row.lock_version))
         return row, parent, lab_id
 
-    def changed_target(self, actor, row, parent, lab):
+    async def changed_target(self, actor, row, parent, lab):
+        if row.__tablename__ in {
+            "test_sessions",
+            "test_runs",
+            "test_observations",
+            "test_run_equipment",
+            "test_run_results",
+        }:
+            from app.services.testing import TestingService
+
+            await TestingService(self.session, self.context).evidence_changed(actor, row, parent)
+            return
         before = row.lock_version
         row.lock_version += 1
         if parent is not None:
@@ -256,7 +280,7 @@ class AttachmentService:
                 upload.upload_status = "COMPLETED"
                 upload.completed_attachment_id = attachment.id
                 upload.lock_version += 1
-                self.changed_target(actor, row, parent, lab)
+                await self.changed_target(actor, row, parent, lab)
                 await self.repo.flush()
                 result = attachment_view(attachment)
                 self.audit.record(
@@ -322,7 +346,7 @@ class AttachmentService:
             )
             self.repo.add(link)
             attachment.lock_version += 1
-            self.changed_target(actor, row, parent, lab)
+            await self.changed_target(actor, row, parent, lab)
             await self.repo.flush()
             self.audit.record(
                 "attachment.linked",
@@ -359,7 +383,7 @@ class AttachmentService:
             link.unlinked_at = datetime.now(UTC)
             link.lock_version += 1
             attachment.lock_version += 1
-            self.changed_target(actor, row, parent, lab)
+            await self.changed_target(actor, row, parent, lab)
             self.audit.record(
                 "attachment.unlinked",
                 actor.user_id,
@@ -381,7 +405,9 @@ class AttachmentService:
                 actor, identifier, "attachment:delete", True
             )
             require_match(match, etag(attachment.lock_version))
-            if await self.repo.active_links(identifier):
+            if await self.repo.active_links(
+                identifier
+            ) or await self.repo.calibration_reference_exists(identifier):
                 raise AppError(
                     409,
                     "PROTECTED_EVIDENCE",

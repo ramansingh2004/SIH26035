@@ -86,6 +86,11 @@ TargetType = Literal[
     "instrument_ranges",
     "instrument_components",
     "test_equipment",
+    "test_sessions",
+    "test_runs",
+    "test_observations",
+    "test_run_equipment",
+    "test_run_results",
 ]
 MimeType = Literal["application/pdf", "image/png", "image/jpeg"]
 

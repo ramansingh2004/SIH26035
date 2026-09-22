@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator, model_validator
 
 TODO = "TODO_REGULATORY_VALIDATION"
 FILES = ("classes", "mpe", "applicability", "voltage", "disturbances", "endurance", "checklist")
@@ -100,8 +100,14 @@ class TestDefinition(Frozen):
     source: Source
     dependencies: tuple[Code, ...]
     applicability: Literal["TODO_REGULATORY_VALIDATION"] = TODO
-    implemented: Literal[False] = False
+    implemented: StrictBool = False
     verification: Verification = Verification()
+
+    @model_validator(mode="after")
+    def implementation_scope(self):
+        if self.implemented and self.code != "WEIGHING_PERFORMANCE":
+            raise ValueError("Only Section 1 implementation is available in Phase 5")
+        return self
 
 
 class ChecklistDefinition(Frozen):

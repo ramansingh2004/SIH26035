@@ -104,6 +104,31 @@ def equipment_service(request: Request, session: Annotated[AsyncSession, Depends
     return EquipmentService(session, context(request))
 
 
+def testing_service(request: Request, session: Annotated[AsyncSession, Depends(database)]):
+    from app.services.testing import TestingService
+
+    return TestingService(session, context(request))
+
+
+async def testing_json(request: Request):
+    """Reject ambiguous duplicate keys before typed testing inputs are consumed."""
+    from app.compliance.canonical import strict_json
+
+    body = await request.body()
+    if body:
+        try:
+            strict_json(body.decode("utf-8"))
+        except (ValueError, UnicodeError):
+            raise AppError(
+                422, "INVALID_JSON", "Unique JSON keys and finite values required"
+            ) from None
+
+
+async def no_body(request: Request):
+    if await request.body():
+        raise AppError(422, "UNEXPECTED_BODY", "This action accepts no request body")
+
+
 def ruleset_service(request: Request, session: Annotated[AsyncSession, Depends(database)]):
     from app.services.rulesets import RulesetService
 

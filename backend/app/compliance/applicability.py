@@ -182,7 +182,19 @@ class ApplicabilityEngine:
         test = next((t for t in ruleset.tests if t.code == test_code), None)
         if test is None:
             raise ValueError("Unknown catalog test")
-        resolution = dependencies(ruleset, test.dependencies)
+        # Session applicability is independent of later acceptance/evaluator
+        # readiness. Only explicitly declared applicability roots (and their
+        # transitive dependencies) decide this gate. No guessed fallback policy.
+        roots = tuple(
+            r.key
+            for r in ruleset.rules
+            if r.key in test.dependencies and r.kind == "applicability_policy_v1"
+        )
+        resolution = dependencies(ruleset, roots if roots else test.dependencies)
+        resolution = DependencyResolution(
+            unresolved_rule_ids=resolution.unresolved_rule_ids,
+            rule_references=dependencies(ruleset, test.dependencies).rule_references,
+        )
         if not verified(test):
             resolution = DependencyResolution(
                 unresolved_rule_ids=tuple(

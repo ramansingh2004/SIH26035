@@ -37,7 +37,7 @@ async def preflight(settings):
         async with engine.connect() as connection:
             assert (
                 await connection.execute(text("SELECT version_num FROM alembic_version"))
-            ).scalar() == "0003_phase3"
+            ).scalar() == "0004_phase5"
             assert (await connection.execute(text("SELECT count(*) FROM users"))).scalar() == 0, (
                 "Use a fresh disposable database"
             )
@@ -62,7 +62,7 @@ async def preflight(settings):
             await seed_phase3(session)
     finally:
         await engine.dispose()
-    print("PostgreSQL 0003_phase3 schema, empty database and private versioned storage: PASS")
+    print("PostgreSQL 0004_phase5 schema, empty database and private versioned storage: PASS")
 
 
 def exercise(client, email, password):

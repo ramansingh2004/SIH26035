@@ -15,7 +15,14 @@ from app.compliance.domain import (
 from app.compliance.numbers import Operator, Semantics, compare_ratio, decimal_value, exact
 from app.compliance.ruleset import TODO, RuleSet
 
-SUPPORTED_KINDS = ("applicability_policy_v1", "mpe_profile_v1", "procedure_v1", "dependency_v1")
+SUPPORTED_KINDS = (
+    "applicability_policy_v1",
+    "mpe_profile_v1",
+    "procedure_v1",
+    "dependency_v1",
+    "weighing_procedure_v1",
+    "run_selection_v1",
+)
 
 
 class RegulatoryBlocked(ValueError):

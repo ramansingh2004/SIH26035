@@ -1,5 +1,6 @@
 """Persistence models registered through the current build phase."""
 
+from app.models import testing as testing
 from app.models.foundations import (
     Attachment,
     AttachmentLink,

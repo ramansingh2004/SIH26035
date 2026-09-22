@@ -134,14 +134,18 @@ class RulesetService:
                     category="SUBTEST" if test.parent else "SECTION",
                     subtest_family=test.family,
                     sort_order=index,
-                    supports_numeric_evaluation=False,
-                    requires_manual_review=True,
-                    supported=False,
-                    implemented=False,
+                    supports_numeric_evaluation=test.implemented,
+                    requires_manual_review=not test.implemented,
+                    supported=test.code in m.supported_test_codes,
+                    implemented=test.implemented,
                     applicability_metadata={"schema_version": 1, "status": test.applicability},
-                    default_observation_schema_version=None,
-                    default_procedure_schema_version=None,
-                    description="Candidate catalog definition; evaluator not implemented.",
+                    default_observation_schema_version="v1" if test.implemented else None,
+                    default_procedure_schema_version="v1" if test.implemented else None,
+                    description=(
+                        "Section 1 evaluator declared; regulatory gate applies."
+                        if test.implemented
+                        else "Candidate catalog definition; evaluator not implemented."
+                    ),
                     **provenance(test),
                 )
             )

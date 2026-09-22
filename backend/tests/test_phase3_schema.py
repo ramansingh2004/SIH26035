@@ -9,7 +9,7 @@ from app.db.base import Base
 from app.main import create_app
 
 
-def test_phase3_tables_and_no_future_storage():
+def test_phase3_tables_preserved_and_no_phase6_plus_storage():
     expected = {
         "rule_sets",
         "rule_definitions",
@@ -23,11 +23,10 @@ def test_phase3_tables_and_no_future_storage():
     assert expected <= Base.metadata.tables.keys()
     assert (
         not {
-            "test_run_equipment",
-            "test_sessions",
-            "test_runs",
-            "test_run_results",
             "checklist_responses",
+            "construction_examinations",
+            "approvals",
+            "reports",
         }
         & Base.metadata.tables.keys()
     )
