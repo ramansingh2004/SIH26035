@@ -10,12 +10,12 @@ import pytest
 import pytest_asyncio
 
 from app.compliance.canonical import content_hash
-from app.compliance.suite import IMPLEMENTED_TEST_CODES
 from domain_tests.fixtures.core_reusable import ECCENTRICITY, REPEATABILITY, TARE
 from tests.conftest import login
 from tests.phase6_fixtures import (
     CONTEXTS,
     OBSERVATIONS,
+    PHASE6_IMPLEMENTED_CODES,
     populate_phase6_run,
     prepare_phase6_world,
     started_phase6_runs,
@@ -40,7 +40,7 @@ async def evaluate(client, path, *, key=None):
 
 async def test_phase6_confirmation_creates_typed_runs_for_new_evaluators(client, phase6):
     session_path, paths, requirements = await started_phase6_runs(client, phase6)
-    assert set(paths) == set(IMPLEMENTED_TEST_CODES)
+    assert set(paths) == set(PHASE6_IMPLEMENTED_CODES)
     assert set(PHASE6_CODES) <= set(paths)
     for code in PHASE6_CODES:
         requirement = requirements[code]

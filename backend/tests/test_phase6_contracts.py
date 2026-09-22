@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from app.compliance.suite import IMPLEMENTED_TEST_CODES, implemented_registry
+from app.compliance.suite import implemented_registry
 from app.schemas.testing import ObservationData, ProcedureUpdate
 from domain_tests.fixtures.core_reusable import (
     eccentricity_context,
@@ -16,10 +16,22 @@ from domain_tests.fixtures.core_reusable import (
 from domain_tests.fixtures.weighing import fixture_context, fixture_observations
 
 
-def test_phase6_registry_contains_only_implemented_mechanics():
+def test_phase6_registry_contains_phase6_mechanics():
     registry = implemented_registry()
-    assert tuple(item.test_code for item in registry.registrations) == IMPLEMENTED_TEST_CODES
-    assert {item.implementation_version for item in registry.registrations} == {
+
+    phase6_versions = {
+        item.implementation_version
+        for item in registry.registrations
+        if item.test_code
+        in {
+            "WEIGHING_PERFORMANCE",
+            "ECCENTRICITY",
+            "REPEATABILITY",
+            "TARE",
+        }
+    }
+
+    assert phase6_versions == {
         "section1-v1",
         "section3-v1",
         "section5-v1",

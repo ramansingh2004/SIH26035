@@ -21,7 +21,7 @@ from app.compliance.numbers import Number, Operator, Semantics, exact
 Text = Annotated[str, Field(min_length=1)]
 PositiveInt = Annotated[int, Field(gt=0, strict=True)]
 Digest = Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
-Unit = Literal["g", "V", "degC", "%", "hPa", "s", "1"]
+Unit = Literal["g", "V", "degC", "%", "hPa", "s", "mm", "1"]
 
 
 class Frozen(BaseModel):

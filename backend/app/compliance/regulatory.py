@@ -24,6 +24,11 @@ SUPPORTED_KINDS = (
     "eccentricity_procedure_v1",
     "repeatability_procedure_v1",
     "tare_procedure_v1",
+    "discrimination_procedure_v1",
+    "sensitivity_procedure_v1",
+    "zero_return_procedure_v1",
+    "creep_procedure_v1",
+    "stability_equilibrium_procedure_v1",
     "run_selection_v1",
 )
 

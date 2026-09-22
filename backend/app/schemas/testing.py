@@ -15,6 +15,18 @@ from app.compliance.domain import (
     WorkflowStatus,
 )
 from app.compliance.eccentricity import EccentricityContext, EccentricityObservation
+from app.compliance.phase7 import (
+    CreepContext,
+    CreepObservation,
+    DiscriminationContext,
+    DiscriminationObservation,
+    SensitivityContext,
+    SensitivityObservation,
+    StabilityContext,
+    StabilityObservation,
+    ZeroReturnContext,
+    ZeroReturnObservation,
+)
 from app.compliance.planning import RequirementPlan
 from app.compliance.repeatability import RepeatabilityContext, RepeatabilityObservation
 from app.compliance.tare import TareContext, TareObservation
@@ -55,7 +67,15 @@ class SelectRun(ReasonRequest):
 
 
 ObservationPayload = Annotated[
-    WeighingObservation | EccentricityObservation | RepeatabilityObservation | TareObservation,
+    WeighingObservation
+    | EccentricityObservation
+    | RepeatabilityObservation
+    | DiscriminationObservation
+    | SensitivityObservation
+    | ZeroReturnObservation
+    | CreepObservation
+    | StabilityObservation
+    | TareObservation,
     Field(discriminator="test_code"),
 ]
 
@@ -63,7 +83,15 @@ ObservationPayload = Annotated[
 class ObservationData(Schema):
     sequence_no: int = Field(gt=0, strict=True)
     observation_type: Literal[
-        "WEIGHING_PERFORMANCE", "ECCENTRICITY", "REPEATABILITY", "TARE"
+        "WEIGHING_PERFORMANCE",
+        "ECCENTRICITY",
+        "REPEATABILITY",
+        "DISCRIMINATION",
+        "SENSITIVITY",
+        "ZERO_RETURN",
+        "CREEP",
+        "STABILITY_EQUILIBRIUM",
+        "TARE",
     ]
     payload_schema_version: Literal["v1"]
     payload: ObservationPayload
@@ -242,7 +270,15 @@ class ApplicabilityView(Schema):
 
 
 ProcedurePayload = Annotated[
-    WeighingContext | EccentricityContext | RepeatabilityContext | TareContext,
+    WeighingContext
+    | EccentricityContext
+    | RepeatabilityContext
+    | DiscriminationContext
+    | SensitivityContext
+    | ZeroReturnContext
+    | CreepContext
+    | StabilityContext
+    | TareContext,
     Field(discriminator="test_code"),
 ]
 

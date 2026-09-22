@@ -109,6 +109,11 @@ class TestDefinition(Frozen):
             "WEIGHING_PERFORMANCE",
             "ECCENTRICITY",
             "REPEATABILITY",
+            "DISCRIMINATION",
+            "SENSITIVITY",
+            "ZERO_RETURN",
+            "CREEP",
+            "STABILITY_EQUILIBRIUM",
             "TARE",
         }
         if self.implemented and self.code not in implemented_codes:
