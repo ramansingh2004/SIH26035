@@ -78,9 +78,16 @@ print('PURE_IMPORT_AND_EVALUATION_OK: frameworks blocked; evaluation file/networ
     assert "PURE_IMPORT_AND_EVALUATION_OK" in result.stdout
 
 
-def test_phase5_boundary_only_one_production_evaluator_and_no_route_engine_import():
+def test_current_migration_boundary_and_no_route_engine_import():
     migrations = {p.stem for p in Path("alembic/versions").glob("*.py")}
-    assert migrations == {"0001_phase1", "0002_phase2", "0003_phase3", "0004_phase5"}
+    assert migrations == {
+        "0001_phase1",
+        "0002_phase2",
+        "0003_phase3",
+        "0004_phase5",
+        "0005_phase12",
+        "0006_phase13",
+    }
     from app.compliance.evaluators import EvaluatorRegistry
 
     assert EvaluatorRegistry().registrations == ()

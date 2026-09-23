@@ -9,7 +9,7 @@ from app.db.base import Base
 from app.main import create_app
 
 
-def test_phase3_tables_preserved_and_no_phase6_plus_storage():
+def test_phase3_tables_preserved_while_later_phases_extend_metadata():
     expected = {
         "rule_sets",
         "rule_definitions",
@@ -21,15 +21,12 @@ def test_phase3_tables_preserved_and_no_phase6_plus_storage():
         "attachment_links",
     }
     assert expected <= Base.metadata.tables.keys()
-    assert (
-        not {
-            "checklist_responses",
-            "construction_examinations",
-            "approvals",
-            "reports",
-        }
-        & Base.metadata.tables.keys()
-    )
+    assert {
+        "construction_examinations",
+        "construction_items",
+        "checklist_responses",
+    } <= Base.metadata.tables.keys()
+    assert not {"approvals", "reports"} & Base.metadata.tables.keys()
     assert "uq_ruleset_active" in {i.name for i in Base.metadata.tables["rule_sets"].indexes}
     assert "fk_test_parent_scope" in {
         c.name for c in Base.metadata.tables["test_definitions"].constraints

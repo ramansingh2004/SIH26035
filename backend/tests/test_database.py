@@ -63,6 +63,9 @@ async def test_schema_extensions_indexes_and_citext(world):
             "test_run_results",
             "evaluation_result_events",
             "test_run_selection_events",
+            "construction_examinations",
+            "construction_items",
+            "checklist_responses",
         }
         extensions = set(
             (await session.execute(text("SELECT extname FROM pg_extension"))).scalars()
@@ -86,7 +89,7 @@ async def test_schema_extensions_indexes_and_citext(world):
         assert found.id == world.users["admin"].id
         assert (
             await session.execute(text("SELECT version_num FROM alembic_version"))
-        ).scalar() == "0004_phase5"
+        ).scalar() == "0006_phase13"
 
 
 @pytest.mark.parametrize(

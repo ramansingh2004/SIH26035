@@ -78,10 +78,20 @@ def test_migration_static_append_only_guards_and_no_later_phase():
     for table in TABLES:
         assert f"CREATE TABLE {table}" in source
         assert f'op.drop_table("{table}")' in source
-    assert (
-        not {"approvals", "reports", "construction_examinations", "checklist_responses"}
-        & Base.metadata.tables.keys()
-    )
+    for later_table in (
+        "construction_examinations",
+        "construction_items",
+        "checklist_responses",
+        "approvals",
+        "reports",
+    ):
+        assert f"CREATE TABLE {later_table}" not in source
+    assert {
+        "construction_examinations",
+        "construction_items",
+        "checklist_responses",
+    } <= Base.metadata.tables.keys()
+    assert not {"approvals", "reports"} & Base.metadata.tables.keys()
 
 
 @pytest.mark.parametrize("value", [0.1, "NaN", "Infinity", True])

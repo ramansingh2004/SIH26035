@@ -158,7 +158,11 @@ class RulesetService:
                     requirement_key=item.key,
                     clause_reference=item.source.clause,
                     display_text=item.text,
-                    applicability_expression={"schema_version": 1, "status": item.applicability},
+                    applicability_expression=(
+                        {"schema_version": 1, "status": item.applicability}
+                        if isinstance(item.applicability, str)
+                        else item.applicability.model_dump(mode="json")
+                    ),
                     evidence_required=item.evidence_required,
                     sort_order=index,
                     **provenance(item),

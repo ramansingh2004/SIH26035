@@ -64,6 +64,13 @@ class AttachmentService:
                 self.session,
                 self.context,
             ).evidence_target(actor, target, permission, match)
+        if target.entity_type == "checklist_responses":
+            from app.services.checklist import ChecklistService
+
+            return await ChecklistService(
+                self.session,
+                self.context,
+            ).evidence_target(actor, target, permission, match)
         if target.entity_type in {
             "test_sessions",
             "test_runs",
@@ -115,6 +122,14 @@ class AttachmentService:
             from app.services.construction import ConstructionService
 
             await ConstructionService(
+                self.session,
+                self.context,
+            ).evidence_changed(actor, row, parent)
+            return
+        if row.__tablename__ == "checklist_responses":
+            from app.services.checklist import ChecklistService
+
+            await ChecklistService(
                 self.session,
                 self.context,
             ).evidence_changed(actor, row, parent)

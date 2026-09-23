@@ -434,6 +434,11 @@ class ConstructionService:
             session.lock_version += 1
             examination, _, _ = await self._initialize_locked(session)
             await self._aggregate(session, examination)
+
+            from app.services.checklist import ChecklistService
+
+            checklist = ChecklistService(self.session, self.audit.context)
+            await checklist.initialize_locked(actor, session)
             await self.repo.flush()
             self.audit.record(
                 "session.start-examination",

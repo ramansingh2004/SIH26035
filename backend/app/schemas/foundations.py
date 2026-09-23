@@ -92,6 +92,7 @@ TargetType = Literal[
     "test_run_equipment",
     "test_run_results",
     "construction_items",
+    "checklist_responses",
 ]
 MimeType = Literal["application/pdf", "image/png", "image/jpeg"]
 

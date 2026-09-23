@@ -119,6 +119,15 @@ def construction_service(
     return ConstructionService(session, context(request))
 
 
+def checklist_service(
+    request: Request,
+    session: Annotated[AsyncSession, Depends(database)],
+):
+    from app.services.checklist import ChecklistService
+
+    return ChecklistService(session, context(request))
+
+
 async def testing_json(request: Request):
     """Reject ambiguous duplicate keys before typed testing inputs are consumed."""
     from app.compliance.canonical import strict_json
