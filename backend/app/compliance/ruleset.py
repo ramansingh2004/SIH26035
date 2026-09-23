@@ -127,6 +127,7 @@ class TestDefinition(Frozen):
             "DISTURBANCE_VEHICLE_SUPPLY",
             "DAMP_HEAT",
             "SPAN_STABILITY",
+            "ENDURANCE",
             "TARE",
         }
         if self.implemented and self.code not in implemented_codes:

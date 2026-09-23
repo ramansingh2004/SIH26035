@@ -59,6 +59,7 @@ from app.compliance.phase10 import (
     VoltageDipContext,
     VoltageDipObservation,
 )
+from app.compliance.phase11 import EnduranceContext, EnduranceObservation
 from app.compliance.planning import RequirementPlan
 from app.compliance.repeatability import RepeatabilityContext, RepeatabilityObservation
 from app.compliance.tare import TareContext, TareObservation
@@ -120,7 +121,8 @@ ObservationPayload = Annotated[
     | ConductedRfObservation
     | VehicleSupplyObservation
     | DampHeatObservation
-    | SpanStabilityObservation,
+    | SpanStabilityObservation
+    | EnduranceObservation,
     Field(discriminator="test_code"),
 ]
 
@@ -150,6 +152,7 @@ class ObservationData(Schema):
         "DISTURBANCE_VEHICLE_SUPPLY",
         "DAMP_HEAT",
         "SPAN_STABILITY",
+        "ENDURANCE",
     ]
     payload_schema_version: Literal["v1"]
     payload: ObservationPayload
@@ -349,7 +352,8 @@ ProcedurePayload = Annotated[
     | ConductedRfContext
     | VehicleSupplyContext
     | DampHeatContext
-    | SpanStabilityContext,
+    | SpanStabilityContext
+    | EnduranceContext,
     Field(discriminator="test_code"),
 ]
 

@@ -36,6 +36,7 @@ SUPPORTED_KINDS = (
     "damp_heat_procedure_v1",
     "span_stability_procedure_v1",
     "disturbance_procedure_v1",
+    "endurance_procedure_v1",
     "run_selection_v1",
 )
 
