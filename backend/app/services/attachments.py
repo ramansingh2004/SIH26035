@@ -57,6 +57,13 @@ class AttachmentService:
         self.context = context
 
     async def target(self, actor, target, permission, match):
+        if target.entity_type == "construction_items":
+            from app.services.construction import ConstructionService
+
+            return await ConstructionService(
+                self.session,
+                self.context,
+            ).evidence_target(actor, target, permission, match)
         if target.entity_type in {
             "test_sessions",
             "test_runs",
@@ -104,6 +111,14 @@ class AttachmentService:
         return row, parent, lab_id
 
     async def changed_target(self, actor, row, parent, lab):
+        if row.__tablename__ == "construction_items":
+            from app.services.construction import ConstructionService
+
+            await ConstructionService(
+                self.session,
+                self.context,
+            ).evidence_changed(actor, row, parent)
+            return
         if row.__tablename__ in {
             "test_sessions",
             "test_runs",

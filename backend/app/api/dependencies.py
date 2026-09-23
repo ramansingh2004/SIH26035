@@ -110,6 +110,15 @@ def testing_service(request: Request, session: Annotated[AsyncSession, Depends(d
     return TestingService(session, context(request))
 
 
+def construction_service(
+    request: Request,
+    session: Annotated[AsyncSession, Depends(database)],
+):
+    from app.services.construction import ConstructionService
+
+    return ConstructionService(session, context(request))
+
+
 async def testing_json(request: Request):
     """Reject ambiguous duplicate keys before typed testing inputs are consumed."""
     from app.compliance.canonical import strict_json
