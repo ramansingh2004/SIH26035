@@ -43,6 +43,22 @@ from app.compliance.phase9 import (
     SpanStabilityContext,
     SpanStabilityObservation,
 )
+from app.compliance.phase10 import (
+    BurstContext,
+    BurstObservation,
+    ConductedRfContext,
+    ConductedRfObservation,
+    EsdContext,
+    EsdObservation,
+    RadiatedRfContext,
+    RadiatedRfObservation,
+    SurgeContext,
+    SurgeObservation,
+    VehicleSupplyContext,
+    VehicleSupplyObservation,
+    VoltageDipContext,
+    VoltageDipObservation,
+)
 from app.compliance.planning import RequirementPlan
 from app.compliance.repeatability import RepeatabilityContext, RepeatabilityObservation
 from app.compliance.tare import TareContext, TareObservation
@@ -96,6 +112,13 @@ ObservationPayload = Annotated[
     | TareObservation
     | WarmUpObservation
     | VoltageVariationObservation
+    | VoltageDipObservation
+    | BurstObservation
+    | SurgeObservation
+    | EsdObservation
+    | RadiatedRfObservation
+    | ConductedRfObservation
+    | VehicleSupplyObservation
     | DampHeatObservation
     | SpanStabilityObservation,
     Field(discriminator="test_code"),
@@ -118,6 +141,13 @@ class ObservationData(Schema):
         "TARE",
         "WARM_UP",
         "VOLTAGE_VARIATION",
+        "DISTURBANCE_VOLTAGE_DIP",
+        "DISTURBANCE_BURST",
+        "DISTURBANCE_SURGE",
+        "DISTURBANCE_ESD",
+        "DISTURBANCE_RADIATED_RF",
+        "DISTURBANCE_CONDUCTED_RF",
+        "DISTURBANCE_VEHICLE_SUPPLY",
         "DAMP_HEAT",
         "SPAN_STABILITY",
     ]
@@ -311,6 +341,13 @@ ProcedurePayload = Annotated[
     | TareContext
     | WarmUpContext
     | VoltageVariationContext
+    | VoltageDipContext
+    | BurstContext
+    | SurgeContext
+    | EsdContext
+    | RadiatedRfContext
+    | ConductedRfContext
+    | VehicleSupplyContext
     | DampHeatContext
     | SpanStabilityContext,
     Field(discriminator="test_code"),

@@ -35,6 +35,7 @@ SUPPORTED_KINDS = (
     "voltage_variation_procedure_v1",
     "damp_heat_procedure_v1",
     "span_stability_procedure_v1",
+    "disturbance_procedure_v1",
     "run_selection_v1",
 )
 
