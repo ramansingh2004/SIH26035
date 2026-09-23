@@ -404,6 +404,16 @@ class AttachmentService:
                 entity_type=link.entity_type, entity_id=link.entity_id, purpose=link.purpose
             )
             row, parent, lab = await self.target(actor, target, "attachment:delete", match)
+            if (
+                link.entity_type == "test_run_equipment"
+                and link.purpose == "calibration"
+                and getattr(row, "calibration_attachment_id", None) == identifier
+            ):
+                raise AppError(
+                    409,
+                    "EVIDENCE_PROTECTED",
+                    "Calibration evidence bound to a run-equipment snapshot cannot be unlinked",
+                )
             attachment = await self.authorized_attachment(
                 actor, identifier, "attachment:delete", True
             )

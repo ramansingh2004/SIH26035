@@ -9,6 +9,7 @@ from sqlalchemy import func, select, text
 from sqlalchemy.exc import DBAPIError
 
 from app.api.dependencies import object_storage
+from app.core.errors import AppError
 from app.models import Attachment, AttachmentUpload, AuditEvent, UserRoleAssignment
 from app.services.rulesets import seed_phase3
 from app.storage.objects import ObjectStorage, StoredObject
@@ -38,6 +39,15 @@ class MemoryStorage(ObjectStorage):
     async def presign_download(self, key, version, seconds):
         assert key in self.objects
         return "https://private.invalid/download?signature=SECRET"
+
+    async def delete_staged(self, key):
+        if not key.startswith("staged/"):
+            raise AppError(
+                422,
+                "INVALID_STORAGE_KEY",
+                "Cleanup is restricted to staged upload objects",
+            )
+        return 1 if self.objects.pop(key, None) is not None else 0
 
 
 @pytest_asyncio.fixture

@@ -16,13 +16,25 @@ from app.services.authorization import AuthorizationService
 from app.services.master_data import stored_values
 
 
-def calibration_snapshot(equipment: EquipmentView, captured_at: datetime) -> CalibrationSnapshot:
+def calibration_snapshot(
+    equipment: EquipmentView,
+    captured_at: datetime,
+    *,
+    certificate=None,
+) -> CalibrationSnapshot:
     values = equipment.model_dump()
     metadata = values.pop("metadata_json")
     return CalibrationSnapshot(
         equipment_id=values.pop("id"),
         equipment_version=values.pop("lock_version"),
         captured_at=captured_at,
+        calibration_attachment_id=getattr(certificate, "id", None),
+        calibration_attachment_sha256=getattr(certificate, "sha256", None),
+        calibration_attachment_object_version=getattr(
+            certificate,
+            "object_version",
+            None,
+        ),
         **{k: v for k, v in values.items() if k in CalibrationSnapshot.model_fields},
         **metadata,
     )

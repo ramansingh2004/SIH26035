@@ -621,15 +621,25 @@ class TestingService:
             }
             if part in models:
                 rows = await self.repo.rows(models[part], test_run_id=run.id)
-                return [
-                    view(r)
-                    for r in sorted(
+                if part == "environment-readings":
+                    rows = sorted(
                         rows,
-                        key=lambda r: getattr(
-                            r, "sequence_no", getattr(r, "evaluation_version", str(r.id))
+                        key=lambda row: (
+                            row.measured_at,
+                            row.phase or "",
+                            str(row.id),
                         ),
                     )
-                ]
+                else:
+                    rows = sorted(
+                        rows,
+                        key=lambda row: getattr(
+                            row,
+                            "sequence_no",
+                            getattr(row, "evaluation_version", str(row.id)),
+                        ),
+                    )
+                return [view(row) for row in rows]
             return view(run)
 
     async def result_detail(self, actor, identifier, result_id):
@@ -826,6 +836,39 @@ class TestingService:
                 if item.calibration_attachment_id
                 else None
             )
+            if item.calibration_attachment_id:
+                calibration_links = [
+                    (attachment, link)
+                    for attachment, link in links
+                    if (
+                        attachment.id == item.calibration_attachment_id
+                        and link.entity_type == "test_run_equipment"
+                        and link.entity_id == item.id
+                        and link.purpose == "calibration"
+                    )
+                ]
+                frozen_identity = (
+                    snap.get("calibration_attachment_id"),
+                    snap.get("calibration_attachment_sha256"),
+                    snap.get("calibration_attachment_object_version"),
+                )
+                live_identity = (
+                    str(certificate.id) if certificate else None,
+                    certificate.sha256 if certificate else None,
+                    certificate.object_version if certificate else None,
+                )
+                if (
+                    certificate is None
+                    or certificate.laboratory_id != session.laboratory_id
+                    or certificate.archived_at is not None
+                    or len(calibration_links) != 1
+                    or frozen_identity != live_identity
+                ):
+                    reject(
+                        "EVIDENCE_INTEGRITY_ERROR",
+                        "Calibration evidence mapping is "
+                        "inconsistent with the frozen equipment snapshot",
+                    )
             equipment_values.append(
                 dict(
                     reference=snap.get("reference_number") or snap.get("serial_number") or "",
@@ -1248,7 +1291,9 @@ class TestingService:
                 ):
                     raise missing()
             snapshot = calibration_snapshot(
-                EquipmentView.model_validate(equipment), datetime.now(UTC)
+                EquipmentView.model_validate(equipment),
+                datetime.now(UTC),
+                certificate=certificate,
             )
             row = TestRunEquipment(
                 id=uuid4(),

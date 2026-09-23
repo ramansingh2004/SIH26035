@@ -12,7 +12,8 @@ from app.services.provisioning import ProvisioningService
 
 
 async def run(args):
-    engine = create_database_engine(get_settings())
+    settings = get_settings()
+    engine = create_database_engine(settings)
     try:
         async with create_session_factory(engine)() as session:
             service = ProvisioningService(session)
@@ -22,6 +23,23 @@ async def run(args):
                 from app.services.rulesets import seed_phase3
 
                 print(f"Candidate ruleset: {await seed_phase3(session)}")
+            elif args.command == "cleanup-evidence":
+                from app.services.audit import RequestContext
+                from app.services.evidence_maintenance import EvidenceMaintenanceService
+                from app.storage.objects import create_storage
+
+                result = await EvidenceMaintenanceService(
+                    session,
+                    create_storage(settings),
+                    RequestContext(),
+                ).cleanup_once()
+                print(
+                    "Evidence cleanup: "
+                    f"scanned={result['scanned']} "
+                    f"cleaned={result['cleaned']} "
+                    f"failed={result['failed']} "
+                    f"deleted_versions={result['deleted_versions']}"
+                )
             else:
                 email = str(
                     TypeAdapter(EmailStr).validate_python(
@@ -44,7 +62,15 @@ async def run(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["seed", "seed-phase3", "bootstrap-admin"])
+    parser.add_argument(
+        "command",
+        choices=[
+            "seed",
+            "seed-phase3",
+            "cleanup-evidence",
+            "bootstrap-admin",
+        ],
+    )
     asyncio.run(run(parser.parse_args()))
 
 

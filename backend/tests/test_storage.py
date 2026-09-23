@@ -196,3 +196,42 @@ async def test_read_pins_versions_closes_stream_and_download_is_private():
     assert params["Params"]["VersionId"] == "v1"
     assert params["ExpiresIn"] == 60
     assert params["Params"]["ResponseContentDisposition"] == "attachment"
+
+
+@pytest.mark.asyncio
+async def test_staged_cleanup_deletes_all_versions_but_never_evidence():
+    storage = adapter()
+    staged = f"staged/{uuid4()}/{uuid4()}/{uuid4().hex}"
+    storage.client.list_object_versions.return_value = {
+        "Versions": [
+            {"Key": staged, "VersionId": "v1"},
+            {"Key": staged, "VersionId": "v2"},
+        ],
+        "DeleteMarkers": [
+            {"Key": staged, "VersionId": "d1"},
+        ],
+    }
+
+    assert await storage.delete_staged(staged) == 3
+    assert storage.client.delete_object.call_count == 3
+    assert {call.kwargs["VersionId"] for call in storage.client.delete_object.call_args_list} == {
+        "v1",
+        "v2",
+        "d1",
+    }
+
+    evidence = f"evidence/{uuid4()}/{uuid4()}/{uuid4().hex}"
+    with pytest.raises(AppError) as error:
+        await storage.delete_staged(evidence)
+    assert error.value.code == "INVALID_STORAGE_KEY"
+
+
+@pytest.mark.asyncio
+async def test_staged_cleanup_rejects_truncated_version_listing():
+    storage = adapter()
+    staged = f"staged/{uuid4()}/{uuid4()}/{uuid4().hex}"
+    storage.client.list_object_versions.return_value = {"IsTruncated": True}
+
+    with pytest.raises(AppError) as error:
+        await storage.delete_staged(staged)
+    assert error.value.code == "STORAGE_UNAVAILABLE"

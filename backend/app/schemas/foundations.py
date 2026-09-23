@@ -70,6 +70,12 @@ class CalibrationSnapshot(Schema):
     calibration_date: date | None
     calibration_due_date: date | None
     accuracy_or_class: str | None
+    calibration_attachment_id: UUID | None = None
+    calibration_attachment_sha256: str | None = Field(
+        None,
+        pattern=r"^[a-f0-9]{64}$",
+    )
+    calibration_attachment_object_version: str | None = None
     nominal_mass_g: Mass | None
     certificate_reference: str | None
     notes: str | None

@@ -1,12 +1,62 @@
 """Phase 3 query and lock ownership."""
 
-from sqlalchemy import select, text
+from sqlalchemy import and_, exists, or_, select, text
 
-from app.models import AttachmentLink, RuleSetRecord, TestEquipment
+from app.models import (
+    AttachmentLink,
+    AttachmentUpload,
+    AuditEvent,
+    RuleSetRecord,
+    TestEquipment,
+)
 from app.repositories.identity import IdentityRepository
 
 
 class FoundationRepository(IdentityRepository):
+    async def staged_cleanup_candidates(self, now, limit):
+        succeeded = (
+            select(AuditEvent.id)
+            .where(
+                AuditEvent.action == "attachment.staged_deleted",
+                AuditEvent.entity_type == "attachment_uploads",
+                AuditEvent.entity_id == AttachmentUpload.id,
+            )
+            .correlate(AttachmentUpload)
+            .exists()
+        )
+        statement = (
+            select(AttachmentUpload)
+            .where(
+                ~succeeded,
+                or_(
+                    and_(
+                        AttachmentUpload.upload_status == "PENDING",
+                        AttachmentUpload.expires_at <= now,
+                    ),
+                    AttachmentUpload.upload_status.in_(("FAILED", "EXPIRED", "COMPLETED")),
+                ),
+            )
+            .order_by(
+                AttachmentUpload.expires_at,
+                AttachmentUpload.id,
+            )
+            .limit(limit)
+        )
+        return list((await self.session.scalars(statement)).all())
+
+    async def staged_cleanup_succeeded(self, upload_id):
+        return bool(
+            await self.session.scalar(
+                select(
+                    exists().where(
+                        AuditEvent.action == "attachment.staged_deleted",
+                        AuditEvent.entity_type == "attachment_uploads",
+                        AuditEvent.entity_id == upload_id,
+                    )
+                )
+            )
+        )
+
     async def calibration_reference_exists(self, attachment_id):
         from app.models.testing import TestRunEquipment
 

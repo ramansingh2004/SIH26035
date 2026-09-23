@@ -64,6 +64,9 @@ class ObjectStorage(ABC):
     @abstractmethod
     async def presign_download(self, key, version, seconds): ...
 
+    async def delete_staged(self, key):
+        raise NotImplementedError
+
 
 class S3Storage(ObjectStorage):
     provider = "s3"
@@ -176,6 +179,44 @@ class S3Storage(ObjectStorage):
             ExpiresIn=seconds,
             HttpMethod="GET",
         )
+
+    async def delete_staged(self, key):
+        key = safe_key(key)
+        if not key.startswith("staged/"):
+            raise AppError(
+                422,
+                "INVALID_STORAGE_KEY",
+                "Cleanup is restricted to staged upload objects",
+            )
+        result = await self.call(
+            "list_object_versions",
+            Bucket=self.bucket,
+            Prefix=key,
+        )
+        if result.get("IsTruncated"):
+            raise AppError(
+                503,
+                "STORAGE_UNAVAILABLE",
+                "Staged object version listing was truncated",
+            )
+
+        matches = [
+            item
+            for collection in (
+                result.get("Versions", ()),
+                result.get("DeleteMarkers", ()),
+            )
+            for item in collection
+            if item.get("Key") == key and item.get("VersionId")
+        ]
+        for item in matches:
+            await self.call(
+                "delete_object",
+                Bucket=self.bucket,
+                Key=key,
+                VersionId=item["VersionId"],
+            )
+        return len(matches)
 
 
 class MinioStorage(S3Storage):

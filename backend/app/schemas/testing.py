@@ -176,6 +176,21 @@ class EnvironmentData(Schema):
     phase: str | None = Field(None, max_length=100)
     notes: str | None = Field(None, max_length=2000)
 
+    @model_validator(mode="after")
+    def traceable_measurement(self):
+        if all(
+            value is None
+            for value in (
+                self.temperature_c,
+                self.relative_humidity_percent,
+                self.barometric_pressure_hpa,
+            )
+        ):
+            raise ValueError("Environment row requires at least one measured quantity")
+        if self.phase is not None and not self.phase.strip():
+            raise ValueError("Environment phase must contain visible text")
+        return self
+
 
 class EquipmentLink(Schema):
     equipment_id: UUID
