@@ -36,6 +36,11 @@ from app.schemas.construction import (
 from app.schemas.testing import SessionView
 from app.services.audit import AuditService
 from app.services.authorization import AuthorizationService
+from app.services.review_scope import (
+    enforce_correction_scope,
+    invalidate_technical_approvals,
+    open_corrections,
+)
 
 EDITABLE_WORKFLOWS = {"EXAMINATION"}
 
@@ -428,6 +433,12 @@ class ConstructionService:
                     "INVALID_TRANSITION",
                     "Start examination requires TESTING workflow",
                 )
+            if await open_corrections(self.repo, session.id):
+                raise AppError(
+                    409,
+                    "CORRECTION_RESOLUTION_REQUIRED",
+                    "Resolve the bounded TESTING correction before starting examination",
+                )
             before = SessionView.model_validate(session).model_dump(mode="json")
             session.workflow_status = "EXAMINATION"
             session.regulatory_revision += 1
@@ -537,6 +548,13 @@ class ConstructionService:
             if examination is None:
                 raise missing()
             require_match(match, etag(examination.lock_version))
+            await enforce_correction_scope(
+                self.repo,
+                session,
+                entity_type="construction_examinations",
+                entity_id=examination.id,
+                field_paths=tuple(data.model_fields_set),
+            )
             before = examination_view(examination)
 
             examination.overall_notes = data.overall_notes
@@ -545,6 +563,18 @@ class ConstructionService:
             examination.lock_version += 1
             session.regulatory_revision += 1
             session.lock_version += 1
+            await invalidate_technical_approvals(
+                self.repo,
+                actor,
+                session,
+                reason="Construction examination changed after technical review",
+                scope={
+                    "entity_type": "construction_examinations",
+                    "entity_id": str(examination.id),
+                    "field_paths": sorted(data.model_fields_set),
+                },
+                audit=self.audit,
+            )
             await self._refresh(session, examination)
             await self.repo.flush()
 
@@ -591,6 +621,13 @@ class ConstructionService:
             if item is None or item.construction_examination_id != examination.id:
                 raise missing()
             require_match(match, etag(item.lock_version))
+            await enforce_correction_scope(
+                self.repo,
+                session,
+                entity_type="construction_items",
+                entity_id=item.id,
+                field_paths=tuple(data.model_fields_set),
+            )
 
             rule = await self.repo.get(
                 RuleDefinition,
@@ -642,6 +679,18 @@ class ConstructionService:
             examination.lock_version += 1
             session.regulatory_revision += 1
             session.lock_version += 1
+            await invalidate_technical_approvals(
+                self.repo,
+                actor,
+                session,
+                reason="Construction item changed after technical review",
+                scope={
+                    "entity_type": "construction_items",
+                    "entity_id": str(item.id),
+                    "field_paths": sorted(data.model_fields_set),
+                },
+                audit=self.audit,
+            )
             await self._refresh(session, examination)
             await self.repo.flush()
 
@@ -701,6 +750,18 @@ class ConstructionService:
             examination.lock_version += 1
             session.regulatory_revision += 1
             session.lock_version += 1
+            await invalidate_technical_approvals(
+                self.repo,
+                actor,
+                session,
+                reason="Construction completion changed after technical review",
+                scope={
+                    "entity_type": "construction_examinations",
+                    "entity_id": str(examination.id),
+                    "field_paths": ["completion"],
+                },
+                audit=self.audit,
+            )
             await self.repo.flush()
 
             self.audit.record(
@@ -762,6 +823,13 @@ class ConstructionService:
             item.id,
             lock=True,
         )
+        await enforce_correction_scope(
+            self.repo,
+            session,
+            entity_type="construction_items",
+            entity_id=item.id,
+            field_paths=("evidence",),
+        )
         require_match(match, etag(item.lock_version))
         return item, session, session.laboratory_id
 
@@ -783,6 +851,18 @@ class ConstructionService:
         examination.lock_version += 1
         session.regulatory_revision += 1
         session.lock_version += 1
+        await invalidate_technical_approvals(
+            self.repo,
+            actor,
+            session,
+            reason="Construction evidence changed after technical review",
+            scope={
+                "entity_type": "construction_items",
+                "entity_id": str(item.id),
+                "field_paths": ["evidence"],
+            },
+            audit=self.audit,
+        )
         await self._refresh(session, examination)
         await self.repo.flush()
         self.audit.record(

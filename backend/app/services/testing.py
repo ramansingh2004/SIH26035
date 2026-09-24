@@ -58,6 +58,10 @@ from app.services.audit import AuditService
 from app.services.authorization import AuthorizationService
 from app.services.equipment import calibration_snapshot
 from app.services.idempotency import IdempotencyService
+from app.services.review_scope import (
+    enforce_correction_scope,
+    invalidate_technical_approvals,
+)
 
 EDITABLE = {"DRAFT", "INSTRUMENT_CONFIGURATION", "APPLICABILITY_CONFIRMED", "TESTING"}
 VIEWS = {
@@ -352,7 +356,15 @@ class TestingService:
                 row.workflow_status = "CANCELLED"
                 row.regulatory_revision += 1
             elif action == "patch":
-                for field, value in data.model_dump(exclude_unset=True).items():
+                changes = data.model_dump(exclude_unset=True)
+                await enforce_correction_scope(
+                    self.repo,
+                    row,
+                    entity_type="test_sessions",
+                    entity_id=row.id,
+                    field_paths=tuple(changes),
+                )
+                for field, value in changes.items():
                     setattr(row, field, value)
             else:
                 raise ValueError("Unknown lifecycle action")
@@ -583,6 +595,17 @@ class TestingService:
         # Called INSIDE the source mutation transaction, before publishing any audit.
         session.regulatory_revision += 1
         session.lock_version += 1
+        await invalidate_technical_approvals(
+            self.repo,
+            actor,
+            session,
+            reason=reason,
+            scope={
+                "entity_type": "test_runs",
+                "entity_id": str(run.id),
+            },
+            audit=self.audit,
+        )
         if run.current_result_id:
             self.repo.add(
                 EvaluationResultEvent(
@@ -661,6 +684,30 @@ class TestingService:
             self.source_editable(session, run)
             require_match(match, etag(run.lock_version))
             before = view(run)
+            correction_field = {
+                "procedure-context": "procedure_context",
+                "start": "start",
+                "complete": "complete",
+            }[action]
+            alternatives = (
+                (
+                    (
+                        "test_runs",
+                        run.retest_of_run_id,
+                        ("retest",),
+                    ),
+                )
+                if run.retest_of_run_id
+                else ()
+            )
+            await enforce_correction_scope(
+                self.repo,
+                session,
+                entity_type="test_runs",
+                entity_id=run.id,
+                field_paths=(correction_field,),
+                alternatives=alternatives,
+            )
             if action == "procedure-context":
                 definition = await self.repo.get(TestDefinitionRecord, run.test_definition_id)
                 context = data.procedure_context
@@ -697,6 +744,18 @@ class TestingService:
                 run.lock_version += 1
                 session.lock_version += 1
                 session.regulatory_revision += 1
+                await invalidate_technical_approvals(
+                    self.repo,
+                    actor,
+                    session,
+                    reason="Run start changed reviewed regulatory content",
+                    scope={
+                        "entity_type": "test_runs",
+                        "entity_id": str(run.id),
+                        "field_paths": ["start"],
+                    },
+                    audit=self.audit,
+                )
                 await self.aggregate(session)
             elif action == "complete":
                 result = (
@@ -717,6 +776,18 @@ class TestingService:
                 run.lock_version += 1
                 session.lock_version += 1
                 session.regulatory_revision += 1
+                await invalidate_technical_approvals(
+                    self.repo,
+                    actor,
+                    session,
+                    reason="Run completion changed reviewed regulatory content",
+                    scope={
+                        "entity_type": "test_runs",
+                        "entity_id": str(run.id),
+                        "field_paths": ["complete"],
+                    },
+                    audit=self.audit,
+                )
                 for observation in await self.repo.rows(TestObservation, test_run_id=run.id):
                     observation.is_locked = True
                 await self.aggregate(session)
@@ -746,6 +817,32 @@ class TestingService:
             if row and getattr(row, "is_locked", False):
                 reject("TEST_ALREADY_LOCKED", "Observation is locked")
             if delete:
+                collection_field = "observations" if kind == "observations" else "environment"
+                await enforce_correction_scope(
+                    self.repo,
+                    session,
+                    entity_type=row.__tablename__,
+                    entity_id=row.id,
+                    field_paths=("__delete__",),
+                    alternatives=(
+                        (
+                            "test_runs",
+                            run.id,
+                            (collection_field,),
+                        ),
+                        *(
+                            (
+                                (
+                                    "test_runs",
+                                    run.retest_of_run_id,
+                                    ("retest",),
+                                ),
+                            )
+                            if run.retest_of_run_id
+                            else ()
+                        ),
+                    ),
+                )
                 links = await self.repo.evidence([(row.__tablename__, row.id)])
                 if links:
                     reject(
@@ -779,6 +876,60 @@ class TestingService:
                 else:
                     values = data.model_dump()
                     values["test_session_id"] = session.id
+
+                collection_field = "observations" if kind == "observations" else "environment"
+                if row:
+                    ignored = {"test_session_id"}
+                    changed_fields = tuple(
+                        name
+                        for name, value in values.items()
+                        if name not in ignored and getattr(row, name) != value
+                    )
+                    await enforce_correction_scope(
+                        self.repo,
+                        session,
+                        entity_type=row.__tablename__,
+                        entity_id=row.id,
+                        field_paths=changed_fields,
+                        alternatives=(
+                            (
+                                "test_runs",
+                                run.id,
+                                (collection_field,),
+                            ),
+                            *(
+                                (
+                                    (
+                                        "test_runs",
+                                        run.retest_of_run_id,
+                                        ("retest",),
+                                    ),
+                                )
+                                if run.retest_of_run_id
+                                else ()
+                            ),
+                        ),
+                    )
+                else:
+                    alternatives = (
+                        (
+                            (
+                                "test_runs",
+                                run.retest_of_run_id,
+                                ("retest",),
+                            ),
+                        )
+                        if run.retest_of_run_id
+                        else ()
+                    )
+                    await enforce_correction_scope(
+                        self.repo,
+                        session,
+                        entity_type="test_runs",
+                        entity_id=run.id,
+                        field_paths=(collection_field,),
+                        alternatives=alternatives,
+                    )
                 if row:
                     for name, value in values.items():
                         setattr(row, name, value)
@@ -947,6 +1098,25 @@ class TestingService:
         async with self.session.begin():
             parent, run = await self.scoped_run(actor, identifier, "test:evaluate", mutation=True)
             self.source_editable(parent, run)
+            alternatives = (
+                (
+                    (
+                        "test_runs",
+                        run.retest_of_run_id,
+                        ("retest",),
+                    ),
+                )
+                if run.retest_of_run_id
+                else ()
+            )
+            await enforce_correction_scope(
+                self.repo,
+                parent,
+                entity_type="test_runs",
+                entity_id=run.id,
+                field_paths=("evaluate",),
+                alternatives=alternatives,
+            )
             require_match(match, etag(run.lock_version))
             if not run.started_at:
                 reject("RUN_NOT_STARTED", "Start the run before evaluation")
@@ -1037,6 +1207,18 @@ class TestingService:
                 await self.repo.flush()
                 parent.regulatory_revision += 1
                 parent.lock_version += 1
+                await invalidate_technical_approvals(
+                    self.repo,
+                    actor,
+                    parent,
+                    reason="Evaluation result changed after technical review",
+                    scope={
+                        "entity_type": "test_runs",
+                        "entity_id": str(run.id),
+                        "field_paths": ["evaluate"],
+                    },
+                    audit=self.audit,
+                )
                 run.lock_version += 1
                 run.current_result_id = stored.id
                 run.evaluation_status, run.compliance_outcome = (
@@ -1153,6 +1335,13 @@ class TestingService:
             )
             self.editable(parent, testing=True)
             require_match(match, etag(original.lock_version))
+            await enforce_correction_scope(
+                self.repo,
+                parent,
+                entity_type="test_runs",
+                entity_id=original.id,
+                field_paths=("retest",),
+            )
             siblings = await self.repo.rows(TestRun, requirement_id=original.requirement_id)
             run = TestRun(
                 id=uuid4(),
@@ -1170,6 +1359,19 @@ class TestingService:
             self.repo.add(run)
             parent.lock_version += 1
             parent.regulatory_revision += 1
+            await invalidate_technical_approvals(
+                self.repo,
+                actor,
+                parent,
+                reason="Retest created after technical review",
+                scope={
+                    "entity_type": "test_runs",
+                    "entity_id": str(original.id),
+                    "field_paths": ["retest"],
+                    "new_run_id": str(run.id),
+                },
+                audit=self.audit,
+            )
             await self.repo.flush()
             self.event(actor, parent, "test_run.retest_created", run, reason=data.reason)
             return await self.finish(reservation, actor, lab, run, 201)
@@ -1186,6 +1388,13 @@ class TestingService:
             self.editable(parent, testing=True)
             req = await self.repo.get(SessionTestRequirement, identifier, lock=True)
             require_match(match, etag(req.lock_version))
+            await enforce_correction_scope(
+                self.repo,
+                parent,
+                entity_type="session_test_requirements",
+                entity_id=req.id,
+                field_paths=("selected_run_id",),
+            )
             run = await self.repo.get(TestRun, data.run_id, lock=True)
             if run is None or run.requirement_id != req.id:
                 raise missing()
@@ -1221,6 +1430,18 @@ class TestingService:
                 reject("INVALID_RUN_SELECTION", "Run does not meet verified selection policy")
             parent.regulatory_revision += 1
             parent.lock_version += 1
+            await invalidate_technical_approvals(
+                self.repo,
+                actor,
+                parent,
+                reason="Authoritative run selection changed after technical review",
+                scope={
+                    "entity_type": "session_test_requirements",
+                    "entity_id": str(req.id),
+                    "field_paths": ["selected_run_id"],
+                },
+                audit=self.audit,
+            )
             self.repo.add(
                 TestRunSelectionEvent(
                     requirement_id=req.id,
@@ -1242,6 +1463,25 @@ class TestingService:
         async with self.session.begin():
             parent, run = await self.scoped_run(actor, identifier, "test:execute", mutation=True)
             self.source_editable(parent, run)
+            alternatives = (
+                (
+                    (
+                        "test_runs",
+                        run.retest_of_run_id,
+                        ("retest",),
+                    ),
+                )
+                if run.retest_of_run_id
+                else ()
+            )
+            await enforce_correction_scope(
+                self.repo,
+                parent,
+                entity_type="test_runs",
+                entity_id=run.id,
+                field_paths=("equipment",),
+                alternatives=alternatives,
+            )
             _, grants = await self.authz.current(actor)
             grants.require("equipment:read", parent.laboratory_id)
             if equipment_id:
@@ -1373,6 +1613,34 @@ class TestingService:
                 if isinstance(row, TestRun)
                 else await self.repo.get(models[target.entity_type], row.id, lock=True)
             )
+        alternatives = ()
+        if not isinstance(row, TestSession):
+            alternatives = (
+                (
+                    "test_runs",
+                    run.id,
+                    ("evidence",),
+                ),
+                *(
+                    (
+                        (
+                            "test_runs",
+                            run.retest_of_run_id,
+                            ("retest",),
+                        ),
+                    )
+                    if run.retest_of_run_id
+                    else ()
+                ),
+            )
+        await enforce_correction_scope(
+            self.repo,
+            parent,
+            entity_type=row.__tablename__,
+            entity_id=row.id,
+            field_paths=("evidence",),
+            alternatives=alternatives,
+        )
         require_match(match, etag(row.lock_version))
         return row, parent, parent.laboratory_id
 
@@ -1382,6 +1650,18 @@ class TestingService:
             if not runs:
                 parent.lock_version += 1
                 parent.regulatory_revision += 1
+                await invalidate_technical_approvals(
+                    self.repo,
+                    actor,
+                    parent,
+                    reason="Session evidence changed after technical review",
+                    scope={
+                        "entity_type": "test_sessions",
+                        "entity_id": str(parent.id),
+                        "field_paths": ["evidence"],
+                    },
+                    audit=self.audit,
+                )
             for run in runs:
                 run = await self.repo.get(TestRun, run.id, lock=True)
                 self.source_editable(parent, run)

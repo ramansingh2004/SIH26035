@@ -22,7 +22,7 @@ def test_health_is_public_and_starts_without_database(monkeypatch: pytest.Monkey
     assert response.json() == {"status": "ok"}
 
 
-def test_health_preserved_and_only_phase_five_integration() -> None:
+def test_health_preserved_and_phase_fifteen_integration_boundary() -> None:
     settings = Settings(_env_file=None, environment="test", database_url=None)
     paths = set(create_app(settings).openapi()["paths"])
     assert "/health" in paths
@@ -31,9 +31,20 @@ def test_health_preserved_and_only_phase_five_integration() -> None:
     assert "/api/v1/rulesets" in paths
     assert "/api/v1/test-sessions" in paths
     assert "/api/v1/test-runs/{identifier}/evaluate" in paths
-    assert not any("approve" in path or "reports" in path for path in paths)
+
+    assert "/api/v1/test-sessions/{identifier}/submit-for-review" in paths
+    assert "/api/v1/test-sessions/{identifier}/reviews" in paths
+    assert "/api/v1/test-sessions/{identifier}/return-for-correction" in paths
+    assert "/api/v1/test-sessions/{identifier}/approve" in paths
+    assert "/api/v1/test-sessions/{identifier}/reject" in paths
+
+    assert not any("/reports" in path or "/report-previews" in path for path in paths)
+
     assert "instruments" in Base.metadata.tables
     assert "test_sessions" in Base.metadata.tables
+    assert "approval_actions" in Base.metadata.tables
+    assert "correction_requests" in Base.metadata.tables
+    assert "session_approval_snapshots" in Base.metadata.tables
 
 
 def test_settings_read_environment(monkeypatch: pytest.MonkeyPatch) -> None:

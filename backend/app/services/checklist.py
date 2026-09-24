@@ -28,6 +28,10 @@ from app.schemas.checklist import (
 )
 from app.services.audit import AuditService
 from app.services.authorization import AuthorizationService
+from app.services.review_scope import (
+    enforce_correction_scope,
+    invalidate_technical_approvals,
+)
 
 EDITABLE_WORKFLOWS = {"EXAMINATION"}
 
@@ -387,6 +391,13 @@ class ChecklistService:
             if response is None:
                 raise missing()
             require_match(match, etag(response.lock_version))
+            await enforce_correction_scope(
+                self.repo,
+                session,
+                entity_type="checklist_responses",
+                entity_id=response.id,
+                field_paths=tuple(data.model_fields_set),
+            )
             rule = await self.repo.get(ChecklistRule, rule_id)
             if rule is None or rule.rule_set_id != session.rule_set_id:
                 raise missing()
@@ -426,6 +437,18 @@ class ChecklistService:
             response.lock_version += 1
             session.regulatory_revision += 1
             session.lock_version += 1
+            await invalidate_technical_approvals(
+                self.repo,
+                actor,
+                session,
+                reason="Checklist response changed after technical review",
+                scope={
+                    "entity_type": "checklist_responses",
+                    "entity_id": str(response.id),
+                    "field_paths": sorted(data.model_fields_set),
+                },
+                audit=self.audit,
+            )
             await self._refresh(session)
             await self.repo.flush()
 
@@ -473,6 +496,18 @@ class ChecklistService:
 
             session.regulatory_revision += 1
             session.lock_version += 1
+            await invalidate_technical_approvals(
+                self.repo,
+                actor,
+                session,
+                reason="Checklist completion changed after technical review",
+                scope={
+                    "entity_type": "test_sessions",
+                    "entity_id": str(session.id),
+                    "field_paths": ["checklist_completion"],
+                },
+                audit=self.audit,
+            )
             await self.repo.flush()
             self.audit.record(
                 "checklist.completed",
@@ -529,6 +564,13 @@ class ChecklistService:
                 "CHECKLIST_ROW_NOT_EDITABLE",
                 "Evidence can only be linked to applicable checklist rows",
             )
+        await enforce_correction_scope(
+            self.repo,
+            session,
+            entity_type="checklist_responses",
+            entity_id=response.id,
+            field_paths=("evidence",),
+        )
         require_match(match, etag(response.lock_version))
         return response, session, session.laboratory_id
 
@@ -542,6 +584,18 @@ class ChecklistService:
         response.lock_version += 1
         session.regulatory_revision += 1
         session.lock_version += 1
+        await invalidate_technical_approvals(
+            self.repo,
+            actor,
+            session,
+            reason="Checklist evidence changed after technical review",
+            scope={
+                "entity_type": "checklist_responses",
+                "entity_id": str(response.id),
+                "field_paths": ["evidence"],
+            },
+            audit=self.audit,
+        )
         await self._refresh(session)
         await self.repo.flush()
         self.audit.record(

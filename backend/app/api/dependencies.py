@@ -128,6 +128,15 @@ def checklist_service(
     return ChecklistService(session, context(request))
 
 
+def review_service(
+    request: Request,
+    session: Annotated[AsyncSession, Depends(database)],
+):
+    from app.services.review import ReviewService
+
+    return ReviewService(session, context(request))
+
+
 async def testing_json(request: Request):
     """Reject ambiguous duplicate keys before typed testing inputs are consumed."""
     from app.compliance.canonical import strict_json

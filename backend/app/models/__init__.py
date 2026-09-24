@@ -25,8 +25,12 @@ from app.models.identity import (
     UserRoleAssignment,
 )
 from app.models.master_data import Instrument, InstrumentComponent, InstrumentRange, Manufacturer
+from app.models.review import ApprovalAction, CorrectionRequest, SessionApprovalSnapshot
 
 __all__ = [
+    "ApprovalAction",
+    "CorrectionRequest",
+    "SessionApprovalSnapshot",
     "ChecklistResponse",
     "ConstructionExamination",
     "ConstructionItem",

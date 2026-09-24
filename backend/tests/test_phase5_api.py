@@ -132,11 +132,17 @@ async def test_session_etags_revisions_and_protected_workflow(client, phase5):
     assert (await client.get(path)).json() == created.json()
     assert len((await client.get(path + "/revisions")).json()) == 2
     for state in ("UNDER_REVIEW", "APPROVED", "REPORT_ISSUED", "REJECTED", "CANCELLED"):
+        protected, _, _ = await create_session(client, phase5)
+        protected_path = "/api/v1/test-sessions/" + protected.json()["id"]
         async with phase5.factory() as session, session.begin():
-            row = await session.get(SessionRecord, UUID(created.json()["id"]))
+            row = await session.get(SessionRecord, UUID(protected.json()["id"]))
             row.workflow_status = state
         assert (
-            await client.patch(path, json={"notes": "forbidden"}, headers={"If-Match": '"1"'})
+            await client.patch(
+                protected_path,
+                json={"notes": "forbidden"},
+                headers={"If-Match": '"1"'},
+            )
         ).status_code == 409
 
 
