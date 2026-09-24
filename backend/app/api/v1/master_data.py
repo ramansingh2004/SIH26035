@@ -26,6 +26,7 @@ from app.schemas.master_data import (
     RangePatch,
     RangeView,
 )
+from app.schemas.repository import InstrumentHistoryItem
 
 router = APIRouter(tags=["Master data"])
 
@@ -289,6 +290,20 @@ async def archive_components(
     response.headers["X-Instrument-ETag"] = etag(parent_version)
 
 
-@router.get("/instruments/{identifier}/history")
-async def history(identifier: UUID, service: Instruments, actor: Actor):
-    return await service.history(actor, identifier)
+@router.get(
+    "/instruments/{identifier}/history",
+    response_model=Page[InstrumentHistoryItem],
+)
+async def history(
+    identifier: UUID,
+    service: Instruments,
+    actor: Actor,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+):
+    return await service.history(
+        actor,
+        identifier,
+        page,
+        page_size,
+    )

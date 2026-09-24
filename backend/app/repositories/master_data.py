@@ -1,8 +1,10 @@
 """Scoped SQL access; services own permissions and transaction boundaries."""
 
-from sqlalchemy import func, or_, select
+from sqlalchemy import case, func, or_, select
 
 from app.models.master_data import Instrument, InstrumentRange, Manufacturer
+from app.models.report import Report
+from app.models.testing import TestRun, TestSession
 
 
 class MasterRepository:
@@ -67,3 +69,55 @@ class MasterRepository:
         if lock:
             query = query.with_for_update().execution_options(populate_existing=True)
         return await self.session.scalar(query)
+
+    async def instrument_history(self, instrument_id, page, size):
+        run_counts = (
+            select(
+                TestRun.test_session_id.label("session_id"),
+                func.count(TestRun.id).label("run_count"),
+                func.sum(
+                    case(
+                        (TestRun.retest_of_run_id.is_not(None), 1),
+                        else_=0,
+                    )
+                ).label("retest_count"),
+            )
+            .group_by(TestRun.test_session_id)
+            .subquery()
+        )
+
+        query = (
+            select(
+                TestSession,
+                Report,
+                func.coalesce(run_counts.c.run_count, 0),
+                func.coalesce(run_counts.c.retest_count, 0),
+            )
+            .outerjoin(
+                Report,
+                Report.test_session_id == TestSession.id,
+            )
+            .outerjoin(
+                run_counts,
+                run_counts.c.session_id == TestSession.id,
+            )
+            .where(TestSession.instrument_id == instrument_id)
+        )
+
+        total = await self.session.scalar(
+            select(func.count()).select_from(
+                select(TestSession.id).where(TestSession.instrument_id == instrument_id).subquery()
+            )
+        )
+        rows = (
+            await self.session.execute(
+                query.order_by(
+                    TestSession.session_revision_no.desc(),
+                    TestSession.created_at.desc(),
+                    TestSession.id,
+                )
+                .offset((page - 1) * size)
+                .limit(size)
+            )
+        ).all()
+        return rows, total

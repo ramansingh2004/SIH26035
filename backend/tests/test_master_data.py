@@ -84,8 +84,13 @@ async def test_instrument_crud_exact_decimal_nulls_and_no_regulatory_claim(clien
     assert validation.json()["regulatory_validation_status"] == "TODO_REGULATORY_VALIDATION"
     assert validation.json()["unresolved_rule_ids"] == ["REG-02"]
     history = await client.get(path + "/history")
-    assert history.json()["availability"] == "NOT_IMPLEMENTED"
-    assert history.json()["sessions"] is None
+    assert history.status_code == 200, history.text
+    assert history.json() == {
+        "items": [],
+        "page": 1,
+        "page_size": 20,
+        "total": 0,
+    }
     archived = await client.post(
         path + "/archive", json={"reason": "Withdrawn"}, headers={"If-Match": '"2"'}
     )

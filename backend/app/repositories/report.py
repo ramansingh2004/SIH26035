@@ -1,8 +1,9 @@
-"""Phase 16 reporting queries, numbering and lock ownership."""
+"""Phase 16/17 reporting queries, numbering, search and lock ownership."""
 
-from sqlalchemy import func, select, text
+from sqlalchemy import func, or_, select, text
 
 from app.models.foundations import Attachment
+from app.models.master_data import Instrument, Manufacturer
 from app.models.report import (
     Report,
     ReportFile,
@@ -12,6 +13,10 @@ from app.models.report import (
 from app.models.review import SessionApprovalSnapshot
 from app.models.testing import TestSession
 from app.repositories.foundations import FoundationRepository
+
+
+def _escaped_search(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
 class ReportRepository(FoundationRepository):
@@ -149,3 +154,92 @@ class ReportRepository(FoundationRepository):
                 )
             ).all()
         )
+
+    async def revisions_page(self, report_number, page, size):
+        statement = (
+            select(Report)
+            .where(Report.report_number == report_number)
+            .order_by(
+                Report.revision_no,
+                Report.created_at,
+                Report.id,
+            )
+        )
+        return await self.page(statement, page, size)
+
+    async def search(self, labs, page, size, filters):
+        query = (
+            select(
+                Report,
+                TestSession,
+                Instrument,
+                Manufacturer,
+            )
+            .join(
+                TestSession,
+                TestSession.id == Report.test_session_id,
+            )
+            .join(
+                Instrument,
+                Instrument.id == TestSession.instrument_id,
+            )
+            .join(
+                Manufacturer,
+                Manufacturer.id == Instrument.manufacturer_id,
+            )
+            .where(TestSession.laboratory_id.in_(labs))
+        )
+
+        exact = {
+            "laboratory_id": TestSession.laboratory_id,
+            "manufacturer_id": Instrument.manufacturer_id,
+            "instrument_id": TestSession.instrument_id,
+            "report_number": Report.report_number,
+            "workflow_status": TestSession.workflow_status,
+            "evaluation_status": TestSession.evaluation_status,
+            "compliance_outcome": TestSession.compliance_outcome,
+            "report_status": Report.report_status,
+        }
+        for key, column in exact.items():
+            value = filters.get(key)
+            if value is not None:
+                query = query.where(column == value)
+
+        created_from = filters.get("created_from")
+        if created_from is not None:
+            query = query.where(Report.created_at >= created_from)
+        created_to = filters.get("created_to")
+        if created_to is not None:
+            query = query.where(Report.created_at <= created_to)
+
+        search = filters.get("search")
+        if search:
+            escaped = _escaped_search(search)
+            pattern = f"%{escaped}%"
+            query = query.where(
+                or_(
+                    Report.report_number.ilike(pattern, escape="\\"),
+                    TestSession.application_number.ilike(pattern, escape="\\"),
+                    Manufacturer.name.ilike(pattern, escape="\\"),
+                    Instrument.model_name.ilike(pattern, escape="\\"),
+                    Instrument.serial_number.ilike(pattern, escape="\\"),
+                    Instrument.type_designation.ilike(pattern, escape="\\"),
+                )
+            )
+
+        total = await self.session.scalar(
+            select(func.count()).select_from(query.order_by(None).subquery())
+        )
+        rows = (
+            await self.session.execute(
+                query.order_by(
+                    Report.created_at.desc(),
+                    Report.report_number.desc(),
+                    Report.revision_no.desc(),
+                    Report.id,
+                )
+                .offset((page - 1) * size)
+                .limit(size)
+            )
+        ).all()
+        return rows, total

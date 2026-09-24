@@ -1,8 +1,16 @@
 """Session SQL and consistent parent-first row locking."""
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 
-from app.models import Attachment, AttachmentLink, InstrumentComponent, InstrumentRange
+from app.models import (
+    Attachment,
+    AttachmentLink,
+    Instrument,
+    InstrumentComponent,
+    InstrumentRange,
+    Manufacturer,
+)
+from app.models.report import Report
 from app.models.testing import (
     SessionTestRequirement,
     TestRun,
@@ -13,15 +21,35 @@ from app.models.testing import (
 from app.repositories.foundations import FoundationRepository
 
 
+def _escaped_search(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 class TestingRepository(FoundationRepository):
     async def rows(self, model, **filters):
         statement = select(model).filter_by(**filters).order_by(model.id)
         return list((await self.session.scalars(statement)).all())
 
     async def sessions(self, labs, page, size, filters):
-        query = select(TestSession).where(TestSession.laboratory_id.in_(labs))
+        query = (
+            select(TestSession)
+            .join(
+                Instrument,
+                Instrument.id == TestSession.instrument_id,
+            )
+            .join(
+                Manufacturer,
+                Manufacturer.id == Instrument.manufacturer_id,
+            )
+            .outerjoin(
+                Report,
+                Report.test_session_id == TestSession.id,
+            )
+            .where(TestSession.laboratory_id.in_(labs))
+        )
+
         for field, value in filters.items():
-            if value is None:
+            if value is None or field in {"search", "report_number"}:
                 continue
             if field == "created_from":
                 query = query.where(TestSession.created_at >= value)
@@ -29,8 +57,72 @@ class TestingRepository(FoundationRepository):
                 query = query.where(TestSession.created_at <= value)
             else:
                 query = query.where(getattr(TestSession, field) == value)
+
+        report_number = filters.get("report_number")
+        if report_number is not None:
+            query = query.where(Report.report_number == report_number)
+
+        search = filters.get("search")
+        if search:
+            escaped = _escaped_search(search)
+            pattern = f"%{escaped}%"
+            query = query.where(
+                or_(
+                    TestSession.application_number.ilike(pattern, escape="\\"),
+                    Report.report_number.ilike(pattern, escape="\\"),
+                    Instrument.model_name.ilike(pattern, escape="\\"),
+                    Instrument.serial_number.ilike(pattern, escape="\\"),
+                    Instrument.type_designation.ilike(pattern, escape="\\"),
+                    Manufacturer.name.ilike(pattern, escape="\\"),
+                )
+            )
+
         return await self.page(
-            query.order_by(TestSession.created_at.desc(), TestSession.id), page, size
+            query.order_by(TestSession.created_at.desc(), TestSession.id),
+            page,
+            size,
+        )
+
+    async def session_revisions(self, root_session_id, page, size):
+        statement = (
+            select(TestSession)
+            .where(TestSession.root_session_id == root_session_id)
+            .order_by(
+                TestSession.session_revision_no,
+                TestSession.created_at,
+                TestSession.id,
+            )
+        )
+        return await self.page(statement, page, size)
+
+    async def retest_runs(self, requirement_id, page, size):
+        statement = (
+            select(TestRun)
+            .where(TestRun.requirement_id == requirement_id)
+            .order_by(
+                TestRun.run_no,
+                TestRun.created_at,
+                TestRun.id,
+            )
+        )
+        return await self.page(statement, page, size)
+
+    async def result_events(self, result_ids):
+        if not result_ids:
+            return []
+        from app.models.testing import EvaluationResultEvent
+
+        return list(
+            (
+                await self.session.scalars(
+                    select(EvaluationResultEvent)
+                    .where(EvaluationResultEvent.result_id.in_(result_ids))
+                    .order_by(
+                        EvaluationResultEvent.created_at,
+                        EvaluationResultEvent.id,
+                    )
+                )
+            ).all()
         )
 
     async def instrument_children(self, instrument_id):
@@ -67,8 +159,6 @@ class TestingRepository(FoundationRepository):
         )
 
     async def evidence(self, targets):
-        from sqlalchemy import or_
-
         query = (
             select(Attachment, AttachmentLink)
             .join(AttachmentLink, AttachmentLink.attachment_id == Attachment.id)

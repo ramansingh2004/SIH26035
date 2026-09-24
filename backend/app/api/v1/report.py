@@ -1,5 +1,6 @@
 """Phase 16 report preview, official generation, repository and issue API."""
 
+from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
@@ -11,7 +12,13 @@ from app.api.dependencies import (
     no_body,
     report_service,
 )
+from app.compliance.domain import (
+    ComplianceOutcome,
+    EvaluationStatus,
+    WorkflowStatus,
+)
 from app.core.concurrency import etag
+from app.schemas.identity import Page
 from app.schemas.report import (
     ReportFileView,
     ReportGenerateRequest,
@@ -23,6 +30,7 @@ from app.schemas.report import (
     ReportRevisionRequest,
     ReportView,
 )
+from app.schemas.repository import ReportRepositoryItem
 from app.services.report import ReportService
 
 router = APIRouter(tags=["Reports"])
@@ -119,6 +127,45 @@ async def regenerate_report(
         if_match,
         idempotency_key,
         data,
+    )
+
+
+@router.get(
+    "/reports",
+    response_model=Page[ReportRepositoryItem],
+)
+async def list_reports(
+    service: Service,
+    actor: Actor,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    laboratory_id: UUID | None = None,
+    manufacturer_id: UUID | None = None,
+    instrument_id: UUID | None = None,
+    report_number: str | None = Query(None, max_length=80),
+    workflow_status: WorkflowStatus | None = None,
+    evaluation_status: EvaluationStatus | None = None,
+    compliance_outcome: ComplianceOutcome | None = None,
+    report_status: Literal["UNISSUED", "ISSUED", "SUPERSEDED"] | None = None,
+    created_from: datetime | None = None,
+    created_to: datetime | None = None,
+    search: str | None = Query(None, max_length=200),
+):
+    return await service.listing(
+        actor,
+        page,
+        page_size,
+        laboratory_id=laboratory_id,
+        manufacturer_id=manufacturer_id,
+        instrument_id=instrument_id,
+        report_number=report_number,
+        workflow_status=workflow_status,
+        evaluation_status=evaluation_status,
+        compliance_outcome=compliance_outcome,
+        report_status=report_status,
+        created_from=created_from,
+        created_to=created_to,
+        search=search,
     )
 
 
@@ -220,11 +267,18 @@ async def create_report_revision(
 
 @router.get(
     "/reports/{identifier}/revisions",
-    response_model=list[ReportView],
+    response_model=Page[ReportView],
 )
 async def get_report_revisions(
     identifier: UUID,
     service: Service,
     actor: Actor,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
 ):
-    return await service.revisions(actor, identifier)
+    return await service.revisions(
+        actor,
+        identifier,
+        page,
+        page_size,
+    )

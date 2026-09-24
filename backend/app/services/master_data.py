@@ -357,14 +357,44 @@ class InstrumentService(MasterService):
             )
             return after, parent.lock_version
 
-    async def history(self, actor, identifier):
+    async def history(self, actor, identifier, page, size):
         async with self.session.begin():
             row = await self._root(actor, identifier, "instrument:read")
+            rows, total = await self.repo.instrument_history(
+                row.id,
+                page,
+                size,
+            )
+            items = []
+            for test_session, report, run_count, retest_count in rows:
+                items.append(
+                    {
+                        "session_id": test_session.id,
+                        "root_session_id": test_session.root_session_id,
+                        "parent_session_id": test_session.parent_session_id,
+                        "session_revision_no": test_session.session_revision_no,
+                        "revision_reason": test_session.revision_reason,
+                        "application_number": test_session.application_number,
+                        "workflow_status": test_session.workflow_status,
+                        "evaluation_status": test_session.evaluation_status,
+                        "compliance_outcome": test_session.compliance_outcome,
+                        "regulatory_revision": test_session.regulatory_revision,
+                        "session_created_at": test_session.created_at,
+                        "run_count": run_count,
+                        "retest_count": retest_count,
+                        "report_id": report.id if report is not None else None,
+                        "report_number": (report.report_number if report is not None else None),
+                        "report_revision_no": (report.revision_no if report is not None else None),
+                        "report_status": (report.report_status if report is not None else None),
+                        "supersedes_report_id": (
+                            report.supersedes_report_id if report is not None else None
+                        ),
+                        "report_issued_at": (report.issued_at if report is not None else None),
+                    }
+                )
             return {
-                "instrument_id": str(row.id),
-                "availability": "NOT_IMPLEMENTED",
-                "message": "Evaluation history is unavailable in Phase 2",
-                "sessions": None,
-                "revisions": None,
-                "reports": None,
+                "items": items,
+                "page": page,
+                "page_size": size,
+                "total": total,
             }

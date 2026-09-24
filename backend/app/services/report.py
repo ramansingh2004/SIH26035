@@ -1404,6 +1404,58 @@ class ReportService:
             )
             return body
 
+    async def listing(self, actor, page, size, **filters):
+        async with self.session.begin():
+            _, grants = await self.authz.current(actor)
+            labs = grants.labs_for("report:read")
+            if not labs:
+                raise denied()
+            laboratory_id = filters.get("laboratory_id")
+            if laboratory_id is not None and laboratory_id not in labs:
+                raise denied()
+
+            rows, total = await self.repo.search(
+                labs,
+                page,
+                size,
+                filters,
+            )
+            items = []
+            for report, test_session, instrument, manufacturer in rows:
+                items.append(
+                    {
+                        "id": report.id,
+                        "test_session_id": report.test_session_id,
+                        "laboratory_id": test_session.laboratory_id,
+                        "instrument_id": test_session.instrument_id,
+                        "manufacturer_id": instrument.manufacturer_id,
+                        "manufacturer_name": manufacturer.name,
+                        "instrument_model_name": instrument.model_name,
+                        "instrument_serial_number": instrument.serial_number,
+                        "application_number": test_session.application_number,
+                        "workflow_status": test_session.workflow_status,
+                        "evaluation_status": test_session.evaluation_status,
+                        "compliance_outcome": test_session.compliance_outcome,
+                        "report_number": report.report_number,
+                        "revision_no": report.revision_no,
+                        "root_report_id": report.root_report_id,
+                        "supersedes_report_id": report.supersedes_report_id,
+                        "revision_reason": report.revision_reason,
+                        "report_status": report.report_status,
+                        "issued_at": report.issued_at,
+                        "report_hash": report.report_hash,
+                        "created_at": report.created_at,
+                        "is_current_issued": report.report_status == "ISSUED",
+                        "is_superseded": report.report_status == "SUPERSEDED",
+                    }
+                )
+            return {
+                "items": items,
+                "page": page,
+                "page_size": size,
+                "total": total,
+            }
+
     async def detail(self, actor, identifier):
         async with self.session.begin():
             report, _ = await self.scoped_report(
@@ -1422,14 +1474,24 @@ class ReportService:
             )
             return [generation_view(row) for row in await self.repo.generations(report.id)]
 
-    async def revisions(self, actor, identifier):
+    async def revisions(self, actor, identifier, page, size):
         async with self.session.begin():
             report, _ = await self.scoped_report(
                 actor,
                 identifier,
                 "report:read",
             )
-            return [report_view(row) for row in await self.repo.revisions(report.report_number)]
+            rows, total = await self.repo.revisions_page(
+                report.report_number,
+                page,
+                size,
+            )
+            return {
+                "items": [report_view(row) for row in rows],
+                "page": page,
+                "page_size": size,
+                "total": total,
+            }
 
     async def _candidate_generation(self, report):
         if report.selected_generation_id is not None:

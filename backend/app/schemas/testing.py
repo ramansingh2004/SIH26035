@@ -64,7 +64,7 @@ from app.compliance.planning import RequirementPlan
 from app.compliance.repeatability import RepeatabilityContext, RepeatabilityObservation
 from app.compliance.tare import TareContext, TareObservation
 from app.compliance.weighing import MeasurementTime, WeighingContext, WeighingObservation
-from app.schemas.identity import Schema
+from app.schemas.identity import Page, Schema
 
 Reason = Annotated[str, Field(min_length=1, max_length=2000, pattern=r"\S")]
 
@@ -399,7 +399,22 @@ class SelectionEventView(Schema):
     created_at: datetime
 
 
+class RetestHistoryItem(Schema):
+    id: UUID
+    run_no: int
+    retest_of_run_id: UUID | None
+    retest_reason: str | None
+    evaluation_status: EvaluationStatus
+    compliance_outcome: ComplianceOutcome
+    input_revision: int
+    current_result_id: UUID | None
+    started_at: datetime | None
+    completed_at: datetime | None
+    is_selected: bool
+
+
 class RunHistory(Schema):
+    runs: Page[RetestHistoryItem]
     results: list[ResultView]
     events: list[ResultEventView]
     selections: list[SelectionEventView]

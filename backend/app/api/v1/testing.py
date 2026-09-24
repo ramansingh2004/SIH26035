@@ -49,8 +49,11 @@ async def sessions(
     laboratory_id: UUID | None = None,
     instrument_id: UUID | None = None,
     workflow_status: str | None = None,
+    evaluation_status: str | None = None,
     compliance_outcome: str | None = None,
     application_number: str | None = None,
+    report_number: str | None = Query(None, max_length=80),
+    search: str | None = Query(None, max_length=200),
     created_from: datetime | None = None,
     created_to: datetime | None = None,
 ):
@@ -61,8 +64,11 @@ async def sessions(
         laboratory_id=laboratory_id,
         instrument_id=instrument_id,
         workflow_status=workflow_status,
+        evaluation_status=evaluation_status,
         compliance_outcome=compliance_outcome,
         application_number=application_number,
+        report_number=report_number,
+        search=search,
         created_from=created_from,
         created_to=created_to,
     )
@@ -175,9 +181,23 @@ async def result(identifier: UUID, result_id: UUID, service: Service, actor: Act
     return await service.result_detail(actor, identifier, result_id)
 
 
-@router.get("/test-runs/{identifier}/history", response_model=RunHistory)
-async def history(identifier: UUID, service: Service, actor: Actor):
-    return await service.history(actor, identifier)
+@router.get(
+    "/test-runs/{identifier}/history",
+    response_model=RunHistory,
+)
+async def history(
+    identifier: UUID,
+    service: Service,
+    actor: Actor,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+):
+    return await service.history(
+        actor,
+        identifier,
+        page,
+        page_size,
+    )
 
 
 @router.post(
@@ -252,9 +272,23 @@ async def session_cancel(
     )
 
 
-@router.get("/test-sessions/{identifier}/revisions", response_model=list[SessionView])
-async def session_revisions(identifier: UUID, service: Service, actor: Actor):
-    return await service.detail(actor, identifier, "revisions")
+@router.get(
+    "/test-sessions/{identifier}/revisions",
+    response_model=Page[SessionView],
+)
+async def session_revisions(
+    identifier: UUID,
+    service: Service,
+    actor: Actor,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+):
+    return await service.revisions(
+        actor,
+        identifier,
+        page,
+        page_size,
+    )
 
 
 @router.get("/test-sessions/{identifier}/dashboard", response_model=Dashboard)

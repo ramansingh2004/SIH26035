@@ -59,9 +59,8 @@ def test_issue_manifest_contains_hashes_but_no_self_hash():
     assert "manifest_hash" not in manifest
 
 
-def test_phase16_stage3_does_not_pull_phase17_repository_search_forward():
+def test_phase16_stage3_reporting_remains_independent_of_dashboard_layer():
     api = Path("app/api/v1/report.py").read_text()
-    assert '@router.get(\\n    "/reports",' not in api
     assert "/dashboard/summary" not in api
 
 

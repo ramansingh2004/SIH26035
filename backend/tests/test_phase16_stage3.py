@@ -573,4 +573,5 @@ async def test_report_revision_uses_same_number_and_supersedes_only_on_issue(
 
     chain = await client.get("/api/v1/reports/" + issued.json()["id"] + "/revisions")
     assert chain.status_code == 200
-    assert [row["revision_no"] for row in chain.json()] == [1, 2]
+    assert chain.json()["total"] == 2
+    assert [row["revision_no"] for row in chain.json()["items"]] == [1, 2]

@@ -22,7 +22,7 @@ def test_health_is_public_and_starts_without_database(monkeypatch: pytest.Monkey
     assert response.json() == {"status": "ok"}
 
 
-def test_health_preserved_and_phase_sixteen_reporting_boundary() -> None:
+def test_health_preserved_and_phase_seventeen_complete_boundary() -> None:
     settings = Settings(_env_file=None, environment="test", database_url=None)
     paths = set(create_app(settings).openapi()["paths"])
     assert "/health" in paths
@@ -49,7 +49,8 @@ def test_health_preserved_and_phase_sixteen_reporting_boundary() -> None:
     assert "/api/v1/reports/{identifier}/download" in paths
     assert "/api/v1/reports/{identifier}/issue" in paths
     assert "/api/v1/reports/{identifier}/revisions" in paths
-    assert "/api/v1/reports" not in paths
+    assert "/api/v1/reports" in paths
+    assert "/api/v1/dashboard/summary" in paths
 
     assert "instruments" in Base.metadata.tables
     assert "test_sessions" in Base.metadata.tables

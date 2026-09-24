@@ -130,7 +130,9 @@ async def test_session_etags_revisions_and_protected_workflow(client, phase5):
     assert response.json()["session_revision_no"] == 2
     assert response.json()["workflow_status"] == "INSTRUMENT_CONFIGURATION"
     assert (await client.get(path)).json() == created.json()
-    assert len((await client.get(path + "/revisions")).json()) == 2
+    revisions = (await client.get(path + "/revisions")).json()
+    assert revisions["total"] == 2
+    assert [item["session_revision_no"] for item in revisions["items"]] == [1, 2]
     for state in ("UNDER_REVIEW", "APPROVED", "REPORT_ISSUED", "REJECTED", "CANCELLED"):
         protected, _, _ = await create_session(client, phase5)
         protected_path = "/api/v1/test-sessions/" + protected.json()["id"]

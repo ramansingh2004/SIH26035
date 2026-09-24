@@ -180,6 +180,15 @@ def attachment_service(
     )
 
 
+def dashboard_service(
+    request: Request,
+    session: Annotated[AsyncSession, Depends(database)],
+):
+    from app.services.dashboard import DashboardService
+
+    return DashboardService(session, context(request))
+
+
 def report_service(
     request: Request,
     session: Annotated[AsyncSession, Depends(database)],

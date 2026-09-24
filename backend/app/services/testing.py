@@ -301,6 +301,25 @@ class TestingService:
             rows, total = await self.repo.sessions(labs, page, size, filters)
             return dict(items=[view(r) for r in rows], total=total, page=page, page_size=size)
 
+    async def revisions(self, actor, identifier, page, size):
+        async with self.session.begin():
+            row = await self.scoped(
+                actor,
+                identifier,
+                "session:read",
+            )
+            rows, total = await self.repo.session_revisions(
+                row.root_session_id,
+                page,
+                size,
+            )
+            return {
+                "items": [view(item) for item in rows],
+                "page": page,
+                "page_size": size,
+                "total": total,
+            }
+
     async def detail(self, actor, identifier, part=None):
         async with self.session.begin():
             row = await self.scoped(actor, identifier, "session:read")
@@ -1559,33 +1578,70 @@ class TestingService:
             self.event(actor, parent, "test_run.equipment_linked", row)
             return view(row)
 
-    async def history(self, actor, identifier):
+    async def history(self, actor, identifier, page, size):
         from app.services.rulesets import serialize
 
         async with self.session.begin():
-            _, run = await self.scoped_run(actor, identifier, "test:read")
+            _, run = await self.scoped_run(
+                actor,
+                identifier,
+                "test:read",
+            )
+            sibling_runs, total = await self.repo.retest_runs(
+                run.requirement_id,
+                page,
+                size,
+            )
+            requirement = await self.repo.get(
+                SessionTestRequirement,
+                run.requirement_id,
+            )
             results = await self.repo.results(run.id)
+            events = await self.repo.result_events([item.id for item in results])
             selection_events = await self.repo.rows(
                 TestRunSelectionEvent,
                 requirement_id=run.requirement_id,
             )
-        selection_events.sort(
-            key=lambda event: (
-                event.regulatory_revision,
-                event.created_at,
-                str(event.id),
-            )
-        )
 
-        return {
-            "results": [view(r) for r in results],
-            "events": [
-                serialize(e)
-                for r in results
-                for e in await self.repo.rows(EvaluationResultEvent, result_id=r.id)
-            ],
-            "selections": [serialize(event) for event in selection_events],
-        }
+            selection_events.sort(
+                key=lambda event: (
+                    event.regulatory_revision,
+                    event.created_at,
+                    str(event.id),
+                )
+            )
+
+            run_items = []
+            for item in sibling_runs:
+                run_items.append(
+                    {
+                        "id": item.id,
+                        "run_no": item.run_no,
+                        "retest_of_run_id": item.retest_of_run_id,
+                        "retest_reason": item.retest_reason,
+                        "evaluation_status": item.evaluation_status,
+                        "compliance_outcome": item.compliance_outcome,
+                        "input_revision": item.input_revision,
+                        "current_result_id": item.current_result_id,
+                        "started_at": item.started_at,
+                        "completed_at": item.completed_at,
+                        "is_selected": (
+                            requirement is not None and requirement.selected_run_id == item.id
+                        ),
+                    }
+                )
+
+            return {
+                "runs": {
+                    "items": run_items,
+                    "page": page,
+                    "page_size": size,
+                    "total": total,
+                },
+                "results": [view(item) for item in results],
+                "events": [serialize(item) for item in events],
+                "selections": [serialize(item) for item in selection_events],
+            }
 
     async def evidence_target(self, actor, target, permission, match):
         models = {
