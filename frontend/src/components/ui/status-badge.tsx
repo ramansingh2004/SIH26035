@@ -1,4 +1,5 @@
 const classByValue: Record<string, string> = {
+  ACTIVE: "status-success",
   COMPLETE: "status-success",
   COMPLIANT: "status-success",
   ISSUED: "status-success",
@@ -12,6 +13,7 @@ const classByValue: Record<string, string> = {
   UNDETERMINED: "status-muted",
   NOT_APPLICABLE: "status-muted",
   SUPERSEDED: "status-muted",
+  ARCHIVED: "status-muted",
 };
 
 export function StatusBadge({ value }: { value: string }) {

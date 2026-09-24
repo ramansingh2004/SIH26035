@@ -35,19 +35,19 @@ const groups: NavigationGroup[] = [
         label: "Manufacturers",
         href: "/manufacturers",
         permission: "manufacturer:read",
-        implemented: false,
+        implemented: true,
       },
       {
         label: "Instruments",
         href: "/instruments",
         permission: "instrument:read",
-        implemented: false,
+        implemented: true,
       },
       {
         label: "Test Equipment",
         href: "/equipment",
         permission: "equipment:read",
-        implemented: false,
+        implemented: true,
       },
     ],
   },
@@ -149,9 +149,7 @@ export function Sidebar({
             const visible = group.items.filter((item) =>
               hasPermission(item.permission),
             );
-            if (visible.length === 0) {
-              return null;
-            }
+            if (visible.length === 0) return null;
 
             return (
               <div className="nav-group" key={group.label ?? `group-${index}`}>
@@ -162,7 +160,10 @@ export function Sidebar({
                   item.implemented ? (
                     <Link
                       className={`nav-item ${
-                        pathname === item.href ? "is-active" : ""
+                        pathname === item.href ||
+                        pathname.startsWith(`${item.href}/`)
+                          ? "is-active"
+                          : ""
                       }`}
                       href={item.href}
                       key={item.href}

@@ -10,6 +10,7 @@ export type ApiErrorBody = {
 export type ApiResponse<T> = {
   data: T;
   etag: string | null;
+  instrumentEtag: string | null;
   requestId: string | null;
 };
 

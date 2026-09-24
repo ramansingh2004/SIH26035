@@ -62,8 +62,6 @@ async function rawRefresh(): Promise<string | null> {
       cache: "no-store",
     });
   } catch {
-    // Backend/network unavailability during bootstrap is not an unhandled
-    // application failure. Treat it as an unavailable authenticated session.
     setAccessToken(null);
     return null;
   }
@@ -160,6 +158,7 @@ export async function apiRequest<T>(
   return {
     data,
     etag: response.headers.get("ETag"),
+    instrumentEtag: response.headers.get("X-Instrument-ETag"),
     requestId: response.headers.get("X-Request-ID"),
   };
 }
