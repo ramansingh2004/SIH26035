@@ -58,7 +58,7 @@ const groups: NavigationGroup[] = [
         label: "Evaluations",
         href: "/evaluations",
         permission: "session:read",
-        implemented: false,
+        implemented: true,
       },
     ],
   },
