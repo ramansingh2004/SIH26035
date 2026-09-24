@@ -5,7 +5,7 @@ import { createServer } from "node:net";
 import { setTimeout as delay } from "node:timers/promises";
 import { test } from "node:test";
 
-test("built frontend starts and serves the bootstrap page", async () => {
+test("built frontend starts and serves the Phase 18 login shell", async () => {
   const reservation = createServer();
   reservation.listen(0, "127.0.0.1");
   await once(reservation, "listening");
@@ -37,7 +37,7 @@ test("built frontend starts and serves the bootstrap page", async () => {
     while (Date.now() < deadline) {
       assert.equal(server.exitCode, null, logs);
       try {
-        response = await fetch(`http://127.0.0.1:${port}`, {
+        response = await fetch(`http://127.0.0.1:${port}/login`, {
           signal: AbortSignal.timeout(2000),
         });
         break;
@@ -45,12 +45,14 @@ test("built frontend starts and serves the bootstrap page", async () => {
         await delay(100);
       }
     }
+
     assert.ok(response, `Frontend did not become ready.\n${logs}`);
     assert.equal(response.status, 200);
     const html = await response.text();
     assert.match(html, /<html[^>]+lang="en"/);
-    assert.match(html, /Laboratory platform/);
-    assert.match(html, /Project bootstrap ready/);
+    assert.match(html, /NAWI Type Evaluation/);
+    assert.match(html, /Authorized access/);
+    assert.match(html, /Sign in/);
   } finally {
     if (server.exitCode === null) {
       server.kill("SIGTERM");

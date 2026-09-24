@@ -1,17 +1,24 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { Providers } from "./providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SIH26035 | Laboratory Platform",
-  description: "SIH26035 laboratory platform — Phase 0 project bootstrap.",
+  title: {
+    default: "SIH26035 | NAWI Laboratory Platform",
+    template: "%s | SIH26035",
+  },
+  description:
+    "OIML R76 NAWI type-evaluation and test-report management platform.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
