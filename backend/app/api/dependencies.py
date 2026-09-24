@@ -178,3 +178,19 @@ def attachment_service(
     return AttachmentService(
         session, context(request), storage, request.app.state.settings.storage_url_seconds
     )
+
+
+def report_service(
+    request: Request,
+    session: Annotated[AsyncSession, Depends(database)],
+    storage: Annotated[object, Depends(object_storage)],
+):
+    from app.services.report import ReportService
+
+    return ReportService(
+        session,
+        context(request),
+        storage,
+        download_seconds=request.app.state.settings.storage_url_seconds,
+        preview_hours=request.app.state.settings.report_preview_hours,
+    )

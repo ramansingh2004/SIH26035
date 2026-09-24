@@ -11,7 +11,7 @@ async def test_phase15_stage3_head_and_terminal_source_guards(world):
     async with world.factory() as session:
         assert (
             await session.execute(text("SELECT version_num FROM alembic_version"))
-        ).scalar() == "0008_phase15"
+        ).scalar() == "0010_phase16"
 
         triggers = set(
             (

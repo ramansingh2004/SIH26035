@@ -22,7 +22,7 @@ def test_health_is_public_and_starts_without_database(monkeypatch: pytest.Monkey
     assert response.json() == {"status": "ok"}
 
 
-def test_health_preserved_and_phase_fifteen_integration_boundary() -> None:
+def test_health_preserved_and_phase_sixteen_reporting_boundary() -> None:
     settings = Settings(_env_file=None, environment="test", database_url=None)
     paths = set(create_app(settings).openapi()["paths"])
     assert "/health" in paths
@@ -38,13 +38,29 @@ def test_health_preserved_and_phase_fifteen_integration_boundary() -> None:
     assert "/api/v1/test-sessions/{identifier}/approve" in paths
     assert "/api/v1/test-sessions/{identifier}/reject" in paths
 
-    assert not any("/reports" in path or "/report-previews" in path for path in paths)
+    assert "/api/v1/test-sessions/{identifier}/report-previews" in paths
+    assert "/api/v1/report-previews/{identifier}" in paths
+    assert "/api/v1/report-previews/{identifier}/download" in paths
+    assert "/api/v1/test-sessions/{identifier}/reports" in paths
+    assert "/api/v1/reports/{identifier}" in paths
+    assert "/api/v1/reports/{identifier}/regenerate" in paths
+    assert "/api/v1/reports/{identifier}/generations" in paths
+    assert "/api/v1/reports/{identifier}/files" in paths
+    assert "/api/v1/reports/{identifier}/download" in paths
+    assert "/api/v1/reports/{identifier}/issue" in paths
+    assert "/api/v1/reports/{identifier}/revisions" in paths
+    assert "/api/v1/reports" not in paths
 
     assert "instruments" in Base.metadata.tables
     assert "test_sessions" in Base.metadata.tables
     assert "approval_actions" in Base.metadata.tables
     assert "correction_requests" in Base.metadata.tables
     assert "session_approval_snapshots" in Base.metadata.tables
+    assert "report_number_counters" in Base.metadata.tables
+    assert "reports" in Base.metadata.tables
+    assert "report_generations" in Base.metadata.tables
+    assert "report_files" in Base.metadata.tables
+    assert "report_previews" in Base.metadata.tables
 
 
 def test_settings_read_environment(monkeypatch: pytest.MonkeyPatch) -> None:

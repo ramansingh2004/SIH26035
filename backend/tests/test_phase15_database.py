@@ -23,7 +23,7 @@ async def test_phase15_real_tables_and_head(world):
         } <= tables
         assert (
             await session.execute(text("SELECT version_num FROM alembic_version"))
-        ).scalar() == "0008_phase15"
+        ).scalar() == "0010_phase16"
 
 
 @pytest.mark.asyncio

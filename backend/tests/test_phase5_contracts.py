@@ -91,7 +91,16 @@ def test_migration_static_append_only_guards_and_no_later_phase():
         "construction_items",
         "checklist_responses",
     } <= Base.metadata.tables.keys()
-    assert not {"approvals", "reports"} & Base.metadata.tables.keys()
+    assert "approvals" not in Base.metadata.tables
+    assert {
+        "approval_actions",
+        "correction_requests",
+        "session_approval_snapshots",
+        "reports",
+        "report_generations",
+        "report_files",
+        "report_previews",
+    } <= Base.metadata.tables.keys()
 
 
 @pytest.mark.parametrize("value", [0.1, "NaN", "Infinity", True])

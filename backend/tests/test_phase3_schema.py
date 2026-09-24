@@ -26,7 +26,16 @@ def test_phase3_tables_preserved_while_later_phases_extend_metadata():
         "construction_items",
         "checklist_responses",
     } <= Base.metadata.tables.keys()
-    assert not {"approvals", "reports"} & Base.metadata.tables.keys()
+    assert "approvals" not in Base.metadata.tables
+    assert {
+        "approval_actions",
+        "correction_requests",
+        "session_approval_snapshots",
+        "reports",
+        "report_generations",
+        "report_files",
+        "report_previews",
+    } <= Base.metadata.tables.keys()
     assert "uq_ruleset_active" in {i.name for i in Base.metadata.tables["rule_sets"].indexes}
     assert "fk_test_parent_scope" in {
         c.name for c in Base.metadata.tables["test_definitions"].constraints

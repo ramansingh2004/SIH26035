@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     storage_access_key: SecretStr | None = None
     storage_secret_key: SecretStr | None = None
     storage_url_seconds: int = Field(default=300, ge=30, le=900)
+    report_preview_hours: int = Field(default=24, ge=1, le=168)
 
     @model_validator(mode="after")
     def storage_security(self):

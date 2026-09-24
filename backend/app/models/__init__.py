@@ -25,12 +25,24 @@ from app.models.identity import (
     UserRoleAssignment,
 )
 from app.models.master_data import Instrument, InstrumentComponent, InstrumentRange, Manufacturer
+from app.models.report import (
+    Report,
+    ReportFile,
+    ReportGeneration,
+    ReportNumberCounter,
+    ReportPreview,
+)
 from app.models.review import ApprovalAction, CorrectionRequest, SessionApprovalSnapshot
 
 __all__ = [
     "ApprovalAction",
     "CorrectionRequest",
     "SessionApprovalSnapshot",
+    "ReportNumberCounter",
+    "Report",
+    "ReportGeneration",
+    "ReportFile",
+    "ReportPreview",
     "ChecklistResponse",
     "ConstructionExamination",
     "ConstructionItem",

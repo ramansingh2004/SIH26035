@@ -18,6 +18,7 @@ from app.api.v1.checklist import router as checklist_router
 from app.api.v1.construction import router as construction_router
 from app.api.v1.foundations import router as foundations_router
 from app.api.v1.master_data import router as master_data_router
+from app.api.v1.report import router as report_router
 from app.api.v1.review import router as review_router
 from app.api.v1.testing import router as testing_router
 from app.core.config import Settings, get_settings
@@ -67,6 +68,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(construction_router, prefix="/api/v1")
     application.include_router(checklist_router, prefix="/api/v1")
     application.include_router(review_router, prefix="/api/v1")
+    application.include_router(report_router, prefix="/api/v1")
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_origins,

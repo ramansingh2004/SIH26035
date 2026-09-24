@@ -2,7 +2,9 @@
 
 import asyncio
 import hashlib
+import io
 import re
+import zipfile
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
@@ -12,7 +14,10 @@ from botocore.exceptions import BotoCoreError, ClientError
 
 from app.core.errors import AppError
 
-KEY = re.compile(r"^(staged|evidence)/[0-9a-f-]{36}/[0-9a-f-]{36}/[0-9a-f]{32}$")
+KEY = re.compile(
+    r"^(staged|evidence|reports|previews)/"
+    r"[0-9a-f-]{36}/[0-9a-f-]{36}/[0-9a-f]{32}$"
+)
 MAX_SIZE = 25 * 1024 * 1024
 
 
@@ -29,6 +34,22 @@ class StoredObject:
     version: str
 
 
+DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+
+def _valid_docx(data: bytes) -> bool:
+    try:
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            names = set(archive.namelist())
+            return {
+                "[Content_Types].xml",
+                "_rels/.rels",
+                "word/document.xml",
+            } <= names
+    except (zipfile.BadZipFile, OSError):
+        return False
+
+
 def verify_content(obj: StoredObject, size: int, content_type: str, sha256: str):
     if len(obj.body) != size or size > MAX_SIZE:
         raise AppError(422, "ATTACHMENT_SIZE_MISMATCH", "Stored size differs from declared size")
@@ -37,6 +58,7 @@ def verify_content(obj: StoredObject, size: int, content_type: str, sha256: str)
         "image/png": obj.body.startswith(b"\x89PNG\r\n\x1a\n")
         and obj.body.endswith(b"IEND\xaeB`\x82"),
         "image/jpeg": obj.body.startswith(b"\xff\xd8\xff") and obj.body.endswith(b"\xff\xd9"),
+        DOCX_MIME: _valid_docx(obj.body),
     }
     if obj.content_type != content_type or not signatures.get(content_type, False):
         raise AppError(422, "ATTACHMENT_TYPE_MISMATCH", "Declared and stored media types differ")
@@ -151,7 +173,8 @@ class S3Storage(ObjectStorage):
         return StoredObject(data, result.get("ContentType", ""), version_id)
 
     async def publish(self, key, obj):
-        if not safe_key(key).startswith("evidence/"):
+        key = safe_key(key)
+        if not key.startswith(("evidence/", "reports/", "previews/")):
             raise AppError(422, "INVALID_STORAGE_KEY", "Published prefix required")
         result = await self.call(
             "put_object", Bucket=self.bucket, Key=key, Body=obj.body, ContentType=obj.content_type

@@ -340,6 +340,8 @@ class AttachmentService:
         row = await self.repo.get(Attachment, identifier)
         if row is None or row.laboratory_id not in labs:
             raise missing()
+        if row.attachment_type in {"REPORT_PREVIEW", "REPORT"}:
+            raise missing()
         if lock:
             lab = await self.repo.lab(row.laboratory_id, lock=True)
             if lab is None or not lab.is_active:
@@ -445,9 +447,11 @@ class AttachmentService:
                 actor, identifier, "attachment:delete", True
             )
             require_match(match, etag(attachment.lock_version))
-            if await self.repo.active_links(
-                identifier
-            ) or await self.repo.calibration_reference_exists(identifier):
+            if (
+                await self.repo.active_links(identifier)
+                or await self.repo.calibration_reference_exists(identifier)
+                or await self.repo.generated_document_reference_exists(identifier)
+            ):
                 raise AppError(
                     409,
                     "PROTECTED_EVIDENCE",

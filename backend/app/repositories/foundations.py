@@ -1,5 +1,7 @@
 """Phase 3 query and lock ownership."""
 
+from datetime import UTC, datetime
+
 from sqlalchemy import and_, exists, or_, select, text
 
 from app.models import (
@@ -67,6 +69,30 @@ class FoundationRepository(IdentityRepository):
                 .limit(1)
             )
             is not None
+        )
+
+    async def generated_document_reference_exists(self, attachment_id):
+        from app.models.report import ReportFile, ReportPreview
+
+        if await self.session.scalar(
+            select(exists().where(ReportFile.attachment_id == attachment_id))
+        ):
+            return True
+
+        text_id = str(attachment_id)
+        return bool(
+            await self.session.scalar(
+                select(
+                    exists().where(
+                        ReportPreview.preview_status == "READY",
+                        ReportPreview.expires_at > datetime.now(UTC),
+                        or_(
+                            ReportPreview.file_attachment_ids["pdf"].astext == text_id,
+                            ReportPreview.file_attachment_ids["docx"].astext == text_id,
+                        ),
+                    )
+                )
+            )
         )
 
     async def get(self, model, identifier, *, lock=False):
