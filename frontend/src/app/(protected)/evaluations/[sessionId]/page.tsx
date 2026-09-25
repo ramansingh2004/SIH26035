@@ -4,9 +4,12 @@ import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ApplicabilityPanel } from "@/components/evaluations/applicability-panel";
+import { EvaluationHistoryPanel } from "@/components/evaluations/evaluation-history-panel";
 import { InstrumentSnapshotPanel } from "@/components/evaluations/instrument-snapshot";
 import { SectionNavigator } from "@/components/evaluations/section-navigator";
 import { StatusAxes } from "@/components/evaluations/status-axes";
+import { ReportSessionPanel } from "@/components/reports/report-session-panel";
+import { ReviewLifecyclePanel } from "@/components/review/review-lifecycle-panel";
 import { ErrorState } from "@/components/ui/error-state";
 import { LoadingState } from "@/components/ui/loading-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -237,6 +240,12 @@ export default function EvaluationWorkspacePage() {
 
           <InstrumentSnapshotPanel snapshot={session.instrument_snapshot} />
 
+          <ReviewLifecyclePanel
+            session={session}
+            sessionEtag={detail.data.etag}
+            onChanged={refresh}
+          />
+
           {["INSTRUMENT_CONFIGURATION", "APPLICABILITY_CONFIRMED"].includes(
             session.workflow_status,
           ) ? (
@@ -272,6 +281,9 @@ export default function EvaluationWorkspacePage() {
           </section>
         </div>
       </div>
+      <ReportSessionPanel sessionId={sessionId} />
+
+      <EvaluationHistoryPanel sessionId={sessionId} />
     </div>
   );
 }

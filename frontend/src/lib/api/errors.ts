@@ -58,6 +58,18 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
     "This evaluation is not yet ready for technical review.",
   SESSION_NOT_READY_FOR_APPROVAL:
     "This evaluation is not yet ready for final approval.",
+  REVIEW_INDEPENDENCE_REQUIRED:
+    "Technical review must be performed by someone independent from every raw-observation author.",
+  APPROVAL_INDEPENDENCE_REQUIRED:
+    "Final approval must be performed by an independent approving officer.",
+  REVIEW_REVISION_MISMATCH:
+    "The evaluation changed after this review screen was loaded. Reload the current regulatory revision.",
+  CORRECTION_ALREADY_OPEN:
+    "Resolve the existing bounded correction request before creating another.",
+  CORRECTION_CHANGE_REQUIRED:
+    "Make an authorized regulatory source change before resolving the correction.",
+  CORRECTION_STATE_CONFLICT:
+    "The correction workflow no longer matches this evaluation. Reload the current state.",
   CORRECTION_SCOPE_VIOLATION:
     "This field is outside the correction scope authorized by the reviewer.",
   SOURCE_CHANGED_DURING_EVALUATION:

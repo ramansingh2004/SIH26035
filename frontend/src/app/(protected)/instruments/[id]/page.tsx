@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { EvidenceUploader } from "@/components/evidence/evidence-uploader";
 import { ArchiveAction } from "@/components/master-data/archive-action";
 import { ComponentManager } from "@/components/master-data/component-manager";
+import { InstrumentHistoryPanel } from "@/components/master-data/instrument-history-panel";
 import { DetailList } from "@/components/master-data/detail-list";
 import { RangeManager } from "@/components/master-data/range-manager";
 import { ErrorState } from "@/components/ui/error-state";
@@ -163,6 +164,8 @@ export default function InstrumentDetailPage() {
           }
         />
       </div>
+
+      <InstrumentHistoryPanel instrumentId={id} />
 
       {item.instrument_status === "ACTIVE" &&
       hasPermission("attachment:create") ? (
