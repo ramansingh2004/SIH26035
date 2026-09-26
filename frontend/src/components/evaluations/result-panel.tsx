@@ -69,6 +69,53 @@ export function ResultPanel({
             outcome={current.compliance_outcome}
           />
 
+          <div className="result-explainer">
+            <div className="result-explainer-heading">
+              <div>
+                <span className="report-kicker">Deterministic explanation</span>
+                <h3>How to read this result</h3>
+              </div>
+              {current.deterministic_result.synthetic_fixture === true ? (
+                <span className="mini-tag">Synthetic fixture · demo only</span>
+              ) : null}
+            </div>
+            <div className="result-explainer-grid">
+              <div>
+                <span>Calculation entries</span>
+                <strong>{current.calculations_json.length}</strong>
+                <small>Persisted backend trace entries.</small>
+              </div>
+              <div>
+                <span>Acceptance criteria</span>
+                <strong>{current.acceptance_limits_json.length}</strong>
+                <small>Persisted limits/rules used by the engine.</small>
+              </div>
+              <div>
+                <span>Failed checks</span>
+                <strong>{current.failed_conditions_json.length}</strong>
+                <small>
+                  {current.failed_conditions_json.length > 0
+                    ? "At least one persisted condition did not pass."
+                    : "No failed condition is persisted for this result."}
+                </small>
+              </div>
+              <div>
+                <span>Unresolved rules</span>
+                <strong>{current.unresolved_rule_ids.length}</strong>
+                <small>
+                  {current.unresolved_rule_ids.length > 0
+                    ? "Regulatory blockers remain explicit."
+                    : "No unresolved rule ID is attached to this result."}
+                </small>
+              </div>
+            </div>
+            <p>
+              <strong>No browser calculation:</strong> this panel explains the
+              immutable result returned by the backend engine. It does not derive,
+              adjust or override a compliance outcome.
+            </p>
+          </div>
+
           <dl className="result-metadata">
             <div>
               <dt>Evaluation version</dt>
@@ -111,19 +158,19 @@ export function ResultPanel({
           ) : null}
 
           <TraceBlock
-            title="Failed conditions"
+            title="Persisted failed checks"
             rows={current.failed_conditions_json}
           />
           <TraceBlock
-            title="Acceptance limits"
+            title="Acceptance limits (persisted criteria)"
             rows={current.acceptance_limits_json}
           />
           <TraceBlock
-            title="Calculation trace"
+            title="Calculation trace (persisted)"
             rows={current.calculations_json}
           />
           <TraceBlock
-            title="Rule references"
+            title="Rule references (persisted)"
             rows={current.rule_references_json}
           />
         </>

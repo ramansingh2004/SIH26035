@@ -50,6 +50,24 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
     );
   }, [session.data]);
 
+  const officialGateReason = useMemo(() => {
+    if (!session.data) return "Reload the evaluation.";
+    const item = session.data.item;
+    if (item.workflow_status !== "APPROVED") {
+      return `workflow is ${item.workflow_status.replaceAll("_", " ")}, not APPROVED`;
+    }
+    if (item.evaluation_status !== "COMPLETE") {
+      return `evaluation status is ${item.evaluation_status.replaceAll("_", " ")}, not COMPLETE`;
+    }
+    if (
+      item.compliance_outcome !== "COMPLIANT" &&
+      item.compliance_outcome !== "NONCOMPLIANT"
+    ) {
+      return `outcome is ${item.compliance_outcome.replaceAll("_", " ")}, not determined`;
+    }
+    return null;
+  }, [session.data]);
+
   const previewMutation = useMutation({
     mutationFn: async () => {
       if (!session.data?.etag) {
@@ -144,19 +162,33 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
                 <StatusBadge value={preview.preview_status} />
               </div>
               {preview.preview_status === "READY" ? (
-                <div className="run-actions">
-                  {(["pdf", "docx"] as ReportFormat[]).map((format) => (
-                    <button
-                      className="button button-secondary button-compact"
-                      type="button"
-                      key={format}
-                      disabled={downloadBusy === format}
-                      onClick={() => void download(format)}
-                    >
-                      Download {format.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
+                <>
+                  <div className="preview-file-guide">
+                    <strong>Preview files are unofficial</strong>
+                    <span>
+                      Source regulatory revision {preview.source_regulatory_revision}
+                      {" · "}expires{" "}
+                      {new Date(preview.expires_at).toLocaleString()}
+                    </span>
+                    <small>
+                      PDF is the fixed-layout presentation copy. DOCX is the
+                      editable working copy. Neither file is an issued report.
+                    </small>
+                  </div>
+                  <div className="run-actions">
+                    {(["pdf", "docx"] as ReportFormat[]).map((format) => (
+                      <button
+                        className="button button-secondary button-compact"
+                        type="button"
+                        key={format}
+                        disabled={downloadBusy === format}
+                        onClick={() => void download(format)}
+                      >
+                        Download {format.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </>
               ) : null}
             </div>
           ) : null}
@@ -173,6 +205,12 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
             <span>Official generation gate</span>
             <strong>{officialGate ? "OPEN" : "BLOCKED"}</strong>
           </div>
+          {!officialGate && officialGateReason ? (
+            <div className="report-gate-explanation">
+              <strong>Official generation is blocked because:</strong>
+              <span>{officialGateReason}.</span>
+            </div>
+          ) : null}
           <label className="form-field">
             <span>Planned issue date (UTC)</span>
             <input

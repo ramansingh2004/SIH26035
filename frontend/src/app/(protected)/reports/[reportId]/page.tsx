@@ -149,8 +149,17 @@ export default function ReportDetailPage() {
       </section>
 
       {item.report_status !== "UNISSUED" ? (
-        <section className="report-repository-card">
-          <div className="run-actions">
+        <section className="report-repository-card report-download-card">
+          <div className="panel-heading">
+            <p className="page-eyebrow">Controlled download</p>
+            <h2>Issued report files</h2>
+            <p>
+              PDF and DOCX are rendered from the same immutable selected generation.
+              Download authorization is audited and the issued report hash remains
+              unchanged.
+            </p>
+          </div>
+          <div className="report-download-grid">
             {(["pdf", "docx"] as ReportFormat[]).map((format) => (
               <button
                 className="button button-secondary"

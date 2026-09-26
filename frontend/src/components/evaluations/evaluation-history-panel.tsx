@@ -56,6 +56,37 @@ export function EvaluationHistoryPanel({
         </p>
       </div>
 
+      <div className="traceability-summary" aria-label="Append-only traceability">
+        <div>
+          <span>Session revisions</span>
+          <strong>
+            {revisions.isPending || revisions.isError
+              ? "—"
+              : revisions.data.items.length}
+          </strong>
+        </div>
+        <div>
+          <span>Review events</span>
+          <strong>
+            {!canReadApprovals || approvals.isPending || approvals.isError
+              ? "—"
+              : approvals.data.length}
+          </strong>
+        </div>
+        <div>
+          <span>Correction requests</span>
+          <strong>
+            {!canReadApprovals || corrections.isPending || corrections.isError
+              ? "—"
+              : corrections.data.length}
+          </strong>
+        </div>
+        <div className="traceability-summary-note">
+          <span>Append-only traceability</span>
+          <strong>Earlier states remain preserved</strong>
+        </div>
+      </div>
+
       <div className="traceability-grid">
         <div className="traceability-column">
           <h3>Session revision chain</h3>

@@ -8,6 +8,7 @@ import { EvaluationHistoryPanel } from "@/components/evaluations/evaluation-hist
 import { InstrumentSnapshotPanel } from "@/components/evaluations/instrument-snapshot";
 import { SectionNavigator } from "@/components/evaluations/section-navigator";
 import { StatusAxes } from "@/components/evaluations/status-axes";
+import { EvaluationProgressOverview } from "@/components/polish/evaluation-progress-overview";
 import { ReportSessionPanel } from "@/components/reports/report-session-panel";
 import { ReviewLifecyclePanel } from "@/components/review/review-lifecycle-panel";
 import { ErrorState } from "@/components/ui/error-state";
@@ -120,6 +121,11 @@ export default function EvaluationWorkspacePage() {
         workflow={session.workflow_status}
         evaluation={session.evaluation_status}
         outcome={session.compliance_outcome}
+      />
+
+      <EvaluationProgressOverview
+        session={session}
+        sections={sections}
       />
 
       {conflict ? (

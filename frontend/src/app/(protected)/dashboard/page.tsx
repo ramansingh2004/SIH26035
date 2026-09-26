@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { LoadingState } from "@/components/ui/loading-state";
 import { PageHeader } from "@/components/ui/page-header";
+import { GuidedWorkflow } from "@/components/polish/guided-workflow";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useAuth } from "@/lib/auth/auth-context";
 import { getDashboardSummary } from "@/lib/dashboard/queries";
@@ -107,6 +108,8 @@ export default function DashboardPage() {
         />
       ) : (
         <>
+          <GuidedWorkflow />
+
           <section className="metric-grid" aria-label="Operational summary">
             <MetricCard
               label="Testing in progress"
