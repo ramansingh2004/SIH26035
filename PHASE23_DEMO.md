@@ -19,7 +19,7 @@ Therefore:
 
 ## Stage plan
 
-### Stage 1 — Demo foundation
+### Stage 1 — Demo foundation ✅ COMPLETE
 
 Creates through the deployed API:
 
@@ -37,9 +37,9 @@ Creates through the deployed API:
 Both Stage 1 scenarios intentionally remain `UNDETERMINED` because the candidate
 ruleset is not authoritative.
 
-### Stage 2 — Complete positive/negative demo scenarios
+### Stage 2 — Complete positive/negative demo scenarios ✅ COMPLETE
 
-Next stage.
+Production acceptance passed for the canonical synthetic positive and negative scenarios.
 
 It will add deterministic synthetic demo fixtures for one positive and one negative
 workflow while adding an explicit application-level non-issuance guard for synthetic
@@ -47,7 +47,7 @@ demo rules/data. Reviewer and approving-officer actions will use distinct users.
 
 No official report will be generated or issued from synthetic demo records.
 
-### Stage 3 — Judge walkthrough and reset
+### Stage 3 — Judge walkthrough and reset ← CURRENT
 
 Final Phase 23 stage.
 
