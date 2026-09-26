@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -101,7 +102,11 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           </div>
         )}
 
-        <div className="user-summary">
+        <Link
+          className="user-summary user-summary-link"
+          href="/account"
+          aria-label="Open account and security settings"
+        >
           <div className="user-avatar" aria-hidden="true">
             {initials}
           </div>
@@ -109,7 +114,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
             <strong>{user?.full_name ?? "User"}</strong>
             <span>{roles || "Authorized user"}</span>
           </div>
-        </div>
+        </Link>
 
         <button
           type="button"

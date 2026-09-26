@@ -38,6 +38,8 @@ type AuthContextValue = {
   hasPermission: (permission: string) => boolean;
   login: (input: LoginInput) => Promise<void>;
   logout: () => Promise<void>;
+  logoutAll: () => Promise<void>;
+  clearAuthentication: () => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -65,6 +67,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [selectedLaboratoryId, setSelectedLaboratoryIdState] = useState<
     string | null
   >(null);
+
+  const clearAuthentication = useCallback(() => {
+    setAccessToken(null);
+    setUser(null);
+    setSelectedLaboratoryIdState(null);
+    setStatus("unauthenticated");
+    queryClient.clear();
+
+    if (typeof window !== "undefined") {
+      window.sessionStorage.removeItem(LAB_STORAGE_KEY);
+    }
+  }, [queryClient]);
 
   const establishUser = useCallback(async () => {
     const response = await apiRequest<AuthUser>("/api/v1/auth/me", {
@@ -132,16 +146,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         retryAuth: false,
       });
     } finally {
-      setAccessToken(null);
-      setUser(null);
-      setSelectedLaboratoryIdState(null);
-      setStatus("unauthenticated");
-      queryClient.clear();
-      if (typeof window !== "undefined") {
-        window.sessionStorage.removeItem(LAB_STORAGE_KEY);
-      }
+      clearAuthentication();
     }
-  }, [queryClient]);
+  }, [clearAuthentication]);
+
+  const logoutAll = useCallback(async () => {
+    await apiRequest<void>("/api/v1/auth/logout-all", {
+      method: "POST",
+    });
+    clearAuthentication();
+  }, [clearAuthentication]);
 
   const setSelectedLaboratoryId = useCallback(
     (laboratoryId: string) => {
@@ -175,11 +189,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       hasPermission,
       login,
       logout,
+      logoutAll,
+      clearAuthentication,
     }),
     [
+      clearAuthentication,
       hasPermission,
       login,
       logout,
+      logoutAll,
       selectedLaboratoryId,
       setSelectedLaboratoryId,
       status,
