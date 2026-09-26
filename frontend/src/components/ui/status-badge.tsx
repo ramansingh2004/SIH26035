@@ -1,5 +1,7 @@
 const classByValue: Record<string, string> = {
   ACTIVE: "status-success",
+  INACTIVE: "status-muted",
+  REVOKED: "status-muted",
   COMPLETE: "status-success",
   COMPLIANT: "status-success",
   ISSUED: "status-success",

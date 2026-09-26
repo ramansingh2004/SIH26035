@@ -3534,3 +3534,44 @@ textarea:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+/* Administration — Users */
+
+.admin-user-secondary {
+  display: block;
+  margin-top: 0.16rem;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+}
+
+.admin-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-section-heading h2 {
+  margin: 0.18rem 0 0;
+  color: var(--navy-950);
+  font-size: 1rem;
+}
+
+.admin-section-heading > span {
+  max-width: 30rem;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  text-align: right;
+}
+
+@media (max-width: 700px) {
+  .admin-section-heading {
+    flex-direction: column;
+  }
+
+  .admin-section-heading > span {
+    text-align: left;
+  }
+}

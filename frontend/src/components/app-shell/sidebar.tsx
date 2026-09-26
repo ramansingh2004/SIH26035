@@ -97,7 +97,7 @@ const groups: NavigationGroup[] = [
         label: "Users",
         href: "/admin/users",
         permission: "user:read",
-        implemented: false,
+        implemented: true,
       },
       {
         label: "Laboratories",
