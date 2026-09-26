@@ -9,7 +9,7 @@ function read(relative) {
   return fs.readFileSync(path.join(root, relative), "utf8");
 }
 
-test("Admin Laboratories navigation is enabled while Audit Events remains upcoming", () => {
+test("Admin Laboratories navigation remains enabled with Audit Events", () => {
   const sidebar = read("src/components/app-shell/sidebar.tsx");
   const users = sidebar.indexOf('href: "/admin/users"');
   const labs = sidebar.indexOf('href: "/admin/laboratories"');
@@ -17,7 +17,7 @@ test("Admin Laboratories navigation is enabled while Audit Events remains upcomi
 
   assert.match(sidebar.slice(users, users + 130), /implemented:\s*true/);
   assert.match(sidebar.slice(labs, labs + 150), /implemented:\s*true/);
-  assert.match(sidebar.slice(audit, audit + 130), /implemented:\s*false/);
+  assert.match(sidebar.slice(audit, audit + 130), /implemented:\s*true/);
 });
 
 test("Admin Laboratories uses the existing administration API contracts", () => {

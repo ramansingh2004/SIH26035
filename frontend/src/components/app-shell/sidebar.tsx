@@ -109,7 +109,7 @@ const groups: NavigationGroup[] = [
         label: "Audit Events",
         href: "/admin/audit",
         permission: "audit:read",
-        implemented: false,
+        implemented: true,
       },
     ],
   },
