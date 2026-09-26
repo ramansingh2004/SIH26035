@@ -9,7 +9,7 @@ function read(relative) {
   return fs.readFileSync(path.join(root, relative), "utf8");
 }
 
-test("Admin Users navigation is enabled while other admin modules remain upcoming", () => {
+test("Admin Users navigation remains enabled as later admin modules are added", () => {
   const sidebar = read("src/components/app-shell/sidebar.tsx");
   const users = sidebar.indexOf('href: "/admin/users"');
   const labs = sidebar.indexOf('href: "/admin/laboratories"');
@@ -17,7 +17,7 @@ test("Admin Users navigation is enabled while other admin modules remain upcomin
 
   assert.ok(users >= 0);
   assert.match(sidebar.slice(users, users + 130), /implemented:\s*true/);
-  assert.match(sidebar.slice(labs, labs + 150), /implemented:\s*false/);
+  assert.match(sidebar.slice(labs, labs + 150), /implemented:\s*true/);
   assert.match(sidebar.slice(audit, audit + 130), /implemented:\s*false/);
 });
 

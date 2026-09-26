@@ -103,7 +103,7 @@ const groups: NavigationGroup[] = [
         label: "Laboratories",
         href: "/admin/laboratories",
         permission: "laboratory:read",
-        implemented: false,
+        implemented: true,
       },
       {
         label: "Audit Events",
