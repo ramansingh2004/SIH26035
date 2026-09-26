@@ -2,9 +2,11 @@
 
 ## Stage 1 — production request topology
 
-Browser: `https://<vercel-app>/api/v1/...`
+Browser:
+`https://<vercel-app>/api/v1/...`
 
-Next.js rewrite: `https://<render-service>/api/v1/...`
+Next.js rewrite:
+`https://<render-service>/api/v1/...`
 
 Frontend production variables:
 
@@ -13,109 +15,183 @@ NEXT_PUBLIC_API_BASE_URL=/
 BACKEND_API_ORIGIN=https://<render-service>.onrender.com
 ```
 
-## Stage 2 — managed PostgreSQL and private S3
+The browser therefore stays on the Vercel origin while API traffic is transparently
+proxied to Render. The existing strict refresh/CSRF cookie design remains same-site.
+
+## Stage 2 — managed infrastructure
 
 Completed:
+
 - Render PostgreSQL 17 in Singapore;
-- Alembic repository head applied;
+- repository Alembic head applied;
 - private versioned S3 bucket in `ap-southeast-1`;
 - all four Block Public Access controls enabled;
 - least-privilege S3 runtime IAM;
-- live PostgreSQL and S3 dependency verification.
+- live PostgreSQL/S3 verification.
 
-## Stage 3 — Render backend deployment
+## Stage 3 — Render backend
 
-Create a Render Web Service:
+Production backend:
 
 ```text
-Repository: ramansingh2004/SIH26035
-Branch: main
-Name: sih26035-api
-Region: Singapore
-Language: Python 3
+https://sih26035-h3s9.onrender.com
+```
+
+Render service contract:
+
+```text
 Root Directory: backend
-Build Command: uv sync --frozen --no-dev
-Start Command: uv run python -m scripts.start_render
-Health Check Path: /health
+Build: uv sync --frozen --no-dev
+Start: uv run python -m scripts.start_render
+Health: /health
 ```
 
-`backend/.python-version` pins Render to Python 3.12.
+Public Stage 3 verification passed for health, disabled docs/OpenAPI, protected API
+authentication boundary, and no-store policy.
 
-Do not use bare `uvicorn app.main:app`: the dedicated entrypoint converts
-`RENDER_DATABASE_URL` before FastAPI settings are imported.
-
-### Environment variables
+Until Stage 4 is complete, Render may use the temporary origin:
 
 ```text
-ENVIRONMENT=production
-RENDER_DATABASE_URL=<Render Postgres INTERNAL database URL>
-JWT_SECRET=<permanent generated secret>
-COOKIE_SECURE=true
 ALLOWED_ORIGINS=["https://stage4.invalid"]
-
-STORAGE_PROVIDER=s3
-STORAGE_BUCKET=sih26035-production-store
-STORAGE_REGION=ap-southeast-1
-STORAGE_ACCESS_KEY=<dedicated runtime IAM access key>
-STORAGE_SECRET_KEY=<dedicated runtime IAM secret key>
-```
-
-Do not set `STORAGE_ENDPOINT` for AWS S3. Render supplies `PORT`.
-
-The `stage4.invalid` origin is deliberately temporary. Stage 4 replaces it with the
-stable Vercel production origin.
-
-Generate the permanent JWT secret once and store it only in Render:
-
-```text
-uv run python -c "import secrets; print(secrets.token_urlsafe(48))"
-```
-
-### Migration gate
-
-If the selected Render plan supports a pre-deploy command:
-
-```text
-uv run python -m scripts.render_predeploy
-```
-
-This validates production configuration, applies `alembic upgrade head`, then verifies
-PostgreSQL and S3.
-
-Render pre-deploy commands are not available on free web services. On a free service,
-leave that field unset. The initial Stage 3 database was already migrated and verified
-during Stage 2. For future schema-changing deployments, run migration/dependency checks
-explicitly before deploying.
-
-Never run migrations automatically from FastAPI startup.
-
-### Public verification
-
-After deployment:
-
-```text
-$env:RENDER_SERVICE_URL="https://<service>.onrender.com"
-uv run python -m scripts.check_render_service
-Remove-Item Env:RENDER_SERVICE_URL
-```
-
-The check verifies `/health`, disabled production docs/OpenAPI, the unauthenticated auth
-boundary, and `Cache-Control: no-store`.
-
-### Stage 3 source acceptance
-
-```text
-cd backend
-uv run ruff check .
-uv run pytest tests/test_phase22_stage3_contracts.py -q
 ```
 
 ## Stage 4 — Vercel frontend deployment
 
-Deploy Next.js, replace the temporary Render `ALLOWED_ORIGINS` value with the stable
-Vercel production origin, and configure S3 browser-upload CORS with that exact origin.
+### 1. Create/import the Vercel project
+
+Import the GitHub repository:
+
+```text
+ramansingh2004/SIH26035
+```
+
+Configure:
+
+```text
+Project Name: sih26035
+Framework Preset: Next.js
+Root Directory: frontend
+Production Branch: main
+```
+
+Keep the framework-provided build/output defaults unless Vercel reports a concrete
+reason to override them.
+
+### 2. Production environment variables
+
+Add these to the Vercel Production environment:
+
+```text
+NEXT_PUBLIC_API_BASE_URL=/
+BACKEND_API_ORIGIN=https://sih26035-h3s9.onrender.com
+```
+
+`BACKEND_API_ORIGIN` intentionally has no `NEXT_PUBLIC_` prefix.
+
+Environment-variable changes require a new Vercel deployment before the build uses
+them.
+
+### 3. Deploy and capture the stable production origin
+
+Deploy `main`. After success, note the stable production URL, for example:
+
+```text
+https://sih26035.vercel.app
+```
+
+Use the exact origin shown by Vercel. Do not include a trailing slash.
+
+### 4. Replace the temporary Render allowed origin
+
+In Render -> `sih26035-api` -> Environment, change:
+
+```text
+ALLOWED_ORIGINS=["https://stage4.invalid"]
+```
+
+to:
+
+```text
+ALLOWED_ORIGINS=["https://<exact-vercel-production-origin>"]
+```
+
+Save and allow Render to redeploy/restart.
+
+Do not use `*` with credentialed authentication.
+
+### 5. Configure S3 browser-upload CORS
+
+Open AWS S3:
+
+```text
+sih26035-production-store
+-> Permissions
+-> Cross-origin resource sharing (CORS)
+```
+
+Use:
+
+```json
+[
+  {
+    "AllowedHeaders": [
+      "content-type"
+    ],
+    "AllowedMethods": [
+      "PUT"
+    ],
+    "AllowedOrigins": [
+      "https://<exact-vercel-production-origin>"
+    ],
+    "ExposeHeaders": [],
+    "MaxAgeSeconds": 300
+  }
+]
+```
+
+Use the exact same Vercel origin as Render `ALLOWED_ORIGINS`. Do not use `*`.
+
+This CORS rule is required because evidence files are uploaded directly from the browser
+to a backend-generated presigned S3 PUT URL.
+
+### 6. Public Stage 4 verification
+
+From `backend/`:
+
+```text
+$env:VERCEL_FRONTEND_URL="https://<exact-vercel-production-origin>"
+uv run python -m scripts.check_vercel_frontend
+Remove-Item Env:VERCEL_FRONTEND_URL
+```
+
+The check requires:
+
+- Vercel `/login` is reachable over HTTPS;
+- `/api/v1/auth/me` on the Vercel origin reaches Render through the Next.js rewrite;
+- the unauthenticated API boundary remains HTTP 401;
+- the proxied backend response retains `Cache-Control: no-store`.
+
+Full login/session/evidence behavior is tested in Stage 5.
+
+### Stage 4 source acceptance
+
+From `frontend/`:
+
+```text
+npm run lint
+npm run typecheck
+npm test
+```
+
+From `backend/`:
+
+```text
+uv run ruff check .
+uv run pytest tests/test_phase22_stage4_contracts.py -q
+```
 
 ## Stage 5 — production acceptance
 
-Verify authentication, lab scope, master data, evaluation, review/approval, reports,
-evidence upload/download, history, and production security boundaries.
+Verify end-to-end login/refresh/logout, lab scope, master data, evaluations,
+review/approval, reports, PDF/DOCX downloads, evidence upload/download, history, CORS,
+cookies, and security boundaries.
