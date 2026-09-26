@@ -13,6 +13,7 @@ from app.compliance.aggregation import (
     SessionComplianceAggregator,
 )
 from app.compliance.canonical import canonical_bytes, evaluation_input_snapshot, normalize
+from app.compliance.demo import DEMO_LAB_CODE, demo_registry, is_demo_ruleset
 from app.compliance.domain import InstrumentSnapshot
 from app.compliance.engine import R76Engine, synthetic_artifact
 from app.compliance.planning import RequirementPlanner
@@ -100,6 +101,23 @@ class TestingService:
     def require_production_output(self, synthetic):
         if synthetic:
             reject("SYNTHETIC_RESULT_FORBIDDEN", "Fixture results cannot be persisted or completed")
+
+    def demo_ruleset(self, session):
+        return is_demo_ruleset(RuleSet.model_validate(session.ruleset_snapshot))
+
+    def engine_for(self, session):
+        return R76Engine(demo_registry()) if self.demo_ruleset(session) else self.engine
+
+    async def require_demo_scope(self, session):
+        if not self.demo_ruleset(session):
+            return False
+        lab = await self.repo.lab(session.laboratory_id)
+        if lab is None or lab.code != DEMO_LAB_CODE:
+            reject(
+                "SYNTHETIC_DEMO_SCOPE_FORBIDDEN",
+                "Synthetic SIH demo data is restricted to the dedicated demo laboratory",
+            )
+        return True
 
     async def scoped(self, actor, identifier, permission, *, mutation=False):
         _, grants = await self.authz.current(actor, lock=mutation)
@@ -265,13 +283,22 @@ class TestingService:
             if artifact.ruleset_status == "RETIRED":
                 reject("RULESET_RETIRED", "Retired ruleset cannot start a new session")
             rules = RuleSet.model_validate(artifact.configuration_snapshot)
-            if (
-                not self.artifact_is_production(rules)
-                or rules.configuration_hash != artifact.configuration_hash
-            ):
+            if rules.configuration_hash != artifact.configuration_hash:
                 reject(
                     "RULESET_INVALID", "Only intact registered regulatory artifacts may be pinned"
                 )
+            if not self.artifact_is_production(rules):
+                if not is_demo_ruleset(rules):
+                    reject(
+                        "RULESET_INVALID",
+                        "Only intact registered regulatory artifacts may be pinned",
+                    )
+                demo_lab = await self.repo.lab(lab)
+                if demo_lab is None or demo_lab.code != DEMO_LAB_CODE:
+                    reject(
+                        "SYNTHETIC_DEMO_SCOPE_FORBIDDEN",
+                        "Synthetic SIH demo data is restricted to the dedicated demo laboratory",
+                    )
             identifier = uuid4()
             row = TestSession(
                 id=identifier,
@@ -411,11 +438,22 @@ class TestingService:
             row = await self.scoped(actor, identifier, "test:execute")
             plan = self.plan(row)
             artifact = await self.repo.get(RuleSetRecord, row.rule_set_id)
+            demo_ready = (
+                artifact.ruleset_status == "DRAFT"
+                and await self.require_demo_scope(row)
+            )
+            production_ready = (
+                artifact.ruleset_status == "ACTIVE"
+                and self.artifact_is_production(
+                    RuleSet.model_validate(row.ruleset_snapshot)
+                )
+            )
             return dict(
                 session_id=row.id,
                 regulatory_revision=row.regulatory_revision,
                 plan=plan,
-                confirmable=artifact.ruleset_status == "ACTIVE" and plan.applicability_confirmable,
+                confirmable=(demo_ready or production_ready)
+                and plan.applicability_confirmable,
             )
 
     async def confirm(self, actor, identifier, match, data):
@@ -427,9 +465,17 @@ class TestingService:
             artifact = await self.repo.get(RuleSetRecord, row.rule_set_id, lock=True)
             rules = RuleSet.model_validate(row.ruleset_snapshot)
             plan = self.plan(row)
+            demo_ready = (
+                artifact.ruleset_status == "DRAFT"
+                and is_demo_ruleset(rules)
+                and await self.require_demo_scope(row)
+            )
+            production_ready = (
+                artifact.ruleset_status == "ACTIVE"
+                and self.artifact_is_production(rules)
+            )
             if (
-                artifact.ruleset_status != "ACTIVE"
-                or not self.artifact_is_production(rules)
+                not (demo_ready or production_ready)
                 or not plan.applicability_confirmable
             ):
                 reject(
@@ -492,7 +538,7 @@ class TestingService:
                                 stages=(),
                             )
                         )
-                    registration = self.engine.registry.find(slot.test_code)
+                    registration = self.engine_for(row).registry.find(slot.test_code)
                     if registration is None:
                         observation_version = procedure_version = "UNIMPLEMENTED"
                     else:
@@ -731,7 +777,7 @@ class TestingService:
                 definition = await self.repo.get(TestDefinitionRecord, run.test_definition_id)
                 context = data.procedure_context
                 req = await self.repo.get(SessionTestRequirement, run.requirement_id)
-                registration = self.engine.registry.find(definition.code)
+                registration = self.engine_for(session).registry.find(definition.code)
                 if (
                     registration is None
                     or context.test_code != definition.code
@@ -790,7 +836,10 @@ class TestingService:
                     reject(
                         "CURRENT_RESULT_REQUIRED", "A complete current verified result is required"
                     )
-                self.require_production_output(result.deterministic_result["synthetic_fixture"])
+                if result.deterministic_result["synthetic_fixture"]:
+                    demo_output_allowed = await self.require_demo_scope(session)
+                    if not demo_output_allowed:
+                        self.require_production_output(True)
                 run.completed_at = datetime.now(UTC)
                 run.lock_version += 1
                 session.lock_version += 1
@@ -871,7 +920,7 @@ class TestingService:
             else:
                 if kind == "observations":
                     definition = await self.repo.get(TestDefinitionRecord, run.test_definition_id)
-                    registration = self.engine.registry.find(definition.code)
+                    registration = self.engine_for(session).registry.find(definition.code)
                     if (
                         registration is None
                         or data.observation_type != definition.code
@@ -972,7 +1021,8 @@ class TestingService:
 
     async def capture(self, session, run):
         definition = await self.repo.get(TestDefinitionRecord, run.test_definition_id)
-        registration = self.engine.registry.find(definition.code)
+        engine = self.engine_for(session)
+        registration = engine.registry.find(definition.code)
         if registration is None:
             reject("TODO_REGULATORY_VALIDATION", "Evaluator not implemented in this phase")
         context = registration.contexts.parse(run.procedure_context)
@@ -1093,7 +1143,7 @@ class TestingService:
         snapshot = evaluation_input_snapshot(
             **{k: v for k, v in arguments.items() if k != "ruleset"},
             ruleset_configuration_hash=rules.configuration_hash,
-            engine_version=self.engine.engine_version,
+            engine_version=engine.engine_version,
         )
         return arguments, snapshot, [(a.id, link.purpose) for a, link in links]
 
@@ -1145,10 +1195,13 @@ class TestingService:
             revision, regulatory_revision = run.input_revision, parent.regulatory_revision
             try:
                 arguments, snapshot, links = await self.capture(parent, run)
+                engine = self.engine_for(parent)
+                demo_output_allowed = await self.require_demo_scope(parent)
             except (ValidationError, ValueError) as exc:
                 reject("INVALID_EVALUATION_INPUT", str(exc), 422)
-        result = await asyncio.to_thread(self.engine.evaluate, **arguments)
-        self.require_production_output(result.synthetic_fixture)
+        result = await asyncio.to_thread(engine.evaluate, **arguments)
+        if result.synthetic_fixture and not demo_output_allowed:
+            self.require_production_output(result.synthetic_fixture)
         # Transaction B: reauthorize and reject source/workflow races before writing.
         async with self.session.begin():
             parent, run = await self.scoped_run(actor, identifier, "test:evaluate", mutation=True)

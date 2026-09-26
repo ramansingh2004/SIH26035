@@ -6,6 +6,8 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 from app.compliance.canonical import content_hash
+from app.compliance.demo import is_demo_ruleset
+from app.compliance.ruleset import RuleSet
 from app.core.concurrency import etag, require_match
 from app.core.errors import AppError, denied, missing
 from app.models.foundations import Attachment
@@ -70,6 +72,15 @@ def generation_response(report, generation, files):
 
 
 class ReportService:
+    @staticmethod
+    def reject_demo_official(test_session):
+        if is_demo_ruleset(RuleSet.model_validate(test_session.ruleset_snapshot)):
+            raise AppError(
+                409,
+                "SYNTHETIC_DEMO_OFFICIAL_FORBIDDEN",
+                "Synthetic SIH demo sessions cannot generate or issue official reports",
+            )
+
     def __init__(
         self,
         session,
@@ -177,6 +188,7 @@ class ReportService:
             )
 
     async def _approved_snapshot(self, test_session):
+        self.reject_demo_official(test_session)
         if (
             test_session.workflow_status != "APPROVED"
             or test_session.evaluation_status != "COMPLETE"
@@ -749,6 +761,7 @@ class ReportService:
                 identifier,
                 "report:generate",
             )
+            self.reject_demo_official(test_session)
             laboratory_id = test_session.laboratory_id
 
         async def authorize():

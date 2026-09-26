@@ -3,6 +3,7 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
+from app.compliance.demo import DEMO_ARTIFACT, is_demo_ruleset, load_demo_ruleset
 from app.compliance.ruleset import RuleSet, load_ruleset
 from app.core.concurrency import etag, require_match
 from app.core.errors import AppError, denied, missing
@@ -73,8 +74,18 @@ class RulesetService:
                 return {"items": [serialize(r) for r in rows], "total": len(rows)}
             return serialize(row)
 
-    async def insert_artifact(self, actor_id=None):
-        ruleset = load_ruleset()  # Server allowlist only; no client paths/configuration.
+    async def insert_artifact(
+        self,
+        actor_id=None,
+        artifact="oiml_r76_2006/candidate-v1",
+    ):
+        if artifact == "oiml_r76_2006/candidate-v1":
+            ruleset = load_ruleset()
+        elif artifact == DEMO_ARTIFACT:
+            ruleset = load_demo_ruleset()
+        else:
+            raise AppError(422, "INVALID_INPUT", "Unknown trusted ruleset artifact")
+        # Server allowlist only; no client paths or arbitrary configuration.
         await self.repo.ruleset_lock()
         existing = await self.repo.ruleset_version(ruleset.metadata)
         if existing:
@@ -100,7 +111,12 @@ class RulesetService:
                 "schema_version": 1,
                 "structurally_valid": True,
                 "authoritative": False,
-                "blockers": list(ruleset.activation_blockers()),
+                "synthetic_demo_only": is_demo_ruleset(ruleset),
+                "blockers": (
+                    ["SYNTHETIC_DEMO_ONLY"]
+                    if is_demo_ruleset(ruleset)
+                    else list(ruleset.activation_blockers())
+                ),
             },
             created_by=actor_id,
         )
@@ -180,10 +196,14 @@ class RulesetService:
         )
         return row
 
-    async def register(self, actor):
+    async def register(
+        self,
+        actor,
+        artifact="oiml_r76_2006/candidate-v1",
+    ):
         async with self.session.begin():
             await self.allowed(actor, "ruleset:create", True)
-            return serialize(await self.insert_artifact(actor.user_id))
+            return serialize(await self.insert_artifact(actor.user_id, artifact))
 
     async def action(self, actor, identifier, action, match):
         async with self.session.begin():
@@ -195,7 +215,9 @@ class RulesetService:
             require_match(match, etag(row.lock_version))
             candidate = RuleSet.model_validate(row.configuration_snapshot)
             # Stored configuration must match the trusted versioned artifact, including provenance.
-            trusted = load_ruleset()
+            trusted = (
+                load_demo_ruleset() if is_demo_ruleset(candidate) else load_ruleset()
+            )
             if (
                 candidate.configuration_hash != row.configuration_hash
                 or row.configuration_hash != trusted.configuration_hash
@@ -206,6 +228,12 @@ class RulesetService:
             blockers = candidate.activation_blockers()
             before = {"status": row.ruleset_status, "lock_version": row.lock_version}
             if action == "activate":
+                if is_demo_ruleset(candidate):
+                    raise AppError(
+                        409,
+                        "SYNTHETIC_DEMO_ACTIVATION_FORBIDDEN",
+                        "Synthetic SIH demo rulesets can never be activated",
+                    )
                 if blockers:
                     raise AppError(
                         409,
@@ -226,8 +254,15 @@ class RulesetService:
                 row.validation_summary = {
                     "schema_version": 1,
                     "structurally_valid": True,
-                    "authoritative": not blockers,
-                    "blockers": list(blockers),
+                    "authoritative": (
+                        not blockers and not is_demo_ruleset(candidate)
+                    ),
+                    "synthetic_demo_only": is_demo_ruleset(candidate),
+                    "blockers": (
+                        ["SYNTHETIC_DEMO_ONLY"]
+                        if is_demo_ruleset(candidate)
+                        else list(blockers)
+                    ),
                 }
             row.lock_version += 1
             await self.repo.flush()

@@ -4,6 +4,8 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.compliance.canonical import content_hash
+from app.compliance.demo import is_demo_ruleset
+from app.compliance.ruleset import RuleSet
 from app.core.concurrency import etag, require_match
 from app.core.errors import AppError, denied, missing
 from app.models.review import ApprovalAction, CorrectionRequest, SessionApprovalSnapshot
@@ -129,6 +131,15 @@ def submission_blockers(
 
 
 class ReviewService:
+    @staticmethod
+    def reject_demo_official(session):
+        if is_demo_ruleset(RuleSet.model_validate(session.ruleset_snapshot)):
+            raise AppError(
+                409,
+                "SYNTHETIC_DEMO_OFFICIAL_FORBIDDEN",
+                "Synthetic SIH demo sessions cannot enter regulatory review or approval",
+            )
+
     def __init__(self, session, context):
         self.session = session
         self.repo = ReviewRepository(session)
@@ -200,6 +211,7 @@ class ReviewService:
                 mutation=True,
             )
             require_match(match, etag(session.lock_version))
+            self.reject_demo_official(session)
             if session.workflow_status not in {"TESTING", "EXAMINATION"}:
                 raise AppError(
                     409,
@@ -287,6 +299,7 @@ class ReviewService:
                 mutation=True,
             )
             require_match(match, etag(session.lock_version))
+            self.reject_demo_official(session)
             if session.workflow_status != "UNDER_REVIEW":
                 raise AppError(
                     409,
@@ -657,6 +670,7 @@ class ReviewService:
                 mutation=True,
             )
             require_match(match, etag(session.lock_version))
+            self.reject_demo_official(session)
             if session.workflow_status != "UNDER_REVIEW":
                 raise AppError(
                     409,

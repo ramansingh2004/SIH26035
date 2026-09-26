@@ -98,7 +98,7 @@ async def rulesets_list(
 async def rulesets_register(
     data: RuleRegistration, service: Rulesets, actor: Actor, response: Response
 ):
-    return versioned(response, await service.register(actor))
+    return versioned(response, await service.register(actor, data.artifact))
 
 
 @router.get("/rulesets/{identifier}")

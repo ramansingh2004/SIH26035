@@ -134,4 +134,4 @@ class CompleteRequest(Schema):
 
 
 class RuleRegistration(Schema):
-    artifact: Literal["oiml_r76_2006/candidate-v1"]
+    artifact: Literal["oiml_r76_2006/candidate-v1", "sih26035_demo_v1"]
