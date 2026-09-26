@@ -203,171 +203,276 @@ def create_scenario(
     expected_outcome: str,
     failing: bool,
 ) -> dict:
+    def current(path: str) -> tuple[dict, str]:
+        # The Vercel same-origin rewrite is intentionally used in production.
+        # Cache-bust optimistic-lock reads so If-Match is always derived from
+        # the current application resource rather than any intermediary copy.
+        response = expect(
+            client.get(
+                path,
+                params={"_phase23_nonce": uuid4().hex},
+                headers={
+                    "Cache-Control": "no-cache, no-store, max-age=0",
+                    "Pragma": "no-cache",
+                },
+            )
+        )
+        body = response.json()
+        # Application concurrency is defined by lock_version. Do not depend on
+        # an intermediary/proxy ETag header for mutation preconditions.
+        return body, etag(body)
+
     existing = session_by_application(client, lab_id, application)
-    if existing is not None:
-        if (
-            existing["evaluation_status"] == "COMPLETE"
-            and existing["compliance_outcome"] == expected_outcome
-        ):
-            return existing
-        raise RuntimeError(
-            f"{application} already exists but is not the completed expected scenario; "
-            "do not overwrite demo regulatory history"
-        )
 
-    session = expect(
-        client.post(
-            "/api/v1/test-sessions",
-            headers={"Idempotency-Key": uuid4().hex},
-            json={
-                "instrument_id": instrument_id,
-                "rule_set_id": ruleset_id,
-                "application_number": application,
-                "evaluation_context": "SIH_DEMO",
-                "notes": (
-                    "SYNTHETIC SIH DEMO ONLY. This scenario demonstrates deterministic "
-                    "software mechanics and must never be represented as an OIML "
-                    "compliance determination or official report."
-                ),
-            },
-        ),
-        201,
-    ).json()
-
-    session = expect(
-        client.post(
-            f"/api/v1/test-sessions/{session['id']}/configure",
-            headers={"If-Match": etag(session)},
-            json={"instrument_snapshot": session["instrument_snapshot"]},
-        )
-    ).json()
-
-    applicability = expect(
-        client.post(f"/api/v1/test-sessions/{session['id']}/applicability")
-    ).json()
-    if applicability["confirmable"] is not True:
-        raise RuntimeError("Synthetic SIH demo applicability was not explicitly confirmable")
-
-    session = expect(
-        client.post(
-            f"/api/v1/test-sessions/{session['id']}/confirm-applicability",
-            headers={"If-Match": etag(session)},
-            json={"elections": {}},
-        )
-    ).json()
-
-    requirements = expect(
-        client.get(f"/api/v1/test-sessions/{session['id']}/requirements")
-    ).json()
-    required_rows = [
-        row
-        for row in requirements
-        if row["applicability_status"] == "REQUIRED"
-    ]
-    if len(required_rows) != 1:
-        raise RuntimeError("Demo ruleset must create exactly one required assessment")
-    requirement = required_rows[0]
-    if requirement["slot_snapshot"]["test_code"] != "WEIGHING_PERFORMANCE":
-        raise RuntimeError("Unexpected required demo assessment")
-
-    session = expect(
-        client.post(
-            f"/api/v1/test-sessions/{session['id']}/start-testing",
-            headers={"If-Match": etag(session)},
-        )
-    ).json()
-
-    run_id = requirement["selected_run_id"]
-    run = expect(client.get(f"/api/v1/test-runs/{run_id}")).json()
-    run = expect(
-        client.post(
-            f"/api/v1/test-runs/{run_id}/start",
-            headers={"If-Match": etag(run)},
-        )
-    ).json()
-
-    run = expect(
-        client.patch(
-            f"/api/v1/test-runs/{run_id}/procedure-context",
-            headers={"If-Match": etag(run)},
-            json={
-                "procedure_context": {
-                    "test_code": "WEIGHING_PERFORMANCE",
-                    "procedure_variant": "DIGITAL_PRE_ROUNDING",
-                    "procedure_schema_version": "v1",
-                    "evaluation_context": "SIH_DEMO",
-                    "protocol": "WEIGHING_V1",
-                    "range_no": 1,
-                    "scenario": "demo",
-                    "stages": ["UP", "DOWN"],
-                    "preloaded": False,
-                    "warmed_up_seconds": "0",
-                    "stabilized": False,
-                    "zero_condition": "DEMO_ZERO",
-                    "environment": [],
-                    "equipment": [],
-                    "evidence_hashes": [],
-                }
-            },
-        )
-    ).json()
-
-    for row in observation_rows(failing=failing):
-        run = expect(client.get(f"/api/v1/test-runs/{run_id}")).json()
-        expect(
+    if existing is None:
+        session = expect(
             client.post(
-                f"/api/v1/test-runs/{run_id}/observations",
-                headers={"If-Match": etag(run)},
-                json=row,
+                "/api/v1/test-sessions",
+                headers={"Idempotency-Key": uuid4().hex},
+                json={
+                    "instrument_id": instrument_id,
+                    "rule_set_id": ruleset_id,
+                    "application_number": application,
+                    "evaluation_context": "SIH_DEMO",
+                    "notes": (
+                        "SYNTHETIC SIH DEMO ONLY. This scenario demonstrates deterministic "
+                        "software mechanics and must never be represented as an OIML "
+                        "compliance determination or official report."
+                    ),
+                },
             ),
             201,
-        )
+        ).json()
+    else:
+        session, _ = current(f"/api/v1/test-sessions/{existing['id']}")
 
-    run = expect(client.get(f"/api/v1/test-runs/{run_id}")).json()
-    result = expect(
-        client.post(
-            f"/api/v1/test-runs/{run_id}/evaluate",
-            headers={
-                "If-Match": etag(run),
-                "Idempotency-Key": uuid4().hex,
-            },
-        )
-    ).json()
+    session_path = f"/api/v1/test-sessions/{session['id']}"
 
-    if result["evaluation_status"] != "COMPLETE":
-        raise RuntimeError("Demo evaluator did not complete")
-    if result["compliance_outcome"] != expected_outcome:
-        raise RuntimeError(
-            f"Expected {expected_outcome}, got {result['compliance_outcome']}"
-        )
-    if result["deterministic_result"].get("synthetic_fixture") is not True:
-        raise RuntimeError("Demo result lost its synthetic fixture marker")
-
-    run = expect(client.get(f"/api/v1/test-runs/{run_id}")).json()
-    expect(
-        client.post(
-            f"/api/v1/test-runs/{run_id}/complete",
-            headers={"If-Match": etag(run)},
-        )
-    )
-
-    session = expect(client.get(f"/api/v1/test-sessions/{session['id']}")).json()
-    if (
-        session["evaluation_status"] != "COMPLETE"
-        or session["compliance_outcome"] != expected_outcome
+    # Resume safely if a previous Stage 2 seeding attempt stopped mid-scenario.
+    if not (
+        session["evaluation_status"] == "COMPLETE"
+        and session["compliance_outcome"] == expected_outcome
     ):
-        raise RuntimeError("Completed demo session aggregate is incorrect")
+        if session["workflow_status"] == "DRAFT":
+            session, token = current(session_path)
+            session = expect(
+                client.post(
+                    session_path + "/configure",
+                    headers={"If-Match": token},
+                    json={"instrument_snapshot": session["instrument_snapshot"]},
+                )
+            ).json()
+
+        if session["workflow_status"] == "INSTRUMENT_CONFIGURATION":
+            applicability = expect(
+                client.post(session_path + "/applicability")
+            ).json()
+            if applicability["confirmable"] is not True:
+                raise RuntimeError(
+                    "Synthetic SIH demo applicability was not explicitly confirmable"
+                )
+
+            session, token = current(session_path)
+            session = expect(
+                client.post(
+                    session_path + "/confirm-applicability",
+                    headers={"If-Match": token},
+                    json={"elections": {}},
+                )
+            ).json()
+
+        requirements = expect(
+            client.get(session_path + "/requirements")
+        ).json()
+        required_rows = [
+            row
+            for row in requirements
+            if row["applicability_status"] == "REQUIRED"
+        ]
+        if len(required_rows) != 1:
+            raise RuntimeError(
+                "Demo ruleset must create exactly one required assessment"
+            )
+        requirement = required_rows[0]
+        if requirement["slot_snapshot"]["test_code"] != "WEIGHING_PERFORMANCE":
+            raise RuntimeError("Unexpected required demo assessment")
+
+        session, token = current(session_path)
+        if session["workflow_status"] == "APPLICABILITY_CONFIRMED":
+            session = expect(
+                client.post(
+                    session_path + "/start-testing",
+                    headers={"If-Match": token},
+                )
+            ).json()
+        elif session["workflow_status"] != "TESTING":
+            raise RuntimeError(
+                f"Cannot resume {application} from workflow "
+                f"{session['workflow_status']}"
+            )
+
+        run_id = requirement["selected_run_id"]
+        run_path = f"/api/v1/test-runs/{run_id}"
+
+        run, token = current(run_path)
+        if run["started_at"] is None:
+            expect(
+                client.post(
+                    run_path + "/start",
+                    headers={"If-Match": token},
+                )
+            )
+            run, token = current(run_path)
+
+        desired_context = {
+            "test_code": "WEIGHING_PERFORMANCE",
+            "procedure_variant": "DIGITAL_PRE_ROUNDING",
+            "procedure_schema_version": "v1",
+            "evaluation_context": "SIH_DEMO",
+            "protocol": "WEIGHING_V1",
+            "range_no": 1,
+            "scenario": "demo",
+            "stages": ["UP", "DOWN"],
+            "preloaded": False,
+            "warmed_up_seconds": "0",
+            "stabilized": False,
+            "zero_condition": "DEMO_ZERO",
+            "environment": [],
+            "equipment": [],
+            "evidence_hashes": [],
+        }
+        context = run.get("procedure_context") or {}
+        context_ready = (
+            context.get("test_code") == desired_context["test_code"]
+            and context.get("procedure_variant")
+            == desired_context["procedure_variant"]
+            and context.get("procedure_schema_version")
+            == desired_context["procedure_schema_version"]
+            and context.get("evaluation_context")
+            == desired_context["evaluation_context"]
+            and context.get("protocol") == desired_context["protocol"]
+            and context.get("range_no") == desired_context["range_no"]
+            and context.get("scenario") == desired_context["scenario"]
+            and context.get("stages") == desired_context["stages"]
+            and context.get("preloaded") is False
+            and str(context.get("warmed_up_seconds")) in {"0", "0.0"}
+            and context.get("stabilized") is False
+            and context.get("zero_condition")
+            == desired_context["zero_condition"]
+            and not context.get("environment")
+            and not context.get("equipment")
+            and not context.get("evidence_hashes")
+        )
+        if not context_ready:
+            _, token = current(run_path)
+            response = client.patch(
+                run_path + "/procedure-context",
+                headers={
+                    "If-Match": token,
+                    "Cache-Control": "no-cache, no-store, max-age=0",
+                    "Pragma": "no-cache",
+                },
+                json={"procedure_context": desired_context},
+            )
+            if response.status_code == 412:
+                _, token = current(run_path)
+                response = client.patch(
+                    run_path + "/procedure-context",
+                    headers={
+                        "If-Match": token,
+                        "Cache-Control": "no-cache, no-store, max-age=0",
+                        "Pragma": "no-cache",
+                    },
+                    json={"procedure_context": desired_context},
+                )
+            expect(response)
+
+        existing_observations = expect(
+            client.get(run_path + "/observations")
+        ).json()
+        existing_sequences = {
+            row["sequence_no"] for row in existing_observations
+        }
+
+        for row in observation_rows(failing=failing):
+            if row["sequence_no"] in existing_sequences:
+                continue
+
+            # A 412 means the mutation did not occur, so it is safe to reload
+            # the current run version and retry this create operation.
+            response = None
+            for _attempt in range(3):
+                _, token = current(run_path)
+                response = client.post(
+                    run_path + "/observations",
+                    headers={
+                        "If-Match": token,
+                        "Cache-Control": "no-cache, no-store, max-age=0",
+                        "Pragma": "no-cache",
+                    },
+                    json=row,
+                )
+                if response.status_code != 412:
+                    break
+
+            if response is None:
+                raise RuntimeError("Observation request was not attempted")
+            expect(response, 201)
+
+        run, token = current(run_path)
+        if not (
+            run["current_result_id"]
+            and run["evaluation_status"] == "COMPLETE"
+            and run["compliance_outcome"] == expected_outcome
+        ):
+            result = expect(
+                client.post(
+                    run_path + "/evaluate",
+                    headers={
+                        "If-Match": token,
+                        "Idempotency-Key": uuid4().hex,
+                    },
+                )
+            ).json()
+
+            if result["evaluation_status"] != "COMPLETE":
+                raise RuntimeError("Demo evaluator did not complete")
+            if result["compliance_outcome"] != expected_outcome:
+                raise RuntimeError(
+                    f"Expected {expected_outcome}, "
+                    f"got {result['compliance_outcome']}"
+                )
+            if result["deterministic_result"].get("synthetic_fixture") is not True:
+                raise RuntimeError("Demo result lost its synthetic fixture marker")
+
+        run, token = current(run_path)
+        if run["completed_at"] is None:
+            expect(
+                client.post(
+                    run_path + "/complete",
+                    headers={"If-Match": token},
+                )
+            )
+
+        session, _ = current(session_path)
+        if (
+            session["evaluation_status"] != "COMPLETE"
+            or session["compliance_outcome"] != expected_outcome
+        ):
+            raise RuntimeError("Completed demo session aggregate is incorrect")
+
+    session, session_token = current(session_path)
 
     sections = expect(
-        client.get(f"/api/v1/test-sessions/{session['id']}/sections")
+        client.get(session_path + "/sections")
     ).json()
     if len(sections) != 17:
         raise RuntimeError("Demo session must expose all 17 report sections")
 
     preview = expect(
         client.post(
-            f"/api/v1/test-sessions/{session['id']}/report-previews",
-            headers={"If-Match": etag(session)},
+            session_path + "/report-previews",
+            headers={"If-Match": session_token},
         ),
         201,
     ).json()
@@ -377,9 +482,10 @@ def create_scenario(
     ):
         raise RuntimeError("Demo preview is not explicitly unofficial")
 
+    session, session_token = current(session_path)
     review_attempt = client.post(
-        f"/api/v1/test-sessions/{session['id']}/submit-for-review",
-        headers={"If-Match": etag(session)},
+        session_path + "/submit-for-review",
+        headers={"If-Match": session_token},
     )
     if review_attempt.status_code != 409:
         raise RuntimeError("Synthetic demo unexpectedly entered regulatory review")
@@ -387,12 +493,16 @@ def create_scenario(
         review_attempt.json().get("error", {}).get("code")
         != "SYNTHETIC_DEMO_OFFICIAL_FORBIDDEN"
     ):
-        raise RuntimeError("Unexpected synthetic demo review gate")
+        raise RuntimeError(
+            "Unexpected synthetic demo review gate: "
+            f"{review_attempt.text[:500]}"
+        )
 
+    session, session_token = current(session_path)
     official_attempt = client.post(
-        f"/api/v1/test-sessions/{session['id']}/reports",
+        session_path + "/reports",
         headers={
-            "If-Match": etag(session),
+            "If-Match": session_token,
             "Idempotency-Key": uuid4().hex,
         },
         json={
@@ -401,16 +511,19 @@ def create_scenario(
         },
     )
     if official_attempt.status_code != 409:
-        raise RuntimeError("Synthetic demo unexpectedly entered official report generation")
+        raise RuntimeError(
+            "Synthetic demo unexpectedly entered official report generation"
+        )
     if (
         official_attempt.json().get("error", {}).get("code")
         != "SYNTHETIC_DEMO_OFFICIAL_FORBIDDEN"
     ):
-        raise RuntimeError("Unexpected synthetic demo report gate")
+        raise RuntimeError(
+            "Unexpected synthetic demo report gate: "
+            f"{official_attempt.text[:500]}"
+        )
 
     return session
-
-
 def main() -> None:
     base = production_origin()
     admin_email = required("PRODUCTION_ADMIN_EMAIL")
