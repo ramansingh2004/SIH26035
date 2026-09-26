@@ -36,6 +36,7 @@ from app.compliance.numbers import (
     compare,
     exact,
 )
+from app.compliance.parameterized import PolicyResolutionError, TemperatureZeroPolicyV2
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
@@ -43,10 +44,13 @@ from app.compliance.registries import (
     ProcedureContextRegistry,
 )
 from app.compliance.regulatory import (
+    DependencyResolution,
     MpeProfile,
+    RegulatoryBlocked,
     calculate_mpe,
     dependencies,
     rule_policy,
+    rule_policy_variant,
 )
 from app.compliance.weighing import (
     MeasurementTime,
@@ -204,6 +208,38 @@ class TemperatureZeroPolicy(CommonInfluencePolicy):
         return self
 
 
+def _temperature_zero_policy(*, instrument_snapshot, procedure_context, ruleset):
+    kind, policy = rule_policy_variant(
+        ruleset,
+        TEMPERATURE_ZERO_POLICY,
+        (
+            ("temperature_zero_procedure_v1", TemperatureZeroPolicy),
+            ("temperature_zero_procedure_v2", TemperatureZeroPolicyV2),
+        ),
+    )
+    if kind == "temperature_zero_procedure_v1":
+        return policy
+
+    from app.compliance.policy_adapters import adapt_temperature_zero_policy
+
+    try:
+        return adapt_temperature_zero_policy(
+            policy,
+            instrument=instrument_snapshot,
+            evaluation_context=procedure_context.evaluation_context,
+        )
+    except PolicyResolutionError as exc:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(TEMPERATURE_ZERO_POLICY,),
+                rule_references=dependencies(
+                    ruleset,
+                    (TEMPERATURE_ZERO_POLICY,),
+                ).rule_references,
+            )
+        ) from exc
+
+
 @dataclass(frozen=True)
 class TemperatureZeroEvaluator:
     def required_rules(self, **kwargs):
@@ -237,11 +273,10 @@ class TemperatureZeroEvaluator:
         observations,
         ruleset,
     ):
-        policy = rule_policy(
-            ruleset,
-            TEMPERATURE_ZERO_POLICY,
-            "temperature_zero_procedure_v1",
-            TemperatureZeroPolicy,
+        policy = _temperature_zero_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
+            ruleset=ruleset,
         )
         refs = dependencies(
             ruleset,
@@ -352,11 +387,10 @@ class TemperatureZeroEvaluator:
         observations,
         ruleset,
     ):
-        policy = rule_policy(
-            ruleset,
-            TEMPERATURE_ZERO_POLICY,
-            "temperature_zero_procedure_v1",
-            TemperatureZeroPolicy,
+        policy = _temperature_zero_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
+            ruleset=ruleset,
         )
         refs = dependencies(
             ruleset,
@@ -494,6 +528,10 @@ def temperature_zero_registration():
             RulePolicyRegistration(
                 "temperature_zero_procedure_v1",
                 TemperatureZeroPolicy,
+            ),
+            RulePolicyRegistration(
+                "temperature_zero_procedure_v2",
+                TemperatureZeroPolicyV2,
             ),
         ),
     )

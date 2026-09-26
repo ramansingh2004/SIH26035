@@ -38,6 +38,11 @@ from app.compliance.numbers import (
     calculate_prerounding_indication,
     compare,
 )
+from app.compliance.parameterized import (
+    MpeProfileSetV2,
+    PolicyResolutionError,
+    WeighingPolicyV2,
+)
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
@@ -48,9 +53,10 @@ from app.compliance.regulatory import (
     DependencyResolution,
     MpeProfile,
     RegulatoryBlocked,
-    calculate_mpe,
+    calculate_mpe_compatible,
+    compatible_mpe_profile,
     dependencies,
-    rule_policy,
+    rule_policy_variant,
 )
 
 CODE = "WEIGHING_PERFORMANCE"
@@ -171,6 +177,36 @@ class WeighingPoint(CalculationTraceEntry):
     compliance_outcome: Literal[ComplianceOutcome.COMPLIANT, ComplianceOutcome.NONCOMPLIANT]
 
 
+def _weighing_policy(*, instrument_snapshot, procedure_context, ruleset):
+    kind, policy = rule_policy_variant(
+        ruleset,
+        POLICY,
+        (
+            ("weighing_procedure_v1", WeighingPolicy),
+            ("weighing_procedure_v2", WeighingPolicyV2),
+        ),
+    )
+    if kind == "weighing_procedure_v1":
+        return policy
+
+    from app.compliance.policy_adapters import adapt_weighing_policy
+
+    try:
+        return adapt_weighing_policy(
+            policy,
+            instrument=instrument_snapshot,
+            evaluation_context=procedure_context.evaluation_context,
+            range_no=procedure_context.range_no,
+        )
+    except PolicyResolutionError as exc:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(POLICY,),
+                rule_references=dependencies(ruleset, (POLICY,)).rule_references,
+            )
+        ) from exc
+
+
 @dataclass(frozen=True)
 class WeighingEvaluator:
     def required_rules(self, **kwargs):
@@ -187,18 +223,20 @@ class WeighingEvaluator:
         )
 
     def validate_procedure(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(ruleset, POLICY, "weighing_procedure_v1", WeighingPolicy)
+        policy = _weighing_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
+            ruleset=ruleset,
+        )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         ctx, rows = procedure_context, observations.rows
         selected = instrument_snapshot.select_range(ctx.range_no)
-        profile = rule_policy(ruleset, MPE, "mpe_profile_v1", MpeProfile)
-        if (profile.accuracy_class, profile.evaluation_context) != (
-            instrument_snapshot.accuracy_class,
-            ctx.evaluation_context,
-        ):
-            raise RegulatoryBlocked(
-                DependencyResolution(unresolved_rule_ids=(MPE,), rule_references=refs)
-            )
+        compatible_mpe_profile(
+            accuracy_class=instrument_snapshot.accuracy_class,
+            evaluation_context=ctx.evaluation_context,
+            ruleset=ruleset,
+            rule_id=MPE,
+        )
         issues = []
 
         def check(condition, category, reason, sequence=None, missing=False):
@@ -349,7 +387,7 @@ class WeighingEvaluator:
             )
             error = calculate_error(p, row.load_g)
             corrected = calculate_corrected_error(error, row.zero_error_g)
-            limit = calculate_mpe(
+            limit = calculate_mpe_compatible(
                 load_g=row.load_g,
                 selected_range=selected,
                 accuracy_class=instrument_snapshot.accuracy_class,
@@ -419,7 +457,9 @@ def section1_registration():
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),
+            RulePolicyRegistration("mpe_profile_set_v2", MpeProfileSetV2),
             RulePolicyRegistration("weighing_procedure_v1", WeighingPolicy),
+            RulePolicyRegistration("weighing_procedure_v2", WeighingPolicyV2),
         ),
     )
 

@@ -1,0 +1,18 @@
+register_id,verification_scope,source_ids,target_stage,status
+REG-01,Applicable editions/amendments; Indian supplemental requirements; authority interpretation/report wording,SRC-R76-1-2006-E;SRC-R76-2-2007-E;SRC-INDIA-APPROVAL-MODELS-2011;SRC-INDIA-LM-GENERAL,Stage 2 + Stage 6,OPEN_SOURCE_IDENTITY_PARTIALLY_MAPPED
+REG-02,Accuracy-class and Min/Max/e/d/n classification rules,SRC-R76-1-2006-E,Stage 2,OPEN
+REG-03,"MPE tables, boundaries, digital/analog error semantics and rounding exceptions",SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 2,OPEN
+REG-04,Section 1 exact procedure and load coverage,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 2,OPEN
+REG-05,Section 2 temperature procedure and acceptance,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 2,OPEN
+REG-06,Section 3 eccentricity variants and geometry,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 2,OPEN
+REG-07,Section 4 discrimination/sensitivity,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 2,OPEN
+REG-08,Section 5 repeatability,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 2,OPEN
+REG-09,Section 6 zero return/creep,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 3,OPEN
+REG-10,Section 7 stability of equilibrium,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 3,OPEN
+REG-11,Section 8 tilting,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 3,OPEN
+REG-12,"Sections 9-11 tare, warm-up and voltage variation",SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 3 + Stage 4,OPEN
+REG-13,Section 12 disturbance severity/procedure and external standards,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 4,OPEN
+REG-14,Sections 13-15 damp heat/span stability/endurance,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 4,OPEN
+REG-15,Sections 16-17 construction/checklist clause mapping,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 5,OPEN
+REG-16,Equipment calibration/environment/retest/evidence requirements,SRC-R76-1-2006-E;SRC-R76-2-2007-E,Stage 6,OPEN
+REG-17,Authority report/issue/revision/signature/retention conventions,SRC-R76-2-2007-E;SRC-INDIA-APPROVAL-MODELS-2011;SRC-INDIA-LM-GENERAL;SRC-INDIA-GATC,Stage 6,OPEN

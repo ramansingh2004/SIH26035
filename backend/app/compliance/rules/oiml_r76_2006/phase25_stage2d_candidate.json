@@ -1,0 +1,744 @@
+{
+  "schema_version": 1,
+  "bundle_id": "OIML_R76_2006_2007_STAGE2D_CANDIDATE",
+  "standard_code": "OIML_R76",
+  "edition": "R76-1:2006 / R76-2:2007",
+  "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+  "activation_allowed": false,
+  "independent_verifier": "PENDING",
+  "sources": [
+    {
+      "source_id": "SRC-R76-1-2006-E",
+      "part": "R76-1",
+      "edition": "2006 (E)",
+      "official_url": "https://www.oiml.org/en/files/pdf_r/r076-1-e06.pdf",
+      "digest": null,
+      "acquisition_status": "PENDING_CONTROLLED_ACQUISITION"
+    },
+    {
+      "source_id": "SRC-R76-2-2007-E",
+      "part": "R76-2",
+      "edition": "2007 (E)",
+      "official_url": "https://www.oiml.org/en/files/pdf_r/r076-2-e07.pdf",
+      "digest": null,
+      "acquisition_status": "PENDING_CONTROLLED_ACQUISITION"
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "STAGE2D_EDITION_SCOPE",
+      "family": "EDITION_SCOPE",
+      "register_ids": [
+        "REG-01"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "publication identity"
+          ],
+          "publication_pages": [
+            1
+          ]
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "publication identity",
+            "report-format scope"
+          ],
+          "publication_pages": [
+            1
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "status": "SCHEMA_READY_PENDING_SIGNOFF",
+        "target_policy_kind": "ruleset_metadata",
+        "blockers": [
+          "controlled PDF SHA-256 still pending",
+          "independent verifier identity/evidence pending",
+          "Indian supplemental legal-metrology mapping remains separate",
+          "current OIML revision project remains change-watch only"
+        ]
+      },
+      "details": {
+        "pinned_parts": [
+          "R76-1:2006 (E)",
+          "R76-2:2007 (E)"
+        ],
+        "revision_material_allowed": false,
+        "india_mapping_separate": true
+      }
+    },
+    {
+      "fact_id": "STAGE2D_CLASSIFICATION_TABLE3",
+      "family": "CLASSIFICATION",
+      "register_ids": [
+        "REG-02"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "3.1.1",
+            "3.1.2",
+            "3.2 Table 3",
+            "3.3",
+            "3.4.4"
+          ],
+          "publication_pages": [
+            25,
+            26,
+            27,
+            29
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "status": "SCHEMA_GAP",
+        "target_policy_kind": null,
+        "blockers": [
+          "no parameterized classification-policy schema exists",
+          "multi-interval and multiple-range classification need explicit runtime treatment",
+          "Table 3 exceptions/special-use Min rules need independent sign-off"
+        ]
+      },
+      "details": {
+        "classes": [
+          "I",
+          "II",
+          "III",
+          "IIII"
+        ],
+        "table3_cases": [
+          {
+            "case_id": "I",
+            "accuracy_class": "I",
+            "e_min_g": "0.001",
+            "e_max_g": null,
+            "n_min": 50000,
+            "n_max": null,
+            "min_capacity_e": "100"
+          },
+          {
+            "case_id": "II_LOW_E",
+            "accuracy_class": "II",
+            "e_min_g": "0.001",
+            "e_max_g": "0.05",
+            "n_min": 100,
+            "n_max": 100000,
+            "min_capacity_e": "20"
+          },
+          {
+            "case_id": "II_STANDARD",
+            "accuracy_class": "II",
+            "e_min_g": "0.1",
+            "e_max_g": null,
+            "n_min": 5000,
+            "n_max": 100000,
+            "min_capacity_e": "50"
+          },
+          {
+            "case_id": "III_LOW_E",
+            "accuracy_class": "III",
+            "e_min_g": "0.1",
+            "e_max_g": "2",
+            "n_min": 100,
+            "n_max": 10000,
+            "min_capacity_e": "20"
+          },
+          {
+            "case_id": "III_STANDARD",
+            "accuracy_class": "III",
+            "e_min_g": "5",
+            "e_max_g": null,
+            "n_min": 500,
+            "n_max": 10000,
+            "min_capacity_e": "20"
+          },
+          {
+            "case_id": "IIII",
+            "accuracy_class": "IIII",
+            "e_min_g": "5",
+            "e_max_g": null,
+            "n_min": 100,
+            "n_max": 1000,
+            "min_capacity_e": "10"
+          }
+        ],
+        "grading_instrument_min_capacity_e": "5",
+        "multiple_range_each_range_treated_as_single": true
+      }
+    },
+    {
+      "fact_id": "STAGE2D_MPE_TABLE6",
+      "family": "MPE",
+      "register_ids": [
+        "REG-03"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "3.5.1 Table 6",
+            "3.5.2",
+            "3.5.3.2"
+          ],
+          "publication_pages": [
+            29
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "status": "SCHEMA_READY_PENDING_SIGNOFF",
+        "target_policy_kind": "mpe_profile_set_v2",
+        "blockers": [
+          "evaluation-context identifiers must be pinned to session semantics",
+          "multi-interval application must be independently cross-checked",
+          "independent verifier sign-off and vectors pending"
+        ]
+      },
+      "details": {
+        "initial_verification_profiles": {
+          "I": [
+            {
+              "lower_e": "0",
+              "lower_inclusive": true,
+              "upper_e": "50000",
+              "upper_inclusive": true,
+              "multiplier_e": "0.5"
+            },
+            {
+              "lower_e": "50000",
+              "lower_inclusive": false,
+              "upper_e": "200000",
+              "upper_inclusive": true,
+              "multiplier_e": "1"
+            },
+            {
+              "lower_e": "200000",
+              "lower_inclusive": false,
+              "upper_e": null,
+              "upper_inclusive": null,
+              "multiplier_e": "1.5"
+            }
+          ],
+          "II": [
+            {
+              "lower_e": "0",
+              "lower_inclusive": true,
+              "upper_e": "5000",
+              "upper_inclusive": true,
+              "multiplier_e": "0.5"
+            },
+            {
+              "lower_e": "5000",
+              "lower_inclusive": false,
+              "upper_e": "20000",
+              "upper_inclusive": true,
+              "multiplier_e": "1"
+            },
+            {
+              "lower_e": "20000",
+              "lower_inclusive": false,
+              "upper_e": "100000",
+              "upper_inclusive": true,
+              "multiplier_e": "1.5"
+            }
+          ],
+          "III": [
+            {
+              "lower_e": "0",
+              "lower_inclusive": true,
+              "upper_e": "500",
+              "upper_inclusive": true,
+              "multiplier_e": "0.5"
+            },
+            {
+              "lower_e": "500",
+              "lower_inclusive": false,
+              "upper_e": "2000",
+              "upper_inclusive": true,
+              "multiplier_e": "1"
+            },
+            {
+              "lower_e": "2000",
+              "lower_inclusive": false,
+              "upper_e": "10000",
+              "upper_inclusive": true,
+              "multiplier_e": "1.5"
+            }
+          ],
+          "IIII": [
+            {
+              "lower_e": "0",
+              "lower_inclusive": true,
+              "upper_e": "50",
+              "upper_inclusive": true,
+              "multiplier_e": "0.5"
+            },
+            {
+              "lower_e": "50",
+              "lower_inclusive": false,
+              "upper_e": "200",
+              "upper_inclusive": true,
+              "multiplier_e": "1"
+            },
+            {
+              "lower_e": "200",
+              "lower_inclusive": false,
+              "upper_e": "1000",
+              "upper_inclusive": true,
+              "multiplier_e": "1.5"
+            }
+          ]
+        },
+        "in_service_multiplier_of_initial": "2",
+        "digital_rounding_elimination_if_d_over_e_greater_than": "0.2"
+      }
+    },
+    {
+      "fact_id": "STAGE2D_WEIGHING_A4_4",
+      "family": "WEIGHING",
+      "register_ids": [
+        "REG-04"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "A.4.4.1",
+            "A.4.4.3"
+          ],
+          "publication_pages": [
+            87
+          ]
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "Section 1"
+          ],
+          "publication_pages": [
+            8
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "status": "PARTIAL_SCHEMA_GAP",
+        "target_policy_kind": "weighing_procedure_v2",
+        "blockers": [
+          "conditional Min inclusion at Min >= 100 mg is not represented by PolicySelector",
+          "MPE transition-point generation is not represented by MassExpression",
+          "initial-intrinsic vs other-weighing-test context mapping must be pinned"
+        ]
+      },
+      "details": {
+        "stages": [
+          "UP",
+          "DOWN"
+        ],
+        "load_from_zero_through_max": true,
+        "unload_back_to_zero": true,
+        "minimum_distinct_loads_initial_intrinsic": 10,
+        "minimum_distinct_loads_other_weighing_tests": 5,
+        "include_max": true,
+        "include_min_if_min_g_at_least": "0.1",
+        "include_mpe_change_points": true,
+        "progressive_loading_and_unloading_during_type_examination": true
+      }
+    },
+    {
+      "fact_id": "STAGE2D_TEMPERATURE_ZERO",
+      "family": "TEMPERATURE_ZERO",
+      "register_ids": [
+        "REG-05"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "3.9.2.1",
+            "3.9.2.2",
+            "3.9.2.3",
+            "A.5.3.1",
+            "A.5.3.2"
+          ],
+          "publication_pages": [
+            33,
+            95
+          ]
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "Section 2"
+          ],
+          "publication_pages": [
+            13
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "status": "PARTIAL_SCHEMA_GAP",
+        "target_policy_kind": "temperature_zero_procedure_v2",
+        "blockers": [
+          "declared-vs-default working-range branch is not represented by PolicySelector",
+          "conditional 5 C sequence point is not represented by TemperatureExpression alone",
+          "smallest-e handling for multi-interval/multiple-range instruments needs explicit coverage"
+        ]
+      },
+      "details": {
+        "default_working_range_c": {
+          "minimum": "-10",
+          "maximum": "40"
+        },
+        "minimum_declared_span_c_by_class": {
+          "I": "5",
+          "II": "15",
+          "III": "30",
+          "IIII": "30"
+        },
+        "normalization_span_c_by_class": {
+          "I": "1",
+          "II": "5",
+          "III": "5",
+          "IIII": "5"
+        },
+        "zero_change_limit_e": "1",
+        "sequence_rules": [
+          "prescribed highest temperature",
+          "prescribed lowest temperature",
+          "5 C if applicable"
+        ],
+        "preloading_before_zero_measurements_allowed": false
+      }
+    },
+    {
+      "fact_id": "STAGE2D_ECCENTRICITY",
+      "family": "ECCENTRICITY",
+      "register_ids": [
+        "REG-06"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "3.6.2",
+            "3.6.2.1-3.6.2.4",
+            "A.4.7",
+            "A.4.7.1-A.4.7.5"
+          ],
+          "publication_pages": [
+            30,
+            89,
+            90,
+            91
+          ]
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "Sections 3.1-3.2"
+          ],
+          "publication_pages": [
+            18,
+            20
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "status": "SCHEMA_GAP",
+        "target_policy_kind": "eccentricity_procedure_v2",
+        "blockers": [
+          "1/(n-1) support-count formula is not representable by current MassExpression",
+          "usual/heaviest concentrated rolling load is an instrument-specific fact not modeled",
+          "geometry-derived positions intentionally remain fail-closed",
+          "mobile operational-condition positions require authority/test-plan input"
+        ]
+      },
+      "details": {
+        "load_rules": [
+          {
+            "case": "GENERAL",
+            "formula": "(Max + maximum additive tare effect) / 3"
+          },
+          {
+            "case": "MORE_THAN_FOUR_SUPPORTS",
+            "formula": "(Max + maximum additive tare effect) / (n - 1)"
+          },
+          {
+            "case": "SPECIAL_RECEPTOR",
+            "formula": "(Max + maximum additive tare effect) / 10"
+          },
+          {
+            "case": "ROLLING_LOAD",
+            "formula": "usual/heaviest/most-concentrated rolling load capped at 0.8 * (Max + maximum additive tare effect)"
+          }
+        ],
+        "position_rules": [
+          {
+            "case": "UP_TO_FOUR_SUPPORTS",
+            "rule": "load four quarter segments in turn"
+          },
+          {
+            "case": "MORE_THAN_FOUR_SUPPORTS",
+            "rule": "load over each support on approximately 1/n receptor area; close support pairs have special doubled-area treatment"
+          },
+          {
+            "case": "SPECIAL_RECEPTOR",
+            "rule": "apply load to each support point"
+          },
+          {
+            "case": "ROLLING_LOAD",
+            "rule": "beginning/middle/end in normal direction and reverse if possible; apply each section"
+          },
+          {
+            "case": "MOBILE",
+            "rule": "use A.4.7.1-A.4.7.4 where applicable, otherwise define positions from operational conditions"
+          }
+        ],
+        "zero_setting_or_tracking_during_test": false,
+        "position_sketch_required_in_test_report": true
+      }
+    },
+    {
+      "fact_id": "STAGE2D_DISCRIMINATION",
+      "family": "DISCRIMINATION",
+      "register_ids": [
+        "REG-07"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "3.8.1",
+            "3.8.2.1",
+            "3.8.2.2",
+            "A.4.8",
+            "A.4.8.1",
+            "A.4.8.2"
+          ],
+          "publication_pages": [
+            31,
+            91
+          ]
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "Section 4.1"
+          ],
+          "publication_pages": [
+            24
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "status": "PARTIAL_SCHEMA_GAP",
+        "target_policy_kind": "discrimination_procedure_v2",
+        "blockers": [
+          "non-self-indicating visible-displacement semantics are not represented by current numeric-only evaluator",
+          "analog 0.7-times-extra-load displacement semantics are not faithfully represented by a fixed millimetre threshold",
+          "digital procedure is representable but still pending independent sign-off"
+        ]
+      },
+      "details": {
+        "minimum_distinct_test_loads": 3,
+        "example_test_loads": [
+          "Min",
+          "0.5 * Max",
+          "Max"
+        ],
+        "cases": [
+          {
+            "mode": "NON_SELF_INDICATING",
+            "extra_load": "max(0.4 * |MPE(applied load)|, 1 mg)",
+            "required_response": "visible displacement of indicating element"
+          },
+          {
+            "mode": "ANALOG_SELF_OR_SEMI_SELF_INDICATING",
+            "extra_load": "max(|MPE(applied load)|, 1 mg)",
+            "required_response": "permanent displacement corresponding to at least 0.7 times the extra load"
+          },
+          {
+            "mode": "DIGITAL",
+            "applicability": "d >= 5 mg; Annex A procedure applies to type examination",
+            "extra_load": "1.4 * d",
+            "required_response": "unambiguous indication change by one actual scale interval"
+          }
+        ]
+      }
+    },
+    {
+      "fact_id": "STAGE2D_SENSITIVITY",
+      "family": "SENSITIVITY",
+      "register_ids": [
+        "REG-07"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "6.1",
+            "A.4.9"
+          ],
+          "publication_pages": [
+            69,
+            91
+          ]
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "Section 4.2"
+          ],
+          "publication_pages": [
+            25
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "status": "SCHEMA_GAP",
+        "target_policy_kind": "sensitivity_procedure_v2",
+        "blockers": [
+          "PolicySelector cannot branch on Max <= 30 kg vs Max > 30 kg",
+          "MassExpression cannot express max(MPE, 1 mg)",
+          "zero-load example needs explicit treatment because MassExpression fields are currently positive/relative constructs"
+        ]
+      },
+      "details": {
+        "instrument_scope": "NON_SELF_INDICATING",
+        "extra_load": "max(|MPE(applied load)|, 1 mg)",
+        "minimum_distinct_test_loads": 2,
+        "example_test_loads": [
+          "zero",
+          "Max"
+        ],
+        "permanent_displacement_mm": [
+          {
+            "classes": [
+              "I",
+              "II"
+            ],
+            "max_condition": "ANY",
+            "minimum_mm": "1"
+          },
+          {
+            "classes": [
+              "III",
+              "IIII"
+            ],
+            "max_condition": "Max <= 30000 g",
+            "minimum_mm": "2"
+          },
+          {
+            "classes": [
+              "III",
+              "IIII"
+            ],
+            "max_condition": "Max > 30000 g",
+            "minimum_mm": "5"
+          }
+        ]
+      }
+    },
+    {
+      "fact_id": "STAGE2D_REPEATABILITY",
+      "family": "REPEATABILITY",
+      "register_ids": [
+        "REG-08"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "3.6.1",
+            "A.4.10"
+          ],
+          "publication_pages": [
+            30,
+            92
+          ]
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "Section 5"
+          ],
+          "publication_pages": [
+            27
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "status": "PARTIAL_SCHEMA_GAP",
+        "target_policy_kind": "repeatability_procedure_v2",
+        "blockers": [
+          "PolicySelector cannot branch on Max < 1000 kg vs larger capacity",
+          "about 50 percent / close to 100 percent load semantics require an explicit tolerance/selection contract",
+          "automatic zero-setting/zero-tracking operating-state requirement is not modeled by current repeatability context"
+        ]
+      },
+      "details": {
+        "acceptance": "spread among repeated results at same load <= absolute MPE for that load",
+        "type_approval": {
+          "series": [
+            {
+              "series": "ABOUT_HALF_MAX",
+              "load": "about 0.5 * Max"
+            },
+            {
+              "series": "CLOSE_TO_MAX",
+              "load": "close to 1.0 * Max"
+            }
+          ],
+          "repetitions": [
+            {
+              "condition": "Max < 1000000 g",
+              "count": 10
+            },
+            {
+              "condition": "Max >= 1000000 g",
+              "minimum_count": 3
+            }
+          ]
+        },
+        "verification": {
+          "series": [
+            {
+              "series": "ABOUT_0_8_MAX",
+              "load": "about 0.8 * Max"
+            }
+          ],
+          "repetitions_by_class": {
+            "I": 6,
+            "II": 6,
+            "III": 3,
+            "IIII": 3
+          }
+        },
+        "automatic_zero_setting_or_tracking_in_operation": true
+      }
+    }
+  ]
+}

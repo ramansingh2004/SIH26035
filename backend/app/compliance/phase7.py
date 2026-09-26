@@ -30,13 +30,35 @@ from app.compliance.domain import (
 )
 from app.compliance.evaluators import EvaluatorRegistration, RulePolicyRegistration
 from app.compliance.numbers import compare, exact
+from app.compliance.parameterized import (
+    DiscriminationPolicyV2,
+    MpeProfileSetV2,
+    PolicyResolutionError,
+    SensitivityPolicyV2,
+)
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
     ObservationSchemaRegistry,
     ProcedureContextRegistry,
 )
-from app.compliance.regulatory import dependencies, rule_policy
+from app.compliance.regulatory import (
+    DependencyResolution,
+    MpeProfile,
+    RegulatoryBlocked,
+    calculate_mpe_compatible,
+    dependencies,
+    rule_policy,
+    rule_policy_variant,
+)
+from app.compliance.section4_v2 import (
+    ResolvedDiscriminationLoad,
+    ResolvedDiscriminationPolicyV2,
+    ResolvedSensitivityLoad,
+    ResolvedSensitivityPolicyV2,
+    resolve_discrimination_policy_v2,
+    resolve_sensitivity_policy_v2,
+)
 from app.compliance.weighing import MeasurementTime, WeighingEnvironment, WeighingEquipment
 
 
@@ -134,6 +156,89 @@ class DiscriminationPolicy(CommonProcedurePolicy):
         return self
 
 
+def _section4_mpe_rule_id(ruleset, test_code):
+    tests = {item.code: item for item in ruleset.tests}
+    rules = {item.key: item for item in ruleset.rules}
+    test = tests.get(test_code)
+    if test is None:
+        raise PolicyResolutionError("Section 4 MPE resolution requires a catalog test")
+
+    visited = set()
+    candidates = set()
+
+    def visit(key):
+        if key in visited:
+            return
+        visited.add(key)
+        rule = rules.get(key)
+        if rule is None:
+            return
+        if rule.kind in {"mpe_profile_v1", "mpe_profile_set_v2"}:
+            candidates.add(key)
+        for dependency in rule.dependencies:
+            visit(dependency)
+
+    for dependency in test.dependencies:
+        visit(dependency)
+
+    if len(candidates) != 1:
+        raise PolicyResolutionError(
+            "Section 4 MPE expression requires exactly one verified MPE policy dependency"
+        )
+    return next(iter(candidates))
+
+
+def _section4_mpe_value(*, ruleset, test_code, instrument_snapshot, procedure_context, load_g):
+    rule_id = _section4_mpe_rule_id(ruleset, test_code)
+    selected = instrument_snapshot.select_range(procedure_context.range_no)
+    return calculate_mpe_compatible(
+        load_g=load_g,
+        selected_range=selected,
+        accuracy_class=instrument_snapshot.accuracy_class,
+        evaluation_context=procedure_context.evaluation_context,
+        ruleset=ruleset,
+        rule_id=rule_id,
+    ).value
+
+
+def _discrimination_policy(*, instrument_snapshot, procedure_context, ruleset):
+    kind, policy = rule_policy_variant(
+        ruleset,
+        DISCRIMINATION_POLICY,
+        (
+            ("discrimination_procedure_v1", DiscriminationPolicy),
+            ("discrimination_procedure_v2", DiscriminationPolicyV2),
+        ),
+    )
+    if kind == "discrimination_procedure_v1":
+        return policy
+
+    try:
+        return resolve_discrimination_policy_v2(
+            policy,
+            instrument=instrument_snapshot,
+            evaluation_context=procedure_context.evaluation_context,
+            range_no=procedure_context.range_no,
+            mpe_for_load=lambda load_g: _section4_mpe_value(
+                ruleset=ruleset,
+                test_code=DISCRIMINATION,
+                instrument_snapshot=instrument_snapshot,
+                procedure_context=procedure_context,
+                load_g=load_g,
+            ),
+        )
+    except PolicyResolutionError as exc:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(DISCRIMINATION_POLICY,),
+                rule_references=dependencies(
+                    ruleset,
+                    (DISCRIMINATION_POLICY,),
+                ).rule_references,
+            )
+        ) from exc
+
+
 @dataclass(frozen=True)
 class DiscriminationEvaluator:
     def required_rules(self, **kwargs):
@@ -153,12 +258,24 @@ class DiscriminationEvaluator:
             procedure_variant=procedure_context.procedure_variant,
         )
 
+    @staticmethod
+    def _requirements(policy):
+        if isinstance(policy, DiscriminationPolicy):
+            return (
+                ResolvedDiscriminationLoad(
+                    test_load_g=policy.test_load_g,
+                    extra_load_g=policy.extra_load_g,
+                    minimum_indication_change_g=policy.minimum_indication_change_g,
+                    minimum_displacement_mm=policy.minimum_displacement_mm,
+                ),
+            )
+        return policy.loads
+
     def validate_procedure(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(
-            ruleset,
-            DISCRIMINATION_POLICY,
-            "discrimination_procedure_v1",
-            DiscriminationPolicy,
+        policy = _discrimination_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
+            ruleset=ruleset,
         )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         rows = observations.rows
@@ -169,6 +286,8 @@ class DiscriminationEvaluator:
                 issues.append(_issue(refs, category, reason, sequence=sequence, missing=missing))
 
         selected = instrument_snapshot.select_range(procedure_context.range_no)
+        requirements = {item.test_load_g: item for item in self._requirements(policy)}
+
         check(
             len(rows) >= policy.minimum_count,
             "COUNT",
@@ -192,20 +311,33 @@ class DiscriminationEvaluator:
             "STAGE",
             "Instrument indication type differs from verified discrimination procedure",
         )
+
+        if isinstance(policy, ResolvedDiscriminationPolicyV2):
+            observed_loads = {row.load_g for row in rows}
+            for test_load_g in requirements:
+                check(
+                    test_load_g in observed_loads,
+                    "LOAD_COVERAGE",
+                    "Required discrimination test load missing",
+                    missing=True,
+                )
+
         previous = None
         for row in rows:
+            requirement = requirements.get(row.load_g)
             check(
-                row.load_g == policy.test_load_g,
+                requirement is not None,
                 "LOAD_COVERAGE",
                 "Discrimination test load differs from verified policy",
                 row.sequence_no,
             )
-            check(
-                row.extra_load_g == policy.extra_load_g,
-                "LOAD_COVERAGE",
-                "Discrimination extra load differs from verified policy",
-                row.sequence_no,
-            )
+            if requirement is not None:
+                check(
+                    row.extra_load_g == requirement.extra_load_g,
+                    "LOAD_COVERAGE",
+                    "Discrimination extra load differs from verified policy",
+                    row.sequence_no,
+                )
             check(
                 row.load_g <= selected.max_capacity_g,
                 "RANGE",
@@ -227,6 +359,7 @@ class DiscriminationEvaluator:
                     row.sequence_no,
                 )
             previous = row.measured_at
+
         check(
             not policy.require_stabilization or procedure_context.stabilized is True,
             "STABILIZATION",
@@ -260,20 +393,22 @@ class DiscriminationEvaluator:
         return tuple(issues)
 
     def evaluate(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(
-            ruleset,
-            DISCRIMINATION_POLICY,
-            "discrimination_procedure_v1",
-            DiscriminationPolicy,
+        policy = _discrimination_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
+            ruleset=ruleset,
         )
         refs = dependencies(ruleset, self.required_rules()).rule_references
+        requirements = {item.test_load_g: item for item in self._requirements(policy)}
         calculations, limits, failures = [], [], []
+
         for row in observations.rows:
+            requirement = requirements[row.load_g]
             if policy.indication_mode == "DIGITAL":
                 value = exact("subtract", row.indication_after_g, row.indication_before_g)
                 limit = _functional_limit(
                     name="minimum_indication_change",
-                    value=policy.minimum_indication_change_g,
+                    value=requirement.minimum_indication_change_g,
                     operator=policy.operator,
                     semantics=policy.semantics,
                     refs=refs,
@@ -285,7 +420,7 @@ class DiscriminationEvaluator:
                 value = row.displacement_mm
                 limit = _functional_limit(
                     name="minimum_displacement",
-                    value=policy.minimum_displacement_mm,
+                    value=requirement.minimum_displacement_mm,
                     operator=policy.operator,
                     semantics=policy.semantics,
                     refs=refs,
@@ -293,6 +428,7 @@ class DiscriminationEvaluator:
                 )
                 expression = "observed permanent displacement"
                 unit = "mm"
+
             calculations.append(
                 CalculationTraceEntry(
                     name=f"{row.sequence_no}:discrimination_response",
@@ -315,10 +451,11 @@ class DiscriminationEvaluator:
                         limit=limit,
                     )
                 )
+
         return EvaluationOutput(
-            compliance_outcome=ComplianceOutcome.NONCOMPLIANT
-            if failures
-            else ComplianceOutcome.COMPLIANT,
+            compliance_outcome=(
+                ComplianceOutcome.NONCOMPLIANT if failures else ComplianceOutcome.COMPLIANT
+            ),
             calculations=tuple(calculations),
             acceptance_limits=tuple(limits),
             failed_conditions=tuple(failures),
@@ -348,7 +485,13 @@ def discrimination_registration():
         implementation_version="section4-discrimination-v1",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
+            RulePolicyRegistration("mpe_profile_v1", MpeProfile),
+            RulePolicyRegistration("mpe_profile_set_v2", MpeProfileSetV2),
             RulePolicyRegistration("discrimination_procedure_v1", DiscriminationPolicy),
+            RulePolicyRegistration(
+                "discrimination_procedure_v2",
+                DiscriminationPolicyV2,
+            ),
         ),
     )
 
@@ -388,6 +531,44 @@ class SensitivityPolicy(CommonProcedurePolicy):
     semantics: Literal["SIGNED", "ABSOLUTE"]
 
 
+def _sensitivity_policy(*, instrument_snapshot, procedure_context, ruleset):
+    kind, policy = rule_policy_variant(
+        ruleset,
+        SENSITIVITY_POLICY,
+        (
+            ("sensitivity_procedure_v1", SensitivityPolicy),
+            ("sensitivity_procedure_v2", SensitivityPolicyV2),
+        ),
+    )
+    if kind == "sensitivity_procedure_v1":
+        return policy
+
+    try:
+        return resolve_sensitivity_policy_v2(
+            policy,
+            instrument=instrument_snapshot,
+            evaluation_context=procedure_context.evaluation_context,
+            range_no=procedure_context.range_no,
+            mpe_for_load=lambda load_g: _section4_mpe_value(
+                ruleset=ruleset,
+                test_code=SENSITIVITY,
+                instrument_snapshot=instrument_snapshot,
+                procedure_context=procedure_context,
+                load_g=load_g,
+            ),
+        )
+    except PolicyResolutionError as exc:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(SENSITIVITY_POLICY,),
+                rule_references=dependencies(
+                    ruleset,
+                    (SENSITIVITY_POLICY,),
+                ).rule_references,
+            )
+        ) from exc
+
+
 @dataclass(frozen=True)
 class SensitivityEvaluator:
     def required_rules(self, **kwargs):
@@ -403,9 +584,23 @@ class SensitivityEvaluator:
             procedure_variant=procedure_context.procedure_variant,
         )
 
+    @staticmethod
+    def _requirements(policy):
+        if isinstance(policy, SensitivityPolicy):
+            return (
+                ResolvedSensitivityLoad(
+                    test_load_g=policy.test_load_g,
+                    extra_load_g=policy.extra_load_g,
+                    minimum_displacement_mm=policy.minimum_displacement_mm,
+                ),
+            )
+        return policy.loads
+
     def validate_procedure(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(
-            ruleset, SENSITIVITY_POLICY, "sensitivity_procedure_v1", SensitivityPolicy
+        policy = _sensitivity_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
+            ruleset=ruleset,
         )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         rows, issues = observations.rows, []
@@ -415,6 +610,8 @@ class SensitivityEvaluator:
                 issues.append(_issue(refs, category, reason, sequence=sequence, missing=missing))
 
         selected = instrument_snapshot.select_range(procedure_context.range_no)
+        requirements = {item.test_load_g: item for item in self._requirements(policy)}
+
         check(
             len(rows) >= policy.minimum_count,
             "COUNT",
@@ -428,22 +625,37 @@ class SensitivityEvaluator:
         )
         if instrument_snapshot.is_self_indicating is True:
             check(
-                False, "FUNCTIONAL", "Sensitivity evaluator is for non-self-indicating instruments"
+                False,
+                "FUNCTIONAL",
+                "Sensitivity evaluator is for non-self-indicating instruments",
             )
+
+        if isinstance(policy, ResolvedSensitivityPolicyV2):
+            observed_loads = {row.load_g for row in rows}
+            for test_load_g in requirements:
+                check(
+                    test_load_g in observed_loads,
+                    "LOAD_COVERAGE",
+                    "Required sensitivity test load missing",
+                    missing=True,
+                )
+
         previous = None
         for row in rows:
+            requirement = requirements.get(row.load_g)
             check(
-                row.load_g == policy.test_load_g,
+                requirement is not None,
                 "LOAD_COVERAGE",
                 "Sensitivity test load differs from verified policy",
                 row.sequence_no,
             )
-            check(
-                row.extra_load_g == policy.extra_load_g,
-                "LOAD_COVERAGE",
-                "Sensitivity extra load differs from verified policy",
-                row.sequence_no,
-            )
+            if requirement is not None:
+                check(
+                    row.extra_load_g == requirement.extra_load_g,
+                    "LOAD_COVERAGE",
+                    "Sensitivity extra load differs from verified policy",
+                    row.sequence_no,
+                )
             check(
                 row.load_g <= selected.max_capacity_g,
                 "RANGE",
@@ -458,6 +670,7 @@ class SensitivityEvaluator:
                     row.sequence_no,
                 )
             previous = row.measured_at
+
         check(
             not policy.require_stabilization or procedure_context.stabilized is True,
             "STABILIZATION",
@@ -491,20 +704,25 @@ class SensitivityEvaluator:
         return tuple(issues)
 
     def evaluate(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(
-            ruleset, SENSITIVITY_POLICY, "sensitivity_procedure_v1", SensitivityPolicy
+        policy = _sensitivity_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
+            ruleset=ruleset,
         )
         refs = dependencies(ruleset, self.required_rules()).rule_references
-        limit = _functional_limit(
-            name="minimum_displacement",
-            value=policy.minimum_displacement_mm,
-            operator=policy.operator,
-            semantics=policy.semantics,
-            refs=refs,
-            unit="mm",
-        )
+        requirements = {item.test_load_g: item for item in self._requirements(policy)}
         calculations, limits, failures = [], [], []
+
         for row in observations.rows:
+            requirement = requirements[row.load_g]
+            limit = _functional_limit(
+                name="minimum_displacement",
+                value=requirement.minimum_displacement_mm,
+                operator=policy.operator,
+                semantics=policy.semantics,
+                refs=refs,
+                unit="mm",
+            )
             value = row.permanent_displacement_mm
             calculations.append(
                 CalculationTraceEntry(
@@ -527,10 +745,11 @@ class SensitivityEvaluator:
                         limit=limit,
                     )
                 )
+
         return EvaluationOutput(
-            compliance_outcome=ComplianceOutcome.NONCOMPLIANT
-            if failures
-            else ComplianceOutcome.COMPLIANT,
+            compliance_outcome=(
+                ComplianceOutcome.NONCOMPLIANT if failures else ComplianceOutcome.COMPLIANT
+            ),
             calculations=tuple(calculations),
             acceptance_limits=tuple(limits),
             failed_conditions=tuple(failures),
@@ -553,7 +772,13 @@ def sensitivity_registration():
         implementation_version="section4-sensitivity-v1",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
+            RulePolicyRegistration("mpe_profile_v1", MpeProfile),
+            RulePolicyRegistration("mpe_profile_set_v2", MpeProfileSetV2),
             RulePolicyRegistration("sensitivity_procedure_v1", SensitivityPolicy),
+            RulePolicyRegistration(
+                "sensitivity_procedure_v2",
+                SensitivityPolicyV2,
+            ),
         ),
     )
 

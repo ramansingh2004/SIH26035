@@ -32,6 +32,11 @@ from app.compliance.numbers import (
     calculate_prerounding_indication,
     compare,
 )
+from app.compliance.parameterized import (
+    EccentricityPolicyV2,
+    MpeProfileSetV2,
+    PolicyResolutionError,
+)
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
@@ -42,9 +47,10 @@ from app.compliance.regulatory import (
     DependencyResolution,
     MpeProfile,
     RegulatoryBlocked,
-    calculate_mpe,
+    calculate_mpe_compatible,
+    compatible_mpe_profile,
     dependencies,
-    rule_policy,
+    rule_policy_variant,
 )
 from app.compliance.weighing import MeasurementTime, WeighingEnvironment, WeighingEquipment
 
@@ -171,6 +177,36 @@ def _issue(refs, category, reason, *, sequence=None, missing=False):
     )
 
 
+def _eccentricity_policy(*, instrument_snapshot, procedure_context, ruleset):
+    kind, policy = rule_policy_variant(
+        ruleset,
+        POLICY,
+        (
+            ("eccentricity_procedure_v1", EccentricityPolicy),
+            ("eccentricity_procedure_v2", EccentricityPolicyV2),
+        ),
+    )
+    if kind == "eccentricity_procedure_v1":
+        return policy
+
+    from app.compliance.policy_adapters import adapt_eccentricity_policy
+
+    try:
+        return adapt_eccentricity_policy(
+            policy,
+            instrument=instrument_snapshot,
+            evaluation_context=procedure_context.evaluation_context,
+            range_no=procedure_context.range_no,
+        )
+    except PolicyResolutionError as exc:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(POLICY,),
+                rule_references=dependencies(ruleset, (POLICY,)).rule_references,
+            )
+        ) from exc
+
+
 @dataclass(frozen=True)
 class EccentricityEvaluator:
     def required_rules(self, **kwargs):
@@ -187,18 +223,20 @@ class EccentricityEvaluator:
         )
 
     def validate_procedure(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(ruleset, POLICY, "eccentricity_procedure_v1", EccentricityPolicy)
+        policy = _eccentricity_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
+            ruleset=ruleset,
+        )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         ctx, rows = procedure_context, observations.rows
         selected = instrument_snapshot.select_range(ctx.range_no)
-        profile = rule_policy(ruleset, MPE, "mpe_profile_v1", MpeProfile)
-        if (profile.accuracy_class, profile.evaluation_context) != (
-            instrument_snapshot.accuracy_class,
-            ctx.evaluation_context,
-        ):
-            raise RegulatoryBlocked(
-                DependencyResolution(unresolved_rule_ids=(MPE,), rule_references=refs)
-            )
+        compatible_mpe_profile(
+            accuracy_class=instrument_snapshot.accuracy_class,
+            evaluation_context=ctx.evaluation_context,
+            ruleset=ruleset,
+            rule_id=MPE,
+        )
         issues = []
 
         def check(condition, category, reason, sequence=None, missing=False):
@@ -348,7 +386,7 @@ class EccentricityEvaluator:
             )
             error = calculate_error(prerounding, row.load_g)
             corrected = calculate_corrected_error(error, row.zero_error_g)
-            limit = calculate_mpe(
+            limit = calculate_mpe_compatible(
                 load_g=row.load_g,
                 selected_range=selected,
                 accuracy_class=instrument_snapshot.accuracy_class,
@@ -424,6 +462,8 @@ def section3_registration():
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),
+            RulePolicyRegistration("mpe_profile_set_v2", MpeProfileSetV2),
             RulePolicyRegistration("eccentricity_procedure_v1", EccentricityPolicy),
+            RulePolicyRegistration("eccentricity_procedure_v2", EccentricityPolicyV2),
         ),
     )

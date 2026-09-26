@@ -1,0 +1,12 @@
+rule_family,source_clauses,source_derived_requirement,register_id,verification_status
+CLASSIFICATION,3.2 Table 3,accuracy classes; e/n/Min relationships,REG-02,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF
+MPE_INITIAL,3.5.1 Table 6,class-dependent 0.5e/1.0e/1.5e bands,REG-03,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF
+MPE_IN_SERVICE,3.5.2,twice initial-verification MPE,REG-03,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF
+WEIGHING,A.4.4.1,load/unload; minimum load counts; Max/Min/transition coverage,REG-04,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF
+TEMP_RANGE,3.9.2.1;3.9.2.2,default range and class-dependent minimum declared spans,REG-05,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF
+TEMP_ZERO,3.9.2.3;A.5.3.2,class-dependent normalization; one-e limit; prescribed temperature points,REG-05,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF
+ECCENTRICITY_LOAD,3.6.2.1-3.6.2.4,load formula varies by receptor/support/rolling case,REG-06,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF
+ECCENTRICITY_POSITIONS,A.4.7.1-A.4.7.5,positioning varies by receptor/support/mobile/rolling case,REG-06,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF
+DISCRIMINATION,3.8;A.4.8,mode-dependent discrimination; digital 1.4d procedure,REG-07,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF
+SENSITIVITY,6.1;A.4.9,non-self-indicating sensitivity procedure,REG-07,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF
+REPEATABILITY,3.6.1;A.4.10,MPE-based spread; context/class/Max-dependent series,REG-08,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF

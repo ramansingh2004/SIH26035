@@ -18,7 +18,14 @@ from app.compliance.ruleset import TODO, RuleSet
 SUPPORTED_KINDS = (
     "applicability_policy_v1",
     "mpe_profile_v1",
+    "mpe_profile_set_v2",
     "procedure_v1",
+    "weighing_procedure_v2",
+    "temperature_zero_procedure_v2",
+    "eccentricity_procedure_v2",
+    "discrimination_procedure_v2",
+    "sensitivity_procedure_v2",
+    "repeatability_procedure_v2",
     "dependency_v1",
     "weighing_procedure_v1",
     "eccentricity_procedure_v1",
@@ -175,6 +182,147 @@ class MpeProfile(Frozen):
         object.__setattr__(self, "bands", ordered)
         return self
 
+
+
+def rule_policy_variant(ruleset: RuleSet, key: str, variants):
+    """Validate a verified policy against one explicitly permitted schema variant."""
+
+    resolution = dependencies(ruleset, (key,))
+    if not resolution.verified:
+        raise RegulatoryBlocked(resolution)
+
+    rule = next((item for item in ruleset.rules if item.key == key), None)
+    if rule is None:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(key,),
+                rule_references=resolution.rule_references,
+            )
+        )
+
+    schemas = {kind: schema for kind, schema in variants}
+    schema = schemas.get(rule.kind)
+    if schema is None:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(key,),
+                rule_references=resolution.rule_references,
+            )
+        )
+
+    return rule.kind, rule_policy(ruleset, key, rule.kind, schema)
+
+
+def compatible_mpe_profile(
+    *,
+    accuracy_class: str,
+    evaluation_context: str,
+    ruleset: RuleSet,
+    rule_id: str,
+) -> MpeProfile:
+    """Resolve either a legacy v1 MPE profile or a parameterized v2 profile set."""
+
+    from app.compliance.parameterized import MpeProfileSetV2, resolve_mpe_profile
+
+    kind, policy = rule_policy_variant(
+        ruleset,
+        rule_id,
+        (
+            ("mpe_profile_v1", MpeProfile),
+            ("mpe_profile_set_v2", MpeProfileSetV2),
+        ),
+    )
+    if kind == "mpe_profile_v1":
+        profile = policy
+        if (profile.accuracy_class, profile.evaluation_context) != (
+            accuracy_class,
+            evaluation_context,
+        ):
+            raise RegulatoryBlocked(
+                DependencyResolution(
+                    unresolved_rule_ids=(rule_id,),
+                    rule_references=dependencies(ruleset, (rule_id,)).rule_references,
+                )
+            )
+        return profile
+
+    try:
+        return resolve_mpe_profile(
+            policy,
+            accuracy_class=accuracy_class,
+            evaluation_context=evaluation_context,
+        )
+    except ValueError as exc:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(rule_id,),
+                rule_references=dependencies(ruleset, (rule_id,)).rule_references,
+            )
+        ) from exc
+
+
+def calculate_mpe_compatible(
+    *,
+    load_g,
+    selected_range: InstrumentRangeSnapshot,
+    accuracy_class: str,
+    evaluation_context: str,
+    ruleset: RuleSet,
+    rule_id: str,
+) -> AcceptanceLimit:
+    """Calculate MPE from either a verified v1 profile or a verified v2 profile set."""
+
+    profile = compatible_mpe_profile(
+        accuracy_class=accuracy_class,
+        evaluation_context=evaluation_context,
+        ruleset=ruleset,
+        rule_id=rule_id,
+    )
+    load = decimal_value(load_g)
+    if load < 0 or load > selected_range.max_capacity_g:
+        raise ValueError("Load outside selected range")
+
+    matches = [
+        band
+        for band in profile.bands
+        if (
+            compare_ratio(
+                load,
+                selected_range.verification_interval_e_g,
+                band.lower_e,
+                operator=band.lower_operator,
+            )
+            and (
+                band.upper_e is None
+                or compare_ratio(
+                    load,
+                    selected_range.verification_interval_e_g,
+                    band.upper_e,
+                    operator=band.upper_operator,
+                )
+            )
+        )
+    ]
+    if len(matches) != 1:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(rule_id,),
+                rule_references=dependencies(ruleset, (rule_id,)).rule_references,
+            )
+        )
+
+    return AcceptanceLimit(
+        name="mpe",
+        value=exact(
+            "multiply",
+            matches[0].multiplier_e,
+            selected_range.verification_interval_e_g,
+        ),
+        unit="g",
+        operator=profile.operator,
+        semantics=profile.semantics,
+        rule_references=dependencies(ruleset, (rule_id,)).rule_references,
+    )
 
 def calculate_mpe(
     *,
