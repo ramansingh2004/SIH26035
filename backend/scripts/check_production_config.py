@@ -2,10 +2,13 @@
 
 from sqlalchemy.engine import make_url
 
-from app.core.config import Settings
+from app.core.config import Settings, get_settings
+from scripts.render_environment import configure_render_database_url
 
 
 def main() -> None:
+    configure_render_database_url()
+    get_settings.cache_clear()
     settings = Settings()
     errors: list[str] = []
 
@@ -13,11 +16,11 @@ def main() -> None:
         errors.append("ENVIRONMENT must be production")
 
     if settings.database_url is None:
-        errors.append("DATABASE_URL is required")
+        errors.append("DATABASE_URL or RENDER_DATABASE_URL is required")
     else:
         url = make_url(settings.database_url.get_secret_value())
         if url.drivername != "postgresql+asyncpg":
-            errors.append("DATABASE_URL must use postgresql+asyncpg")
+            errors.append("Effective DATABASE_URL must use postgresql+asyncpg")
 
     if settings.jwt_secret is None:
         errors.append("JWT_SECRET is required")
@@ -36,6 +39,12 @@ def main() -> None:
     if not settings.storage_bucket:
         errors.append("STORAGE_BUCKET is required")
 
+    if settings.storage_access_key is None:
+        errors.append("STORAGE_ACCESS_KEY is required")
+
+    if settings.storage_secret_key is None:
+        errors.append("STORAGE_SECRET_KEY is required")
+
     if errors:
         print("Production configuration: FAIL")
         for error in errors:
@@ -50,6 +59,7 @@ def main() -> None:
     print(f"- allowed HTTPS origins: {len(settings.allowed_origins)}")
     print(f"- storage provider: {settings.storage_provider}")
     print("- storage bucket: configured")
+    print("- storage credentials: configured")
     print("- secrets were not printed")
 
 

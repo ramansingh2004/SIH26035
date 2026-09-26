@@ -1,11 +1,8 @@
 # Phase 22 — Render backend + Vercel frontend
 
-## Stage 1 contract
+## Stage 1 — production request topology
 
-Stage 1 prepares the codebase for production deployment without deploying infrastructure,
-changing database schema, or weakening authentication.
-
-### Production request topology
+Stage 1 prepares the codebase for production deployment without weakening authentication.
 
 Browser:
 `https://<vercel-app>/api/v1/...`
@@ -34,73 +31,162 @@ Local development remains:
 NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-If `BACKEND_API_ORIGIN` is absent, no Next.js API rewrite is installed.
+## Stage 2 — managed PostgreSQL and private S3 contract
 
-### Backend production variables
+Stage 2 prepares the production data dependencies. It does not create or deploy the
+Render web service or Vercel project.
 
-The Render service will use:
+### Render PostgreSQL
+
+Create a managed Render PostgreSQL database in the same Render region that will host
+the backend. Use its internal/private connection string for the backend service.
+
+Render supplies a standard PostgreSQL URL. The application intentionally continues to
+require SQLAlchemy's asyncpg driver URL. Therefore Render's URL is configured as:
+
+```text
+RENDER_DATABASE_URL=postgresql://...
+```
+
+`scripts.render_environment` converts it at the deployment boundary to:
+
+```text
+DATABASE_URL=postgresql+asyncpg://...
+```
+
+The adapter never prints the connection string.
+
+Do not change `app.core.config.Settings` to accept arbitrary synchronous PostgreSQL
+drivers. The core application invariant remains asyncpg-only.
+
+### Production migration command
+
+Migrations remain separate from FastAPI startup:
+
+```text
+uv run python -m scripts.run_production_migrations
+```
+
+The command:
+
+1. normalizes `RENDER_DATABASE_URL` when present;
+2. requires `ENVIRONMENT=production`;
+3. runs `alembic upgrade head`;
+4. does not print database credentials.
+
+Stage 3 will attach this command to the Render deployment mechanism appropriate for the
+selected Render plan.
+
+### Private S3 bucket
+
+Use a dedicated production bucket. Required bucket properties:
+
+- bucket versioning enabled;
+- all four S3 Block Public Access controls enabled;
+- no public bucket policy;
+- runtime credentials scoped only to this bucket;
+- no storage credentials exposed to the frontend.
+
+The backend's `S3Storage.ready()` rejects a bucket that is not versioned or does not
+have all four bucket-level public access blocks enabled.
+
+A least-privilege runtime policy template is committed at:
+
+```text
+deploy/aws/s3-runtime-policy.json.example
+```
+
+Replace only `REPLACE_BUCKET_NAME` before creating the IAM policy.
+
+### Browser upload CORS
+
+Evidence upload is intentionally direct-to-storage using a backend-generated presigned
+PUT URL. Therefore the S3 bucket needs a CORS rule for the final Vercel production
+origin.
+
+Template:
+
+```text
+deploy/aws/s3-cors.json.example
+```
+
+Do not use `*` for the production origin. Stage 4 will supply the exact stable Vercel
+origin and the CORS rule will be finalized then.
+
+### Render backend environment values
+
+The eventual Render web service will receive:
 
 ```text
 ENVIRONMENT=production
-DATABASE_URL=postgresql+asyncpg://...
+RENDER_DATABASE_URL=<from managed Render Postgres>
 JWT_SECRET=<secret>
 COOKIE_SECURE=true
-ALLOWED_ORIGINS=["https://<vercel-app>.vercel.app"]
+ALLOWED_ORIGINS=["https://<stable-vercel-production-origin>"]
 
 STORAGE_PROVIDER=s3
 STORAGE_BUCKET=<bucket>
 STORAGE_REGION=<region>
-STORAGE_ACCESS_KEY=<secret>
-STORAGE_SECRET_KEY=<secret>
+STORAGE_ACCESS_KEY=<runtime IAM access key>
+STORAGE_SECRET_KEY=<runtime IAM secret key>
 ```
 
-Do not commit any real values.
+Do not commit actual values.
 
-Before production startup, validate the environment:
+### Production configuration preflight
+
+After environment variables are populated:
 
 ```text
 uv run python -m scripts.check_production_config
 ```
 
-### Render process contract
+This checks presence and security shape only.
 
-The FastAPI service must bind to all interfaces and Render's assigned port:
+### Live dependency verification
 
-```text
-uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
-```
-
-Render health-check path:
+After the production database has been migrated and S3 credentials are configured:
 
 ```text
-/health
+uv run python -m scripts.check_production_dependencies
 ```
 
-Database migration execution and managed PostgreSQL/S3 provisioning are Stage 2.
+It verifies:
 
-### Preview deployments
+- PostgreSQL connectivity;
+- database Alembic revision equals repository head;
+- S3 versioning;
+- S3 bucket-level Block Public Access.
 
-For the first production deployment, use the stable Vercel production origin in
-`ALLOWED_ORIGINS`. A Vercel preview URL is a different origin and must be explicitly
-authorized before using authenticated preview deployments. Do not replace the explicit
-origin list with a permissive wildcard.
+It does not print credentials or presigned URLs.
 
-### Stage 1 acceptance
+### Stage 2 local acceptance
 
-From `frontend/`:
-
-```text
-npm run lint
-npm run typecheck
-npm test
-```
+No live cloud credentials are required for source acceptance.
 
 From `backend/`:
 
 ```text
 uv run ruff check .
-uv run pytest
+uv run pytest tests/test_phase22_stage2_contracts.py -q
 ```
 
-The full backend suite requires the existing isolated `TEST_DATABASE_URL` ending in
-`_test`.
+Full backend regression remains available with the existing isolated
+`TEST_DATABASE_URL` ending in `_test`.
+
+## Stage 3 — Render backend deployment
+
+Stage 3 will create/configure the Render web service, connect it to the managed
+PostgreSQL database, apply migrations through the Stage 2 migration command, configure
+the health check, and verify the public backend service.
+
+## Stage 4 — Vercel frontend deployment
+
+Stage 4 will deploy Next.js, set the same-origin API rewrite variables, then finalize
+`ALLOWED_ORIGINS` and S3 browser-upload CORS with the stable production Vercel origin.
+
+## Stage 5 — production acceptance
+
+Stage 5 will verify authentication, laboratory scope, master data, evaluation,
+review/approval, report lifecycle, evidence upload/download, history, and production
+security boundaries.

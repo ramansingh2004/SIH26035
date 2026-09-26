@@ -1,0 +1,15 @@
+[
+  {
+    "AllowedHeaders": [
+      "content-type"
+    ],
+    "AllowedMethods": [
+      "PUT"
+    ],
+    "AllowedOrigins": [
+      "https://REPLACE_WITH_VERCEL_PRODUCTION_ORIGIN"
+    ],
+    "ExposeHeaders": [],
+    "MaxAgeSeconds": 300
+  }
+]
