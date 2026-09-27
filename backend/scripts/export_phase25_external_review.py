@@ -18,6 +18,10 @@ from app.compliance.stage7_activation import (
     REQUIRED_SOURCE_IDS,
 )
 from app.compliance.suite import IMPLEMENTED_TEST_CODES, implemented_registry
+from app.compliance.verified_blueprint import (
+    ASSEMBLY_CONTRACT_VERSION,
+    executable_review_rows,
+)
 
 BACKEND = Path(__file__).resolve().parents[1]
 REPO = BACKEND.parent
@@ -63,6 +67,7 @@ def export_pack(output: Path) -> dict:
     summary = {
         "schema_version": 1,
         "purpose": "PHASE25_EXTERNAL_INDEPENDENT_REVIEW_HANDOFF",
+        "assembly_contract_version": ASSEMBLY_CONTRACT_VERSION,
         "candidate_configuration_hash": ruleset.configuration_hash,
         "candidate_version": ruleset.metadata.version,
         "candidate_edition": ruleset.metadata.edition,
@@ -169,6 +174,8 @@ def export_pack(output: Path) -> dict:
                     sort_keys=True,
                 ),
                 "review_status": "PENDING",
+                "verified_source_part": "",
+                "verified_source_edition": "",
                 "verified_source_identity": "",
                 "verified_source_clause": "",
                 "verified_source_digest": "",
@@ -206,6 +213,8 @@ def export_pack(output: Path) -> dict:
                 "candidate_source_digest": item.source.digest or "",
                 "candidate_verification_status": item.verification.status,
                 "review_status": "PENDING",
+                "verified_source_part": "",
+                "verified_source_edition": "",
                 "verified_source_identity": "",
                 "verified_source_clause": "",
                 "verified_source_digest": "",
@@ -250,6 +259,8 @@ def export_pack(output: Path) -> dict:
                 "verified_text": "",
                 "verified_applicability_policy_json": "",
                 "verified_evidence_required": "",
+                "verified_source_part": "",
+                "verified_source_edition": "",
                 "verified_source_identity": "",
                 "verified_source_clause": "",
                 "verified_source_digest": "",
@@ -313,6 +324,31 @@ def export_pack(output: Path) -> dict:
         runtime_rows,
     )
 
+    executable_rows = executable_review_rows(ruleset)
+    _write_csv(
+        output / "07_executable_rule_review.csv",
+        list(executable_rows[0]),
+        executable_rows,
+    )
+
+    final_declaration = {
+        "schema_version": 1,
+        "candidate_configuration_hash": ruleset.configuration_hash,
+        "assembly_contract_version": ASSEMBLY_CONTRACT_VERSION,
+        "regulatory_signoff": False,
+        "signed_by": None,
+        "signer_role": None,
+        "signer_organization": None,
+        "signed_at": None,
+        "evidence_reference": None,
+        "independent_of_implementation": False,
+        "review_notes": "",
+    }
+    (output / "08_final_regulatory_declaration.json").write_text(
+        json.dumps(final_declaration, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
     readme = f"""# SIH26035 Phase 25 — External Independent Review Pack
 
 Candidate configuration hash:
@@ -332,6 +368,8 @@ The reviewer completes:
 5. `04_test_review.csv`
 6. `05_checklist_review.csv`
 7. `06_runtime_schema_review.csv`
+8. `07_executable_rule_review.csv` — exact runtime/service rule surface
+9. `08_final_regulatory_declaration.json` — overall human sign-off
 
 Do not overwrite candidate columns. Fill only the review/verified columns.
 
@@ -367,6 +405,8 @@ intake/registration/activation gates.
         "registers": len(register_rows),
         "sources": len(source_rows),
         "source_documents_seeded": len(source_document_rows),
+        "executable_rules": len(executable_rows),
+        "final_declaration": "PENDING",
     }
 
 

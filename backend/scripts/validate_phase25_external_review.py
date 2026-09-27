@@ -29,6 +29,10 @@ from app.compliance.stage7_activation import (
     REQUIRED_SOURCE_IDS,
 )
 from app.compliance.suite import IMPLEMENTED_TEST_CODES, implemented_registry
+from app.compliance.verified_blueprint import (
+    ASSEMBLY_CONTRACT_VERSION,
+    validate_executable_review_rows,
+)
 
 SHA64 = set("0123456789abcdef")
 BACKEND = Path(__file__).resolve().parents[1]
@@ -133,6 +137,8 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
         "04_test_review.csv",
         "05_checklist_review.csv",
         "06_runtime_schema_review.csv",
+        "07_executable_rule_review.csv",
+        "08_final_regulatory_declaration.json",
         "README.md",
     )
     for name in required_files:
@@ -146,6 +152,8 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
     summary = json.loads((input_dir / "00_summary.json").read_text(encoding="utf-8"))
     if summary.get("candidate_configuration_hash") != candidate.configuration_hash:
         blockers.append("CANDIDATE_HASH_MISMATCH")
+    if summary.get("assembly_contract_version") != ASSEMBLY_CONTRACT_VERSION:
+        blockers.append("ASSEMBLY_CONTRACT_MISMATCH")
 
     source_rows = _read(input_dir / "01_source_evidence.csv")
     source_ids = {row["source_id"] for row in source_rows}
@@ -257,6 +265,8 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
         if row["review_status"] != "VERIFIED":
             blockers.append(f"NOT_VERIFIED:{prefix}")
         for field in (
+            "verified_source_part",
+            "verified_source_edition",
             "verified_source_identity",
             "verified_source_clause",
             "verified_source_digest",
@@ -287,6 +297,8 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
         if row["review_status"] != "VERIFIED":
             blockers.append(f"NOT_VERIFIED:{prefix}")
         for field in (
+            "verified_source_part",
+            "verified_source_edition",
             "verified_source_identity",
             "verified_source_clause",
             "verified_source_digest",
@@ -312,6 +324,11 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
             f"{prefix}:supported_after_review",
             blockers,
         )
+        supported = row["supported_after_review"].strip().lower()
+        if supported in {"true", "false"}:
+            expected = row["item_key"] in set(IMPLEMENTED_TEST_CODES)
+            if (supported == "true") != expected:
+                blockers.append(f"TEST_SUPPORT_SET_MISMATCH:{prefix}")
 
     checklist_rows = _read(input_dir / "05_checklist_review.csv")
     if {row["item_key"] for row in checklist_rows} != {
@@ -327,6 +344,8 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
             "verified_text",
             "verified_applicability_policy_json",
             "verified_evidence_required",
+            "verified_source_part",
+            "verified_source_edition",
             "verified_source_identity",
             "verified_source_clause",
             "verified_source_digest",
@@ -456,6 +475,72 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
         # against the implementation. Authority enablement remains a separate
         # Stage 7 fail-closed decision.
 
+    executable_rows = _read(input_dir / "07_executable_rule_review.csv")
+    blockers.extend(validate_executable_review_rows(executable_rows, candidate))
+
+    declaration = json.loads(
+        (input_dir / "08_final_regulatory_declaration.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    if declaration.get("schema_version") != 1:
+        blockers.append("FINAL_DECLARATION_SCHEMA_MISMATCH")
+    if declaration.get("candidate_configuration_hash") != candidate.configuration_hash:
+        blockers.append("FINAL_DECLARATION_CANDIDATE_HASH_MISMATCH")
+    if declaration.get("assembly_contract_version") != ASSEMBLY_CONTRACT_VERSION:
+        blockers.append("FINAL_DECLARATION_ASSEMBLY_CONTRACT_MISMATCH")
+    if declaration.get("regulatory_signoff") is not True:
+        blockers.append("FINAL_REGULATORY_SIGNOFF_REQUIRED")
+    if declaration.get("independent_of_implementation") is not True:
+        blockers.append("FINAL_INDEPENDENCE_REQUIRED")
+    for field in (
+        "signed_by",
+        "signer_role",
+        "signer_organization",
+        "signed_at",
+        "evidence_reference",
+    ):
+        value = declaration.get(field)
+        if not isinstance(value, str) or not value.strip():
+            blockers.append(f"MISSING:FINAL_DECLARATION:{field}")
+    if isinstance(declaration.get("signed_at"), str) and declaration["signed_at"].strip():
+        _time(declaration["signed_at"], "FINAL_DECLARATION:signed_at", blockers)
+
+    family_by_scope = {
+        (row["part"], row["edition"]): row["source_id"]
+        for row in source_rows
+    }
+    document_keys = {
+        (row["source_id"], row["identity"], row["sha256"])
+        for row in source_documents
+    }
+
+    def check_item_source(row, prefix):
+        scope = (
+            row.get("verified_source_part", ""),
+            row.get("verified_source_edition", ""),
+        )
+        source_id = family_by_scope.get(scope)
+        if source_id is None:
+            blockers.append(f"ITEM_SOURCE_FAMILY_MISMATCH:{prefix}")
+            return
+        key = (
+            source_id,
+            row.get("verified_source_identity", ""),
+            row.get("verified_source_digest", ""),
+        )
+        if key not in document_keys:
+            blockers.append(f"ITEM_SOURCE_DOCUMENT_MISMATCH:{prefix}")
+
+    for row in rule_rows:
+        check_item_source(row, f"CANDIDATE_RULE:{row['item_key']}")
+    for row in test_rows:
+        check_item_source(row, f"TEST:{row['item_key']}")
+    for row in checklist_rows:
+        check_item_source(row, f"CHECKLIST:{row['item_key']}")
+    for row in executable_rows:
+        check_item_source(row, f"EXEC_RULE:{row['rule_key']}")
+
     canonical = json.dumps(
         {
             "summary": summary,
@@ -466,6 +551,8 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
             "tests": test_rows,
             "checklist": checklist_rows,
             "runtime": runtime_rows,
+            "executable_rules": executable_rows,
+            "final_declaration": declaration,
         },
         sort_keys=True,
         separators=(",", ":"),
@@ -483,6 +570,7 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
         "tests": len(test_rows),
         "checklist": len(checklist_rows),
         "runtime_schemas": len(runtime_rows),
+        "executable_rules": len(executable_rows),
     }
 
 

@@ -52,7 +52,12 @@
       "vehicle_powered": null,
       "vehicle_power_details": null,
       "declared_operating_conditions": null,
-      "declared_installation": null
+      "declared_installation": null,
+      "printing_device_present": null,
+      "extended_indication_available": null,
+      "embedded_software_present": null,
+      "loadable_software_present": null,
+      "conducted_rf_path_available": null
     },
     "test_code": "WEIGHING_PERFORMANCE",
     "procedure_context": {
@@ -348,9 +353,9 @@
     "ruleset_version": "SYNTHETIC_TEST_V1",
     "ruleset_configuration_hash": "6a2bb36a21b49f22f2c950ac21dcf2163e4ee33228ccf89e2389b572faef78ed",
     "engine_version": "r76-domain-0.4.0|WEIGHING_PERFORMANCE@synthetic-v1",
-    "input_hash": "46f50f62de7c0f1aa1853e9e4d10ff32e29932cac3fc8121e1cbc03d9c2dacc7",
+    "input_hash": "9cdf620734a7071dc00a5813d714599f49e4f28acdc3e96ffb2f4cbe0e615551",
     "synthetic_fixture": true
   },
-  "input_hash": "46f50f62de7c0f1aa1853e9e4d10ff32e29932cac3fc8121e1cbc03d9c2dacc7",
-  "result_hash": "912a2fc9d9b2ec9dc3ae79b2a1853dfc40e3c909087487a830116014a377ba35"
+  "input_hash": "9cdf620734a7071dc00a5813d714599f49e4f28acdc3e96ffb2f4cbe0e615551",
+  "result_hash": "6b1cfff3ee2490c6f7f58cde6f53074a109920d95ab013e7c99f6798add8e9f8"
 }
