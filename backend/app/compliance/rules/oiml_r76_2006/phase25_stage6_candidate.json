@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "bundle_id": "OIML_R76_PHASE25_STAGE6_REG16_REG17",
+  "standard_code": "OIML_R76",
+  "edition": "R76-1:2006 / R76-2:2007 + India authority mapping",
+  "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+  "activation_allowed": false,
+  "independent_verifier": "PENDING",
+  "register_ids": [
+    "REG-16",
+    "REG-17"
+  ],
+  "sources": [
+    {
+      "source_id": "SRC-R76-1-2006-E",
+      "publisher": "OIML",
+      "title": "OIML R 76-1 Edition 2006 (E)",
+      "official_url": "https://www.oiml.org/en/files/pdf_r/r076-1-e06.pdf",
+      "digest": null,
+      "status": "PENDING_CONTROLLED_ACQUISITION"
+    },
+    {
+      "source_id": "SRC-R76-2-2007-E",
+      "publisher": "OIML",
+      "title": "OIML R 76-2 Edition 2007 (E)",
+      "official_url": "https://www.oiml.org/en/files/pdf_r/r076-2-e07.pdf",
+      "digest": null,
+      "status": "PENDING_CONTROLLED_ACQUISITION"
+    },
+    {
+      "source_id": "SRC-INDIA-APPROVAL-MODELS-2011",
+      "publisher": "Department of Consumer Affairs, Government of India",
+      "title": "Legal Metrology (Approval of Models) Rules, 2011",
+      "official_url": "https://consumeraffairs.nic.in/legalmetrology/legal-metrologyapproval-models-rules2011",
+      "digest": null,
+      "status": "NATIONAL_MAPPING_PENDING_EXPERT_REVIEW"
+    },
+    {
+      "source_id": "SRC-INDIA-LM-GENERAL",
+      "publisher": "Department of Consumer Affairs, Government of India",
+      "title": "Legal Metrology (General) Rules, 2011 and applicable amendments",
+      "official_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/the-legal-metrology-act-2009",
+      "digest": null,
+      "status": "NATIONAL_MAPPING_PENDING_EXPERT_REVIEW"
+    },
+    {
+      "source_id": "SRC-INDIA-GATC",
+      "publisher": "Department of Consumer Affairs, Government of India",
+      "title": "Government Approved Test Centre rules/context",
+      "official_url": "https://consumeraffairs.nic.in/",
+      "digest": null,
+      "status": "AUTHORITY_SCOPE_MAPPING_PENDING"
+    }
+  ],
+  "reg16": [
+    {
+      "fact_id": "STAGE6_REG16_TEST_STANDARDS",
+      "topic": "test_standards_and_calibration",
+      "source_refs": {
+        "SRC-R76-1-2006-E": [
+          "3.7",
+          "3.7.1",
+          "3.7.2",
+          "Annex F test-equipment information"
+        ],
+        "SRC-R76-2-2007-E": [
+          "test-report equipment/instrument fields"
+        ]
+      },
+      "runtime_owner": "EquipmentService / CalibrationSnapshot / TestingService",
+      "implementation_status": "IMPLEMENTED_TRACEABILITY_PENDING_REGULATORY_ACCEPTANCE",
+      "candidate_semantics": [
+        "freeze equipment master identity at use time",
+        "freeze calibration certificate attachment identity/hash/object version when supplied",
+        "retain calibration date/due-date/class/reference metadata",
+        "do not infer calibration acceptability from stored facts"
+      ],
+      "blockers": [
+        "exact admissible equipment/calibration criteria pending independent verification",
+        "CalibrationSnapshot remains TODO_REGULATORY_VALIDATION"
+      ]
+    },
+    {
+      "fact_id": "STAGE6_REG16_ENVIRONMENT",
+      "topic": "environmental_conditions",
+      "source_refs": {
+        "SRC-R76-1-2006-E": [
+          "A.4.1.1",
+          "A.4.1.2",
+          "B.3",
+          "B.4"
+        ],
+        "SRC-R76-2-2007-E": [
+          "environment fields in applicable test-report forms"
+        ]
+      },
+      "runtime_owner": "EnvironmentData / EnvironmentReading / TestingService.capture",
+      "implementation_status": "IMPLEMENTED_CAPTURE_PENDING_REGULATORY_ACCEPTANCE",
+      "candidate_semantics": [
+        "environment row must contain at least one actual measured quantity",
+        "temperature, relative humidity and barometric pressure may be captured",
+        "measurement time and optional phase are retained",
+        "captured environment is ordered deterministically in evaluation snapshots"
+      ],
+      "blockers": [
+        "test-specific mandatory environmental fields and tolerances remain rule-dependent",
+        "REG-16 independent review pending"
+      ]
+    },
+    {
+      "fact_id": "STAGE6_REG16_RETEST",
+      "topic": "retest_and_authoritative_run_selection",
+      "source_refs": {
+        "SRC-R76-1-2006-E": [
+          "8.3",
+          "8.4",
+          "test-specific Annex A/B procedures"
+        ],
+        "SRC-R76-2-2007-E": [
+          "test-report result forms"
+        ]
+      },
+      "runtime_owner": "TestingService.retest / TestRunSelectionEvent / EvaluationResultEvent",
+      "implementation_status": "IMPLEMENTED_LINEAGE_FAIL_CLOSED",
+      "candidate_semantics": [
+        "retests create new runs linked to the original run",
+        "retest reason is mandatory at the API contract boundary",
+        "authoritative run selection is explicit and append-only audited",
+        "selection requires the verified RETEST_SELECTION policy",
+        "source changes invalidate current results and reviewed state"
+      ],
+      "blockers": [
+        "regulatory retest triggers/selection criteria remain REG-16 pending",
+        "candidate RETEST_SELECTION cannot become authoritative without verification"
+      ]
+    },
+    {
+      "fact_id": "STAGE6_REG16_EVIDENCE",
+      "topic": "evidence_identity_and_immutability",
+      "source_refs": {
+        "SRC-R76-1-2006-E": [
+          "A.1",
+          "A.2",
+          "Annex F test-equipment/report support"
+        ],
+        "SRC-R76-2-2007-E": [
+          "report evidence and traceability fields"
+        ]
+      },
+      "runtime_owner": "Attachment / AttachmentLink / TestingService / ApprovalSnapshotBuilder",
+      "implementation_status": "IMPLEMENTED_INTEGRITY_PENDING_EVIDENTIARY_POLICY",
+      "candidate_semantics": [
+        "published evidence carries storage identity, object version and SHA-256",
+        "evidence linked to immutable regulatory records is protected from unsafe mutation",
+        "approval snapshots include active evidence links and attachment identities",
+        "evidence changes invalidate reviewed regulatory content"
+      ],
+      "blockers": [
+        "which evidence is legally mandatory for each procedure remains independently unverified",
+        "retention duration and disposal authority belong to REG-17/national mapping"
+      ]
+    }
+  ],
+  "reg17": [
+    {
+      "fact_id": "STAGE6_REG17_OIML_REPORT_FORMAT",
+      "topic": "oiml_report_format",
+      "source_refs": {
+        "SRC-R76-2-2007-E": [
+          "entire type-evaluation test report format",
+          "Sections 1-17"
+        ]
+      },
+      "runtime_owner": "app.reporting.context / renderers / ReportService",
+      "implementation_status": "IMPLEMENTED_FORMAT_PIPELINE_PENDING_AUTHORITY_ACCEPTANCE",
+      "candidate_semantics": [
+        "one canonical frozen report context drives PDF and DOCX generation",
+        "all 17 sections are represented in report context/output",
+        "unofficial preview remains numberless and visibly unofficial"
+      ],
+      "blockers": [
+        "local authority acceptance of generated format remains REG-17 pending"
+      ]
+    },
+    {
+      "fact_id": "STAGE6_REG17_GENERATION_ISSUE_SEPARATION",
+      "topic": "generation_vs_issue",
+      "source_refs": {
+        "SRC-R76-2-2007-E": [
+          "report format/identity fields"
+        ],
+        "SRC-INDIA-APPROVAL-MODELS-2011": [
+          "national model-approval context"
+        ]
+      },
+      "runtime_owner": "ReportService.generate / ReportService.issue",
+      "implementation_status": "IMPLEMENTED_FAIL_CLOSED",
+      "candidate_semantics": [
+        "generation creates an UNISSUED report and READY generation/files",
+        "issue is a separate authenticated operation",
+        "official generation requires APPROVED + COMPLETE + determined compliance",
+        "official generation uses the current immutable approval snapshot",
+        "issue requires the explicit REG-17 authority gate"
+      ],
+      "blockers": [
+        "authority-specific issue conventions remain independent-expert pending"
+      ]
+    },
+    {
+      "fact_id": "STAGE6_REG17_NUMBER_REVISION_LINEAGE",
+      "topic": "report_number_and_revision_lineage",
+      "source_refs": {
+        "SRC-R76-2-2007-E": [
+          "report identification fields"
+        ],
+        "SRC-INDIA-APPROVAL-MODELS-2011": [
+          "national certificate/report context"
+        ]
+      },
+      "runtime_owner": "Report / ReportGeneration / ReportService / ReportRepository",
+      "implementation_status": "IMPLEMENTED_SYSTEM_CONVENTION_PENDING_AUTHORITY_ACCEPTANCE",
+      "candidate_semantics": [
+        "report number is server-generated",
+        "revision number and supersession lineage are explicit",
+        "issued/superseded history is preserved",
+        "report/generation/file hashes bind frozen output identity"
+      ],
+      "blockers": [
+        "R76-YYYY-N numbering is a project convention, not yet an accepted authority convention",
+        "exact national revision/numbering rules remain REG-17 pending"
+      ]
+    },
+    {
+      "fact_id": "STAGE6_REG17_SIGNATURE_ISSUER",
+      "topic": "issuer_signature_and_authority",
+      "source_refs": {
+        "SRC-INDIA-APPROVAL-MODELS-2011": [
+          "model-approval authority context"
+        ],
+        "SRC-INDIA-LM-GENERAL": [
+          "legal-metrology authority context"
+        ],
+        "SRC-INDIA-GATC": [
+          "test-centre authority context"
+        ]
+      },
+      "runtime_owner": "AuthorizationService / ReportService / approval snapshot actor-role capture",
+      "implementation_status": "IMPLEMENTED_IDENTITY_GATES_PENDING_NATIONAL_MAPPING",
+      "candidate_semantics": [
+        "intended issuer must have report:issue authority in the laboratory",
+        "authenticated issuer must match the frozen generation context",
+        "actor and role-assignment history is preserved in approval snapshot"
+      ],
+      "blockers": [
+        "which statutory officer may sign/issue remains national mapping pending",
+        "electronic/digital signature form is not asserted as legally sufficient"
+      ]
+    },
+    {
+      "fact_id": "STAGE6_REG17_RETENTION",
+      "topic": "retention_and_immutability",
+      "source_refs": {
+        "SRC-R76-2-2007-E": [
+          "test-report record context"
+        ],
+        "SRC-INDIA-LM-GENERAL": [
+          "national records context pending mapping"
+        ],
+        "SRC-INDIA-GATC": [
+          "test-centre records context pending mapping"
+        ]
+      },
+      "runtime_owner": "append-only review/report history + immutable evidence objects",
+      "implementation_status": "IMPLEMENTED_TECHNICAL_IMMUTABILITY_PENDING_RETENTION_PERIOD",
+      "candidate_semantics": [
+        "approval snapshots are immutable",
+        "report generations/files preserve historical identity",
+        "issued/superseded report lineage is retained",
+        "published regulatory evidence is protected from unsafe deletion"
+      ],
+      "blockers": [
+        "statutory retention period is not yet verified",
+        "archival/disposal procedure remains REG-17 pending"
+      ]
+    }
+  ]
+}

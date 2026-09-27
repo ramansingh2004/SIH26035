@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "vector_set": "PHASE25_STAGE6_BOUNDARY_VECTORS_V1",
+  "authority": "NON_AUTHORITATIVE_WORKFLOW_BOUNDARY_ONLY",
+  "review_status": "PENDING_INDEPENDENT_REVIEW",
+  "regulatory_signoff": false,
+  "vectors": [
+    {
+      "id": "REG16-EQUIPMENT-01",
+      "register_id": "REG-16",
+      "topic": "equipment_snapshot",
+      "input": "linked calibrated equipment",
+      "expected_boundary": "FREEZE_MASTER_AND_CERTIFICATE_IDENTITY",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG16-EQUIPMENT-02",
+      "register_id": "REG-16",
+      "topic": "calibration_acceptance",
+      "input": "stored calibration metadata",
+      "expected_boundary": "DO_NOT_INFER_REGULATORY_ACCEPTANCE",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG16-ENV-01",
+      "register_id": "REG-16",
+      "topic": "environment",
+      "input": "empty environment row",
+      "expected_boundary": "REJECT_EMPTY_MEASUREMENT",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG16-RETEST-01",
+      "register_id": "REG-16",
+      "topic": "retest",
+      "input": "retest requested with reason",
+      "expected_boundary": "CREATE_LINKED_NEW_RUN",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG16-RETEST-02",
+      "register_id": "REG-16",
+      "topic": "run_selection",
+      "input": "candidate unverified selection policy",
+      "expected_boundary": "BLOCK_AUTHORITATIVE_SELECTION",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG16-EVIDENCE-01",
+      "register_id": "REG-16",
+      "topic": "evidence",
+      "input": "bound calibration evidence unlink/archive",
+      "expected_boundary": "PROTECT_BOUND_EVIDENCE",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG16-SNAPSHOT-01",
+      "register_id": "REG-16",
+      "topic": "approval_snapshot",
+      "input": "approved regulatory record",
+      "expected_boundary": "INCLUDE_ENVIRONMENT_EQUIPMENT_EVIDENCE_AND_LINEAGE",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG17-PREVIEW-01",
+      "register_id": "REG-17",
+      "topic": "preview",
+      "input": "preview request",
+      "expected_boundary": "UNOFFICIAL_NUMBERLESS_PREVIEW",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG17-GENERATE-01",
+      "register_id": "REG-17",
+      "topic": "official_generation",
+      "input": "session not APPROVED/COMPLETE/determined",
+      "expected_boundary": "BLOCK_OFFICIAL_GENERATION",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG17-SNAPSHOT-01",
+      "register_id": "REG-17",
+      "topic": "approval_snapshot",
+      "input": "missing/stale approval snapshot",
+      "expected_boundary": "BLOCK_OFFICIAL_GENERATION",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG17-ISSUE-01",
+      "register_id": "REG-17",
+      "topic": "issue",
+      "input": "REG-17 not VERIFIED",
+      "expected_boundary": "BLOCK_OFFICIAL_ISSUE",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG17-ISSUE-02",
+      "register_id": "REG-17",
+      "topic": "issuer",
+      "input": "authenticated issuer differs from frozen intended issuer",
+      "expected_boundary": "BLOCK_ISSUE_METADATA_MISMATCH",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG17-LINEAGE-01",
+      "register_id": "REG-17",
+      "topic": "revision",
+      "input": "report revision",
+      "expected_boundary": "PRESERVE_ROOT_AND_SUPERSESSION_LINEAGE",
+      "authoritative_rule": false
+    },
+    {
+      "id": "REG17-RETENTION-01",
+      "register_id": "REG-17",
+      "topic": "retention",
+      "input": "statutory retention duration",
+      "expected_boundary": "PENDING_NATIONAL_VERIFICATION",
+      "authoritative_rule": false
+    }
+  ]
+}

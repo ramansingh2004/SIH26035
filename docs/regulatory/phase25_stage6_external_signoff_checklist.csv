@@ -1,0 +1,12 @@
+gate_id,requirement,status,owner
+GATE-6-01,Controlled R76-1:2006 acquisition and approved SHA-256 digest,PENDING,Independent regulatory workflow
+GATE-6-02,Controlled R76-2:2007 acquisition and approved SHA-256 digest,PENDING,Independent regulatory workflow
+GATE-6-03,Independent REG-16 equipment/calibration criteria review,PENDING,Human/domain-expert sign-off
+GATE-6-04,Independent REG-16 environment requirements review,PENDING,Human/domain-expert sign-off
+GATE-6-05,Independent REG-16 retest/selection policy review,PENDING,Human/domain-expert sign-off
+GATE-6-06,Independent REG-16 evidence requirements review,PENDING,Human/domain-expert sign-off
+GATE-6-07,Independent REG-17 OIML report-format mapping review,PENDING,Human/domain-expert sign-off
+GATE-6-08,Independent India model-approval authority/issuer mapping,PENDING,National legal-metrology expert
+GATE-6-09,Independent India report numbering/revision/signature convention mapping,PENDING,National legal-metrology expert
+GATE-6-10,Independent statutory retention/archival/disposal mapping,PENDING,National legal-metrology expert
+GATE-6-11,Independent review of Stage 6 boundary vectors,PENDING,Independent test-vector review
