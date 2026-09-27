@@ -33,6 +33,8 @@ from app.compliance.numbers import (
     compare,
     exact,
 )
+from app.compliance.parameterized import MpeProfileSetV2
+from app.compliance.parameterized_stage3 import TarePolicyV2
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
@@ -43,10 +45,12 @@ from app.compliance.regulatory import (
     DependencyResolution,
     MpeProfile,
     RegulatoryBlocked,
-    calculate_mpe,
+    calculate_mpe_compatible,
+    compatible_mpe_profile,
     dependencies,
-    rule_policy,
 )
+from app.compliance.stage3_dispatch import load_stage3_policy_for_runtime
+from app.compliance.stage3_native_schemas import TareContextV2, TareObservationV2
 from app.compliance.weighing import MeasurementTime, WeighingEnvironment, WeighingEquipment
 
 CODE = "TARE"
@@ -188,11 +192,23 @@ class TareEvaluator:
         )
 
     def validate_procedure(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(ruleset, POLICY, "tare_procedure_v1", TarePolicy)
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=POLICY,
+            legacy_kind="tare_procedure_v1",
+            legacy_schema=TarePolicy,
+            v2_kind="tare_procedure_v2",
+            v2_schema=TarePolicyV2,
+        )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         ctx, rows = procedure_context, observations.rows
         selected = instrument_snapshot.select_range(ctx.range_no)
-        profile = rule_policy(ruleset, MPE, "mpe_profile_v1", MpeProfile)
+        profile = compatible_mpe_profile(
+            accuracy_class=instrument_snapshot.accuracy_class,
+            evaluation_context=ctx.evaluation_context,
+            ruleset=ruleset,
+            rule_id=MPE,
+        )
         if (profile.accuracy_class, profile.evaluation_context) != (
             instrument_snapshot.accuracy_class,
             ctx.evaluation_context,
@@ -355,7 +371,7 @@ class TareEvaluator:
             )
             error = calculate_error(prerounding, row.net_load_g)
             corrected = calculate_corrected_error(error, row.zero_error_g)
-            limit = calculate_mpe(
+            limit = calculate_mpe_compatible(
                 load_g=row.net_load_g,
                 selected_range=selected,
                 accuracy_class=instrument_snapshot.accuracy_class,
@@ -422,15 +438,23 @@ def section9_registration():
         CODE,
         TareEvaluator(),
         ProcedureContextRegistry(
-            (ContextRegistration(CODE, "DIGITAL_PRE_ROUNDING", "v1", TareContext),)
+            (
+                ContextRegistration(CODE, "DIGITAL_PRE_ROUNDING", "v1", TareContext),
+                ContextRegistration(CODE, "DIGITAL_PRE_ROUNDING", "v2", TareContextV2),
+            )
         ),
         ObservationSchemaRegistry(
-            (ObservationRegistration(CODE, "TARE_V1", "v1", TareObservation),)
+            (
+                ObservationRegistration(CODE, "TARE_V1", "v1", TareObservation),
+                ObservationRegistration(CODE, "TARE_V2", "v2", TareObservationV2),
+            )
         ),
         implementation_version="section9-v1",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),
+            RulePolicyRegistration("mpe_profile_set_v2", MpeProfileSetV2),
             RulePolicyRegistration("tare_procedure_v1", TarePolicy),
+            RulePolicyRegistration("tare_procedure_v2", TarePolicyV2),
         ),
     )

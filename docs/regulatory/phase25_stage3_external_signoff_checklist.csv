@@ -1,0 +1,9 @@
+gate_id,requirement,status,owner
+GATE-3-01,Controlled acquisition of pinned R76-1:2006 source,PENDING,Independent regulatory workflow
+GATE-3-02,Controlled acquisition of pinned R76-2:2007 source,PENDING,Independent regulatory workflow
+GATE-3-03,Record and approve official source SHA-256 digests,PENDING,Independent regulatory workflow
+GATE-3-04,Independent clause/value review for REG-09,PENDING,Human/domain-expert sign-off
+GATE-3-05,Independent clause/value review for REG-10,PENDING,Human/domain-expert sign-off
+GATE-3-06,Independent clause/value review for REG-11,PENDING,Human/domain-expert sign-off
+GATE-3-07,Independent clause/value review for REG-12,PENDING,Human/domain-expert sign-off
+GATE-3-08,Independent review of Stage 3 mechanics vectors,PENDING,Independent test-vector review

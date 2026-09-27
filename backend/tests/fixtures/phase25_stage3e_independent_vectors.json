@@ -1,0 +1,674 @@
+{
+  "schema_version": 1,
+  "vector_set": "PHASE25_STAGE3E_MECHANICS_V1",
+  "authority": "NON_AUTHORITATIVE_MECHANICS_ONLY",
+  "review_status": "PENDING_INDEPENDENT_REVIEW",
+  "regulatory_signoff": false,
+  "notes": [
+    "Synthetic vectors validate deterministic mechanics only.",
+    "Threshold values in this file are test inputs, not verified regulatory constants.",
+    "Passing these vectors must not promote any candidate rule or enable report authority."
+  ],
+  "vectors": [
+    {
+      "id": "ZR_PASS",
+      "family": "ZERO_RETURN",
+      "expected_passed": true,
+      "limits": {
+        "ordinary": {
+          "name": "explicit_limit",
+          "value": "5",
+          "operator": "<=",
+          "semantics": "ABSOLUTE",
+          "unit": "g"
+        }
+      },
+      "observations": [
+        {
+          "sequence_no": 1,
+          "phase": "PRE_LOAD_ZERO",
+          "indication_g": "0",
+          "elapsed_seconds": "0",
+          "active_range_no": 1,
+          "stabilized": true,
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "phase": "POST_UNLOAD_ZERO",
+          "indication_g": "4",
+          "elapsed_seconds": "1800",
+          "active_range_no": 1,
+          "stabilized": true,
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:30:00+00:00"
+        }
+      ],
+      "expected": {
+        "zero_return_change": "4"
+      }
+    },
+    {
+      "id": "ZR_FAIL",
+      "family": "ZERO_RETURN",
+      "expected_passed": false,
+      "limits": {
+        "ordinary": {
+          "name": "explicit_limit",
+          "value": "5",
+          "operator": "<=",
+          "semantics": "ABSOLUTE",
+          "unit": "g"
+        }
+      },
+      "observations": [
+        {
+          "sequence_no": 1,
+          "phase": "PRE_LOAD_ZERO",
+          "indication_g": "0",
+          "elapsed_seconds": "0",
+          "active_range_no": 1,
+          "stabilized": true,
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "phase": "POST_UNLOAD_ZERO",
+          "indication_g": "6",
+          "elapsed_seconds": "1800",
+          "active_range_no": 1,
+          "stabilized": true,
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:30:00+00:00"
+        }
+      ],
+      "expected": {
+        "zero_return_change": "6"
+      }
+    },
+    {
+      "id": "CREEP_PASS",
+      "family": "CREEP",
+      "expected_passed": true,
+      "comparisons": [
+        {
+          "name": "creep_0_to_1800",
+          "start_seconds": "0",
+          "end_seconds": "1800",
+          "limit": {
+            "name": "explicit_limit",
+            "value": "5",
+            "operator": "<=",
+            "semantics": "ABSOLUTE",
+            "unit": "g"
+          }
+        }
+      ],
+      "temperature_variation_limit": {
+        "name": "temperature_variation",
+        "value": "2",
+        "operator": "<=",
+        "semantics": "ABSOLUTE",
+        "unit": "degC"
+      },
+      "observations": [
+        {
+          "sequence_no": 1,
+          "elapsed_seconds": "0",
+          "indication_g": "1000",
+          "temperature_c": "20",
+          "stabilized": true,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "elapsed_seconds": "1800",
+          "indication_g": "1004",
+          "temperature_c": "21",
+          "stabilized": true,
+          "measured_at": "2026-09-27T10:30:00+00:00"
+        }
+      ],
+      "expected": {
+        "creep_0_to_1800": "4",
+        "creep_temperature_variation": "1"
+      }
+    },
+    {
+      "id": "CREEP_FAIL",
+      "family": "CREEP",
+      "expected_passed": false,
+      "comparisons": [
+        {
+          "name": "creep_0_to_1800",
+          "start_seconds": "0",
+          "end_seconds": "1800",
+          "limit": {
+            "name": "explicit_limit",
+            "value": "5",
+            "operator": "<=",
+            "semantics": "ABSOLUTE",
+            "unit": "g"
+          }
+        }
+      ],
+      "temperature_variation_limit": {
+        "name": "temperature_variation",
+        "value": "2",
+        "operator": "<=",
+        "semantics": "ABSOLUTE",
+        "unit": "degC"
+      },
+      "observations": [
+        {
+          "sequence_no": 1,
+          "elapsed_seconds": "0",
+          "indication_g": "1000",
+          "temperature_c": "20",
+          "stabilized": true,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "elapsed_seconds": "1800",
+          "indication_g": "1006",
+          "temperature_c": "23",
+          "stabilized": true,
+          "measured_at": "2026-09-27T10:30:00+00:00"
+        }
+      ],
+      "expected": {
+        "creep_0_to_1800": "6",
+        "creep_temperature_variation": "3"
+      }
+    },
+    {
+      "id": "STABILITY_PASS",
+      "family": "STABILITY_EQUILIBRIUM",
+      "expected_passed": true,
+      "limits": {
+        "print_storage": {
+          "name": "explicit_limit",
+          "value": "10",
+          "operator": "<=",
+          "semantics": "ABSOLUTE",
+          "unit": "g"
+        },
+        "zero_tare": {
+          "name": "explicit_limit",
+          "value": "2.5",
+          "operator": "<=",
+          "semantics": "ABSOLUTE",
+          "unit": "g"
+        },
+        "adjacent": {
+          "name": "adjacent_values",
+          "value": "2",
+          "operator": "<=",
+          "semantics": "SIGNED",
+          "unit": "1"
+        }
+      },
+      "observations": [
+        {
+          "sequence_no": 1,
+          "function": "PRINTING",
+          "trial_no": 1,
+          "equilibrium_stable": true,
+          "operation_performed": true,
+          "event_output_g": "1000",
+          "final_weight_value_g": "1008",
+          "observation_window_seconds": "5",
+          "adjacent_values_count": 2,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "function": "ZERO",
+          "trial_no": 1,
+          "equilibrium_stable": true,
+          "operation_performed": true,
+          "zero_or_tare_error_g": "2",
+          "measured_at": "2026-09-27T10:01:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:printing_output_difference": "-8",
+        "1:printing_adjacent_values": "2",
+        "2:zero_accuracy_error": "2"
+      }
+    },
+    {
+      "id": "STABILITY_FAIL",
+      "family": "STABILITY_EQUILIBRIUM",
+      "expected_passed": false,
+      "limits": {
+        "print_storage": {
+          "name": "explicit_limit",
+          "value": "10",
+          "operator": "<=",
+          "semantics": "ABSOLUTE",
+          "unit": "g"
+        },
+        "zero_tare": {
+          "name": "explicit_limit",
+          "value": "2.5",
+          "operator": "<=",
+          "semantics": "ABSOLUTE",
+          "unit": "g"
+        },
+        "adjacent": {
+          "name": "adjacent_values",
+          "value": "2",
+          "operator": "<=",
+          "semantics": "SIGNED",
+          "unit": "1"
+        }
+      },
+      "observations": [
+        {
+          "sequence_no": 1,
+          "function": "PRINTING",
+          "trial_no": 1,
+          "equilibrium_stable": true,
+          "operation_performed": true,
+          "event_output_g": "1000",
+          "final_weight_value_g": "1012",
+          "observation_window_seconds": "5",
+          "adjacent_values_count": 3,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "function": "ZERO",
+          "trial_no": 1,
+          "equilibrium_stable": true,
+          "operation_performed": true,
+          "zero_or_tare_error_g": "3",
+          "measured_at": "2026-09-27T10:01:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:printing_output_difference": "-12",
+        "1:printing_adjacent_values": "3",
+        "2:zero_accuracy_error": "3"
+      }
+    },
+    {
+      "id": "TILTING_PASS",
+      "family": "TILTING",
+      "expected_passed": true,
+      "verification_interval_e_g": "10",
+      "unloaded_limit": {
+        "name": "explicit_limit",
+        "value": "5",
+        "operator": "<=",
+        "semantics": "ABSOLUTE",
+        "unit": "g"
+      },
+      "loaded_limits": [
+        {
+          "load_g": "1000",
+          "limit": {
+            "name": "explicit_limit",
+            "value": "5",
+            "operator": "<=",
+            "semantics": "ABSOLUTE",
+            "unit": "g"
+          }
+        }
+      ],
+      "observations": [
+        {
+          "sequence_no": 1,
+          "direction": "FORWARD",
+          "stage": "REFERENCE",
+          "tilt_value": "0",
+          "load_g": "0",
+          "indication_g": "0",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "direction": "FORWARD",
+          "stage": "TILTED",
+          "tilt_value": "0.02",
+          "load_g": "0",
+          "indication_g": "4",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:01:00+00:00"
+        },
+        {
+          "sequence_no": 3,
+          "direction": "FORWARD",
+          "stage": "REFERENCE",
+          "tilt_value": "0",
+          "load_g": "1000",
+          "indication_g": "1000",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:02:00+00:00"
+        },
+        {
+          "sequence_no": 4,
+          "direction": "FORWARD",
+          "stage": "TILTED",
+          "tilt_value": "0.02",
+          "load_g": "1000",
+          "indication_g": "1004",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:03:00+00:00"
+        }
+      ],
+      "expected": {
+        "forward:0:tilt_difference": "4",
+        "forward:1000:tilt_difference": "4"
+      }
+    },
+    {
+      "id": "TILTING_FAIL",
+      "family": "TILTING",
+      "expected_passed": false,
+      "verification_interval_e_g": "10",
+      "unloaded_limit": {
+        "name": "explicit_limit",
+        "value": "5",
+        "operator": "<=",
+        "semantics": "ABSOLUTE",
+        "unit": "g"
+      },
+      "loaded_limits": [
+        {
+          "load_g": "1000",
+          "limit": {
+            "name": "explicit_limit",
+            "value": "5",
+            "operator": "<=",
+            "semantics": "ABSOLUTE",
+            "unit": "g"
+          }
+        }
+      ],
+      "observations": [
+        {
+          "sequence_no": 1,
+          "direction": "FORWARD",
+          "stage": "REFERENCE",
+          "tilt_value": "0",
+          "load_g": "0",
+          "indication_g": "0",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "direction": "FORWARD",
+          "stage": "TILTED",
+          "tilt_value": "0.02",
+          "load_g": "0",
+          "indication_g": "6",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:01:00+00:00"
+        },
+        {
+          "sequence_no": 3,
+          "direction": "FORWARD",
+          "stage": "REFERENCE",
+          "tilt_value": "0",
+          "load_g": "1000",
+          "indication_g": "1000",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:02:00+00:00"
+        },
+        {
+          "sequence_no": 4,
+          "direction": "FORWARD",
+          "stage": "TILTED",
+          "tilt_value": "0.02",
+          "load_g": "1000",
+          "indication_g": "1006",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "zero_tracking_active": false,
+          "measured_at": "2026-09-27T10:03:00+00:00"
+        }
+      ],
+      "expected": {
+        "forward:0:tilt_difference": "6",
+        "forward:1000:tilt_difference": "6"
+      }
+    },
+    {
+      "id": "TARE_PASS",
+      "family": "TARE",
+      "expected_passed": true,
+      "verification_interval_e_g": "10",
+      "weighing_limits": [
+        {
+          "load_g": "1000",
+          "limit": {
+            "name": "explicit_limit",
+            "value": "5",
+            "operator": "<=",
+            "semantics": "ABSOLUTE",
+            "unit": "g"
+          }
+        }
+      ],
+      "tare_setting_limit": {
+        "name": "explicit_limit",
+        "value": "2.5",
+        "operator": "<=",
+        "semantics": "ABSOLUTE",
+        "unit": "g"
+      },
+      "gross_identity_limit": {
+        "name": "gross_identity",
+        "value": "0",
+        "operator": "==",
+        "semantics": "SIGNED",
+        "unit": "g"
+      },
+      "observations": [
+        {
+          "sequence_no": 1,
+          "observation_kind": "WEIGHING",
+          "tare_scenario_code": "S1",
+          "tare_type": "SUBTRACTIVE",
+          "tare_value_g": "100",
+          "net_load_g": "1000",
+          "gross_load_g": "1100",
+          "indication_g": "1000",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "direction": "UP",
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "observation_kind": "TARE_SETTING",
+          "tare_scenario_code": "S1",
+          "tare_type": "SUBTRACTIVE",
+          "tare_value_g": "100",
+          "tare_setting_error_g": "2",
+          "measured_at": "2026-09-27T10:01:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:tare_corrected_error": "0",
+        "1:gross_identity_delta": "0",
+        "2:tare_setting_error": "2"
+      }
+    },
+    {
+      "id": "TARE_FAIL",
+      "family": "TARE",
+      "expected_passed": false,
+      "verification_interval_e_g": "10",
+      "weighing_limits": [
+        {
+          "load_g": "1000",
+          "limit": {
+            "name": "explicit_limit",
+            "value": "5",
+            "operator": "<=",
+            "semantics": "ABSOLUTE",
+            "unit": "g"
+          }
+        }
+      ],
+      "tare_setting_limit": {
+        "name": "explicit_limit",
+        "value": "2.5",
+        "operator": "<=",
+        "semantics": "ABSOLUTE",
+        "unit": "g"
+      },
+      "gross_identity_limit": {
+        "name": "gross_identity",
+        "value": "0",
+        "operator": "==",
+        "semantics": "SIGNED",
+        "unit": "g"
+      },
+      "observations": [
+        {
+          "sequence_no": 1,
+          "observation_kind": "WEIGHING",
+          "tare_scenario_code": "S1",
+          "tare_type": "SUBTRACTIVE",
+          "tare_value_g": "100",
+          "net_load_g": "1000",
+          "gross_load_g": "1110",
+          "indication_g": "1006",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "direction": "UP",
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "observation_kind": "TARE_SETTING",
+          "tare_scenario_code": "S1",
+          "tare_type": "SUBTRACTIVE",
+          "tare_value_g": "100",
+          "tare_setting_error_g": "3",
+          "measured_at": "2026-09-27T10:01:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:tare_corrected_error": "6",
+        "1:gross_identity_delta": "10",
+        "2:tare_setting_error": "3"
+      }
+    },
+    {
+      "id": "WARM_UP_PASS",
+      "family": "WARM_UP",
+      "expected_passed": true,
+      "verification_interval_e_g": "10",
+      "loaded_limits": [
+        {
+          "load_g": "1000",
+          "limit": {
+            "name": "explicit_limit",
+            "value": "5",
+            "operator": "<=",
+            "semantics": "ABSOLUTE",
+            "unit": "g"
+          }
+        }
+      ],
+      "pre_ready_behavior_limit": {
+        "name": "zero_required",
+        "value": "0",
+        "operator": "==",
+        "semantics": "SIGNED",
+        "unit": "1"
+      },
+      "observations": [
+        {
+          "sequence_no": 1,
+          "elapsed_seconds": "0",
+          "zero_indication_g": "0",
+          "zero_additional_load_g": "5",
+          "load_g": "1000",
+          "loaded_indication_g": "1000",
+          "loaded_additional_load_g": "5",
+          "temperature_c": "20",
+          "stabilized": true,
+          "instrument_ready": false,
+          "result_indicated": false,
+          "result_transmitted": false,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:warm_up_corrected_error": "0",
+        "1:pre_ready_result_activity": "0"
+      }
+    },
+    {
+      "id": "WARM_UP_FAIL",
+      "family": "WARM_UP",
+      "expected_passed": false,
+      "verification_interval_e_g": "10",
+      "loaded_limits": [
+        {
+          "load_g": "1000",
+          "limit": {
+            "name": "explicit_limit",
+            "value": "5",
+            "operator": "<=",
+            "semantics": "ABSOLUTE",
+            "unit": "g"
+          }
+        }
+      ],
+      "pre_ready_behavior_limit": {
+        "name": "zero_required",
+        "value": "0",
+        "operator": "==",
+        "semantics": "SIGNED",
+        "unit": "1"
+      },
+      "observations": [
+        {
+          "sequence_no": 1,
+          "elapsed_seconds": "0",
+          "zero_indication_g": "0",
+          "zero_additional_load_g": "5",
+          "load_g": "1000",
+          "loaded_indication_g": "1006",
+          "loaded_additional_load_g": "5",
+          "temperature_c": "20",
+          "stabilized": true,
+          "instrument_ready": false,
+          "result_indicated": true,
+          "result_transmitted": false,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:warm_up_corrected_error": "6",
+        "1:pre_ready_result_activity": "1"
+      }
+    }
+  ]
+}

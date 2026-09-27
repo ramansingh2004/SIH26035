@@ -36,7 +36,12 @@ from app.compliance.numbers import (
     compare,
     exact,
 )
-from app.compliance.parameterized import PolicyResolutionError, TemperatureZeroPolicyV2
+from app.compliance.parameterized import (
+    MpeProfileSetV2,
+    PolicyResolutionError,
+    TemperatureZeroPolicyV2,
+)
+from app.compliance.parameterized_stage3 import TiltingPolicyV2, WarmUpPolicyV2
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
@@ -48,9 +53,17 @@ from app.compliance.regulatory import (
     MpeProfile,
     RegulatoryBlocked,
     calculate_mpe,
+    calculate_mpe_compatible,
     dependencies,
     rule_policy,
     rule_policy_variant,
+)
+from app.compliance.stage3_dispatch import load_stage3_policy_for_runtime
+from app.compliance.stage3_native_schemas import (
+    TiltingContextV2,
+    TiltingObservationV2,
+    WarmUpContextV2,
+    WarmUpObservationV2,
 )
 from app.compliance.weighing import (
     MeasurementTime,
@@ -668,11 +681,13 @@ class TiltingEvaluator:
         observations,
         ruleset,
     ):
-        policy = rule_policy(
-            ruleset,
-            TILTING_POLICY,
-            "tilting_procedure_v1",
-            TiltingPolicy,
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=TILTING_POLICY,
+            legacy_kind="tilting_procedure_v1",
+            legacy_schema=TiltingPolicy,
+            v2_kind="tilting_procedure_v2",
+            v2_schema=TiltingPolicyV2,
         )
         refs = dependencies(
             ruleset,
@@ -842,11 +857,13 @@ class TiltingEvaluator:
         observations,
         ruleset,
     ):
-        policy = rule_policy(
-            ruleset,
-            TILTING_POLICY,
-            "tilting_procedure_v1",
-            TiltingPolicy,
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=TILTING_POLICY,
+            legacy_kind="tilting_procedure_v1",
+            legacy_schema=TiltingPolicy,
+            v2_kind="tilting_procedure_v2",
+            v2_schema=TiltingPolicyV2,
         )
         refs = dependencies(
             ruleset,
@@ -911,7 +928,7 @@ class TiltingEvaluator:
                         tilted_ec,
                         reference_ec,
                     )
-                    limit = calculate_mpe(
+                    limit = calculate_mpe_compatible(
                         load_g=load,
                         selected_range=selected,
                         accuracy_class=instrument_snapshot.accuracy_class,
@@ -1035,6 +1052,15 @@ def tilting_registration():
                 )
                 for variant in variants
             )
+            + tuple(
+                ContextRegistration(
+                    TILTING,
+                    variant,
+                    "v2",
+                    TiltingContextV2,
+                )
+                for variant in variants
+            )
         ),
         ObservationSchemaRegistry(
             (
@@ -1043,6 +1069,12 @@ def tilting_registration():
                     "TILTING_V1",
                     "v1",
                     TiltingObservation,
+                ),
+                ObservationRegistration(
+                    TILTING,
+                    "TILTING_V2",
+                    "v2",
+                    TiltingObservationV2,
                 ),
             )
         ),
@@ -1057,8 +1089,16 @@ def tilting_registration():
                 TiltingPolicy,
             ),
             RulePolicyRegistration(
+                "tilting_procedure_v2",
+                TiltingPolicyV2,
+            ),
+            RulePolicyRegistration(
                 "mpe_profile_v1",
                 MpeProfile,
+            ),
+            RulePolicyRegistration(
+                "mpe_profile_set_v2",
+                MpeProfileSetV2,
             ),
         ),
     )
@@ -1187,11 +1227,13 @@ class WarmUpEvaluator:
         observations,
         ruleset,
     ):
-        policy = rule_policy(
-            ruleset,
-            WARM_UP_POLICY,
-            "warm_up_procedure_v1",
-            WarmUpPolicy,
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=WARM_UP_POLICY,
+            legacy_kind="warm_up_procedure_v1",
+            legacy_schema=WarmUpPolicy,
+            v2_kind="warm_up_procedure_v2",
+            v2_schema=WarmUpPolicyV2,
         )
         refs = dependencies(
             ruleset,
@@ -1305,11 +1347,13 @@ class WarmUpEvaluator:
         observations,
         ruleset,
     ):
-        policy = rule_policy(
-            ruleset,
-            WARM_UP_POLICY,
-            "warm_up_procedure_v1",
-            WarmUpPolicy,
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=WARM_UP_POLICY,
+            legacy_kind="warm_up_procedure_v1",
+            legacy_schema=WarmUpPolicy,
+            v2_kind="warm_up_procedure_v2",
+            v2_schema=WarmUpPolicyV2,
         )
         refs = dependencies(
             ruleset,
@@ -1343,7 +1387,7 @@ class WarmUpEvaluator:
                 loaded_error,
                 zero_error,
             )
-            limit = calculate_mpe(
+            limit = calculate_mpe_compatible(
                 load_g=row.load_g,
                 selected_range=selected,
                 accuracy_class=instrument_snapshot.accuracy_class,
@@ -1399,6 +1443,12 @@ def warm_up_registration():
                     "v1",
                     WarmUpContext,
                 ),
+                ContextRegistration(
+                    WARM_UP,
+                    "WARM_UP",
+                    "v2",
+                    WarmUpContextV2,
+                ),
             )
         ),
         ObservationSchemaRegistry(
@@ -1408,6 +1458,12 @@ def warm_up_registration():
                     "WARM_UP_V1",
                     "v1",
                     WarmUpObservation,
+                ),
+                ObservationRegistration(
+                    WARM_UP,
+                    "WARM_UP_V2",
+                    "v2",
+                    WarmUpObservationV2,
                 ),
             )
         ),
@@ -1422,8 +1478,16 @@ def warm_up_registration():
                 WarmUpPolicy,
             ),
             RulePolicyRegistration(
+                "warm_up_procedure_v2",
+                WarmUpPolicyV2,
+            ),
+            RulePolicyRegistration(
                 "mpe_profile_v1",
                 MpeProfile,
+            ),
+            RulePolicyRegistration(
+                "mpe_profile_set_v2",
+                MpeProfileSetV2,
             ),
         ),
     )

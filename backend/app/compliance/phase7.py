@@ -36,6 +36,11 @@ from app.compliance.parameterized import (
     PolicyResolutionError,
     SensitivityPolicyV2,
 )
+from app.compliance.parameterized_stage3 import (
+    CreepPolicyV2,
+    StabilityPolicyV2,
+    ZeroReturnPolicyV2,
+)
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
@@ -48,7 +53,6 @@ from app.compliance.regulatory import (
     RegulatoryBlocked,
     calculate_mpe_compatible,
     dependencies,
-    rule_policy,
     rule_policy_variant,
 )
 from app.compliance.section4_v2 import (
@@ -58,6 +62,15 @@ from app.compliance.section4_v2 import (
     ResolvedSensitivityPolicyV2,
     resolve_discrimination_policy_v2,
     resolve_sensitivity_policy_v2,
+)
+from app.compliance.stage3_dispatch import load_stage3_policy_for_runtime
+from app.compliance.stage3_native_schemas import (
+    CreepContextV2,
+    CreepObservationV2,
+    StabilityContextV2,
+    StabilityObservationV2,
+    ZeroReturnContextV2,
+    ZeroReturnObservationV2,
 )
 from app.compliance.weighing import MeasurementTime, WeighingEnvironment, WeighingEquipment
 
@@ -834,8 +847,13 @@ class ZeroReturnEvaluator:
         )
 
     def validate_procedure(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(
-            ruleset, ZERO_RETURN_POLICY, "zero_return_procedure_v1", ZeroReturnPolicy
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=ZERO_RETURN_POLICY,
+            legacy_kind="zero_return_procedure_v1",
+            legacy_schema=ZeroReturnPolicy,
+            v2_kind="zero_return_procedure_v2",
+            v2_schema=ZeroReturnPolicyV2,
         )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         rows, issues = observations.rows, []
@@ -914,8 +932,13 @@ class ZeroReturnEvaluator:
         return tuple(issues)
 
     def evaluate(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(
-            ruleset, ZERO_RETURN_POLICY, "zero_return_procedure_v1", ZeroReturnPolicy
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=ZERO_RETURN_POLICY,
+            legacy_kind="zero_return_procedure_v1",
+            legacy_schema=ZeroReturnPolicy,
+            v2_kind="zero_return_procedure_v2",
+            v2_schema=ZeroReturnPolicyV2,
         )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         limit = _functional_limit(
@@ -966,15 +989,26 @@ def zero_return_registration():
         ZERO_RETURN,
         ZeroReturnEvaluator(),
         ProcedureContextRegistry(
-            (ContextRegistration(ZERO_RETURN, "ZERO_RETURN", "v1", ZeroReturnContext),)
+            (
+                ContextRegistration(ZERO_RETURN, "ZERO_RETURN", "v1", ZeroReturnContext),
+                ContextRegistration(ZERO_RETURN, "ZERO_RETURN", "v2", ZeroReturnContextV2),
+            )
         ),
         ObservationSchemaRegistry(
-            (ObservationRegistration(ZERO_RETURN, "ZERO_RETURN_V1", "v1", ZeroReturnObservation),)
+            (
+                ObservationRegistration(
+                    ZERO_RETURN, "ZERO_RETURN_V1", "v1", ZeroReturnObservation
+                ),
+                ObservationRegistration(
+                    ZERO_RETURN, "ZERO_RETURN_V2", "v2", ZeroReturnObservationV2
+                ),
+            )
         ),
         implementation_version="section6-zero-return-v1",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("zero_return_procedure_v1", ZeroReturnPolicy),
+            RulePolicyRegistration("zero_return_procedure_v2", ZeroReturnPolicyV2),
         ),
     )
 
@@ -1042,7 +1076,14 @@ class CreepEvaluator:
         )
 
     def validate_procedure(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(ruleset, CREEP_POLICY, "creep_procedure_v1", CreepPolicy)
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=CREEP_POLICY,
+            legacy_kind="creep_procedure_v1",
+            legacy_schema=CreepPolicy,
+            v2_kind="creep_procedure_v2",
+            v2_schema=CreepPolicyV2,
+        )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         rows, issues = observations.rows, []
 
@@ -1141,7 +1182,14 @@ class CreepEvaluator:
         return tuple(issues)
 
     def evaluate(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(ruleset, CREEP_POLICY, "creep_procedure_v1", CreepPolicy)
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=CREEP_POLICY,
+            legacy_kind="creep_procedure_v1",
+            legacy_schema=CreepPolicy,
+            v2_kind="creep_procedure_v2",
+            v2_schema=CreepPolicyV2,
+        )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         rows = observations.rows
         baseline = rows[0].indication_g
@@ -1194,15 +1242,22 @@ def creep_registration():
             (
                 ContextRegistration(CREEP, "SHORT", "v1", CreepContext),
                 ContextRegistration(CREEP, "EXTENDED", "v1", CreepContext),
+                ContextRegistration(CREEP, "SHORT", "v2", CreepContextV2),
+                ContextRegistration(CREEP, "EXTENDED", "v2", CreepContextV2),
             )
         ),
         ObservationSchemaRegistry(
-            (ObservationRegistration(CREEP, "CREEP_V1", "v1", CreepObservation),)
+            (
+                ObservationRegistration(CREEP, "CREEP_V1", "v1", CreepObservation),
+                ObservationRegistration(CREEP, "CREEP_V2", "v2", CreepObservationV2),
+            )
         ),
         implementation_version="section6-creep-v1",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("creep_procedure_v1", CreepPolicy),
+            RulePolicyRegistration("creep_procedure_v2", CreepPolicyV2),
+            RulePolicyRegistration("mpe_profile_set_v2", MpeProfileSetV2),
         ),
     )
 
@@ -1280,8 +1335,13 @@ class StabilityEvaluator:
         )
 
     def validate_procedure(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(
-            ruleset, STABILITY_POLICY, "stability_equilibrium_procedure_v1", StabilityPolicy
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=STABILITY_POLICY,
+            legacy_kind="stability_equilibrium_procedure_v1",
+            legacy_schema=StabilityPolicy,
+            v2_kind="stability_equilibrium_procedure_v2",
+            v2_schema=StabilityPolicyV2,
         )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         rows, issues = observations.rows, []
@@ -1366,8 +1426,13 @@ class StabilityEvaluator:
         return tuple(issues)
 
     def evaluate(self, *, instrument_snapshot, procedure_context, observations, ruleset):
-        policy = rule_policy(
-            ruleset, STABILITY_POLICY, "stability_equilibrium_procedure_v1", StabilityPolicy
+        policy = load_stage3_policy_for_runtime(
+            ruleset=ruleset,
+            key=STABILITY_POLICY,
+            legacy_kind="stability_equilibrium_procedure_v1",
+            legacy_schema=StabilityPolicy,
+            v2_kind="stability_equilibrium_procedure_v2",
+            v2_schema=StabilityPolicyV2,
         )
         refs = dependencies(ruleset, self.required_rules()).rule_references
         limit = _functional_limit(
@@ -1432,7 +1497,14 @@ def stability_registration():
         STABILITY_EQUILIBRIUM,
         StabilityEvaluator(),
         ProcedureContextRegistry(
-            (ContextRegistration(STABILITY_EQUILIBRIUM, "FUNCTIONAL", "v1", StabilityContext),)
+            (
+                ContextRegistration(
+                    STABILITY_EQUILIBRIUM, "FUNCTIONAL", "v1", StabilityContext
+                ),
+                ContextRegistration(
+                    STABILITY_EQUILIBRIUM, "FUNCTIONAL", "v2", StabilityContextV2
+                ),
+            )
         ),
         ObservationSchemaRegistry(
             (
@@ -1442,11 +1514,20 @@ def stability_registration():
                     "v1",
                     StabilityObservation,
                 ),
+                ObservationRegistration(
+                    STABILITY_EQUILIBRIUM,
+                    "STABILITY_EQUILIBRIUM_V2",
+                    "v2",
+                    StabilityObservationV2,
+                ),
             )
         ),
         implementation_version="section7-v1",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("stability_equilibrium_procedure_v1", StabilityPolicy),
+            RulePolicyRegistration(
+                "stability_equilibrium_procedure_v2", StabilityPolicyV2
+            ),
         ),
     )
