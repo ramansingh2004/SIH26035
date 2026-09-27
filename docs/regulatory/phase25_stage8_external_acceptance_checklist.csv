@@ -1,0 +1,10 @@
+gate_id,requirement,status,owner
+GATE-8-01,Stage 7 external verification package accepted,PENDING,Independent regulatory workflow
+GATE-8-02,"verified-v1 registered, validated and ACTIVE",PENDING,Ruleset authority workflow
+GATE-8-03,Real non-demo acceptance instrument/laboratory selected,PENDING,Acceptance owner
+GATE-8-04,All applicable Sections 1-15 executed with real acceptance data,PENDING,Laboratory acceptance team
+GATE-8-05,Section 16 construction examination complete,PENDING,Laboratory acceptance team
+GATE-8-06,Section 17 checklist complete,PENDING,Laboratory acceptance team
+GATE-8-07,Technical review and final approval completed by authorized actors,PENDING,Reviewer/Approving Officer
+GATE-8-08,Official PDF+DOCX generated and issued through REG-17,PENDING,Authorized issuer
+GATE-8-09,Hashes/history/reproducibility evidence archived,PENDING,Acceptance owner

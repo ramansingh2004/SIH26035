@@ -1,0 +1,14 @@
+gate_id,acceptance_requirement,system_surface,current_state
+S8-01,Stage 7 verified artifact ready,inspect_verified_artifact,BLOCKED_PENDING_EXTERNAL_SIGNOFF
+S8-02,verified-v1 registered,POST /api/v1/rulesets,BLOCKED_BY_S8-01
+S8-03,verified-v1 validated authoritative,POST /api/v1/rulesets/{identifier}/validate,BLOCKED_BY_S8-01
+S8-04,verified-v1 ACTIVE,POST /api/v1/rulesets/{identifier}/activate,BLOCKED_BY_S8-01
+S8-05,real session pins ACTIVE verified artifact,POST /api/v1/test-sessions,BLOCKED_BY_S8-04
+S8-06,Sections 1-15 executed,test run lifecycle,BLOCKED_BY_S8-05
+S8-07,Section 16 complete,construction workflow,BLOCKED_BY_S8-05
+S8-08,Section 17 complete,checklist workflow,BLOCKED_BY_S8-05
+S8-09,technical review complete,review workflow,BLOCKED_BY_S8-06_TO_08
+S8-10,final approval snapshot frozen,approval workflow,BLOCKED_BY_S8-09
+S8-11,official PDF+DOCX generated,report generation,BLOCKED_BY_S8-10
+S8-12,REG-17 issue complete,report issue,BLOCKED_BY_S8-11
+S8-13,hash/history/reproducibility verified,acceptance evidence pack,BLOCKED_BY_S8-12

@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "status": "PENDING_STAGE7_EXTERNAL_SIGNOFF",
+  "stage7_verified_artifact_ready": false,
+  "synthetic_fixture": false,
+  "ruleset_status": null,
+  "ruleset_id": null,
+  "ruleset_configuration_hash": null,
+  "stage7_manifest_hash": null,
+  "test_session_id": null,
+  "regulatory_revision": null,
+  "workflow_status": null,
+  "evaluation_status": null,
+  "compliance_outcome": null,
+  "approval_snapshot_hash": null,
+  "sections": [
+    {
+      "section_number": 1,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 2,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 3,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 4,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 5,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 6,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 7,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 8,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 9,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 10,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 11,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 12,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 13,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 14,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 15,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 16,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    },
+    {
+      "section_number": 17,
+      "applicability_status": null,
+      "evaluation_status": null,
+      "compliance_outcome": null
+    }
+  ],
+  "report_id": null,
+  "report_number": null,
+  "report_revision_no": null,
+  "report_status": null,
+  "generation_id": null,
+  "report_hash": null,
+  "files": [
+    {
+      "format": "PDF",
+      "attachment_id": null,
+      "sha256": null,
+      "object_version": null
+    },
+    {
+      "format": "DOCX",
+      "attachment_id": null,
+      "sha256": null,
+      "object_version": null
+    }
+  ],
+  "audit_evidence_reference": null,
+  "acceptance_evidence_package_sha256": null
+}
