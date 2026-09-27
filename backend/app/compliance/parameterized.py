@@ -28,6 +28,7 @@ class PolicySelector(Frozen):
     indication_types: tuple[Text, ...] = ()
     range_types: tuple[Text, ...] = ()
     self_indicating: StrictBool | None = None
+    conducted_rf_path_available: StrictBool | None = None
 
     @model_validator(mode="after")
     def unique_values(self):
@@ -72,6 +73,14 @@ def selector_state(
             None
             if instrument.is_self_indicating is None
             else instrument.is_self_indicating is selector.self_indicating
+        )
+
+    if selector.conducted_rf_path_available is not None:
+        states.append(
+            None
+            if instrument.conducted_rf_path_available is None
+            else instrument.conducted_rf_path_available
+            is selector.conducted_rf_path_available
         )
 
     if False in states:
@@ -240,6 +249,84 @@ class DirectedLoadExpression(Frozen):
     load: MassExpression
 
 
+class RationalFractionV2(Frozen):
+    # Exact positive rational fraction without Decimal division.
+    numerator: PositiveInt
+    denominator: PositiveInt
+
+    @model_validator(mode="after")
+    def proper_fraction(self):
+        if self.numerator > self.denominator:
+            raise ValueError("Regulatory fraction cannot exceed one")
+        return self
+
+
+def _fraction_less(left: RationalFractionV2, right: RationalFractionV2) -> bool:
+    return left.numerator * right.denominator < right.numerator * left.denominator
+
+
+class StandardWeightReductionV2(Frozen):
+    max_repeatability_error_multiplier_e: Number = Field(ge=0)
+    minimum_standard_weight_fraction: RationalFractionV2
+
+
+class StandardWeightSubstitutionProcedureV2(Frozen):
+    # Regulatory constants are supplied only by verified policy data.
+    applicable_testing_location: Text
+    capacity_basis: Literal["INSTRUMENT_MAX", "SELECTED_RANGE_MAX"]
+    base_minimum_standard_weight_fraction: RationalFractionV2
+    repeatability_reductions: tuple[StandardWeightReductionV2, ...] = ()
+    repeatability_placements: PositiveInt
+    standard_weight_categories: tuple[Text, ...] = ()
+    require_repeatability_load_approximation_confirmation: StrictBool
+    require_total_load_coverage: StrictBool
+    require_evidence: StrictBool
+
+    @model_validator(mode="after")
+    def coherent_reductions(self):
+        thresholds = [
+            item.max_repeatability_error_multiplier_e
+            for item in self.repeatability_reductions
+        ]
+        if len(thresholds) != len(set(thresholds)):
+            raise ValueError("Duplicate repeatability threshold")
+
+        categories = list(self.standard_weight_categories)
+        if len(categories) != len(set(categories)):
+            raise ValueError("Duplicate standard-weight category")
+
+        ordered = tuple(
+            sorted(
+                self.repeatability_reductions,
+                key=lambda item: item.max_repeatability_error_multiplier_e,
+            )
+        )
+        previous = None
+        for item in ordered:
+            fraction = item.minimum_standard_weight_fraction
+            if _fraction_less(
+                self.base_minimum_standard_weight_fraction,
+                fraction,
+            ):
+                raise ValueError(
+                    "A reduction cannot require more standard weight than the base rule"
+                )
+            if previous is not None and _fraction_less(fraction, previous):
+                raise ValueError(
+                    "Looser repeatability thresholds cannot permit a smaller "
+                    "standard-weight fraction"
+                )
+            previous = fraction
+
+        object.__setattr__(self, "repeatability_reductions", ordered)
+        object.__setattr__(
+            self,
+            "standard_weight_categories",
+            tuple(sorted(self.standard_weight_categories)),
+        )
+        return self
+
+
 class StaticTemperatureStageV2(Frozen):
     stage_code: Text
     temperature: TemperatureExpression
@@ -320,6 +407,7 @@ class WeighingPolicyCaseV2(Frozen):
     require_evidence: StrictBool
     require_monotonic_timestamps: StrictBool
     static_temperature: StaticTemperatureProcedureV2 | None = None
+    standard_weight_substitution: StandardWeightSubstitutionProcedureV2 | None = None
 
 
 class WeighingPolicyV2(Frozen):
@@ -495,9 +583,12 @@ __all__ = [
     "MpeProfileSetV2",
     "PolicyResolutionError",
     "PolicySelector",
+    "RationalFractionV2",
     "RepeatabilityPolicyV2",
     "ResolvedStaticTemperatureStage",
     "SensitivityPolicyV2",
+    "StandardWeightReductionV2",
+    "StandardWeightSubstitutionProcedureV2",
     "StaticTemperatureProcedureV2",
     "StaticTemperatureStageV2",
     "TemperatureExpression",

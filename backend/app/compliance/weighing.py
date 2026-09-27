@@ -121,9 +121,45 @@ class WeighingObservation(Observation):
     measured_at: MeasurementTime
 
 
+class SubstitutionRepeatabilityRecord(Frozen):
+    substitution_point_g: Number = Field(gt=0)
+    repeatability_load_g: Number = Field(gt=0)
+    approximately_at_substitution_point: StrictBool | None = None
+    indications_g: tuple[Number, ...] = ()
+
+
+class StandardWeightSubstitutionRecord(Frozen):
+    constant_load_substitution_used: StrictBool
+    standard_weight_references: tuple[Text, ...] = ()
+    constant_load_mass_g: Number | None = Field(None, gt=0)
+    repeatability: SubstitutionRepeatabilityRecord | None = None
+
+    @model_validator(mode="after")
+    def shape(self):
+        if len(self.standard_weight_references) != len(
+            set(self.standard_weight_references)
+        ):
+            raise ValueError("Duplicate standard-weight reference")
+        object.__setattr__(
+            self,
+            "standard_weight_references",
+            tuple(sorted(self.standard_weight_references)),
+        )
+        if self.constant_load_substitution_used:
+            if self.constant_load_mass_g is None:
+                raise ValueError("Constant substitution load mass is required")
+        elif self.constant_load_mass_g is not None or self.repeatability is not None:
+            raise ValueError(
+                "Non-substitution record cannot carry constant-load/repeatability data"
+            )
+        return self
+
+
 class WeighingContextV2(WeighingContext):
     procedure_schema_version: Literal["v2"] = "v2"
     protocol: Literal["WEIGHING_V2"] = "WEIGHING_V2"
+    testing_location: str | None = None
+    standard_weight_substitution: StandardWeightSubstitutionRecord | None = None
 
 
 class StaticTemperatureStageRecord(Frozen):
@@ -328,6 +364,61 @@ def _static_temperature_policy(*, instrument_snapshot, procedure_context, rulese
                 rule_references=dependencies(ruleset, (POLICY,)).rule_references,
             )
         ) from exc
+
+
+def _standard_weight_substitution_policy(
+    *,
+    instrument_snapshot,
+    procedure_context,
+    ruleset,
+):
+    kind, policy = rule_policy_variant(
+        ruleset,
+        POLICY,
+        (
+            ("weighing_procedure_v1", WeighingPolicy),
+            ("weighing_procedure_v2", WeighingPolicyV2),
+        ),
+    )
+    if kind == "weighing_procedure_v1":
+        return None
+    try:
+        case = resolve_policy_case(
+            policy.cases,
+            instrument_snapshot,
+            procedure_context.evaluation_context,
+        )
+        return case.standard_weight_substitution
+    except PolicyResolutionError as exc:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(POLICY,),
+                rule_references=dependencies(ruleset, (POLICY,)).rule_references,
+            )
+        ) from exc
+
+
+def _fraction_at_least(value, capacity, fraction) -> bool:
+    return exact(
+        "multiply",
+        value,
+        str(fraction.denominator),
+    ) >= exact(
+        "multiply",
+        capacity,
+        str(fraction.numerator),
+    )
+
+
+def _fraction_less(left, right) -> bool:
+    return left.numerator * right.denominator < right.numerator * left.denominator
+
+
+def _sum_masses(values):
+    total = exact("add", "0", "0")
+    for value in values:
+        total = exact("add", total, value)
+    return total
 
 
 def _elapsed_seconds(later: datetime, earlier: datetime):
@@ -544,6 +635,172 @@ class WeighingEvaluator:
             "EVIDENCE",
             "Evidence missing",
         )
+
+        substitution_policy = _standard_weight_substitution_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=ctx,
+            ruleset=ruleset,
+        )
+        if substitution_policy is not None:
+            check(
+                ctx.testing_location is not None,
+                "EQUIPMENT",
+                "Testing location required by verified standard-weight substitution policy",
+            )
+            if ctx.testing_location == substitution_policy.applicable_testing_location:
+                substitution = ctx.standard_weight_substitution
+                check(
+                    substitution is not None,
+                    "EQUIPMENT",
+                    "Standard-weight substitution record required at this testing location",
+                )
+                if substitution is not None:
+                    equipment_by_reference = {
+                        item.reference: item for item in ctx.equipment
+                    }
+                    referenced = [
+                        equipment_by_reference.get(reference)
+                        for reference in substitution.standard_weight_references
+                    ]
+                    references_valid = bool(referenced) and all(
+                        item is not None for item in referenced
+                    )
+                    check(
+                        references_valid,
+                        "EQUIPMENT",
+                        "Standard-weight equipment references are missing or unknown",
+                    )
+                    if references_valid:
+                        referenced = [item for item in referenced if item is not None]
+                        categories_valid = (
+                            not substitution_policy.standard_weight_categories
+                            or all(
+                                item.category
+                                in substitution_policy.standard_weight_categories
+                                for item in referenced
+                            )
+                        )
+                        check(
+                            categories_valid,
+                            "EQUIPMENT",
+                            "Referenced equipment category is not permitted as standard weight",
+                        )
+                        masses_valid = all(
+                            item.nominal_mass_g is not None for item in referenced
+                        )
+                        check(
+                            masses_valid,
+                            "EQUIPMENT",
+                            "Nominal mass missing for referenced standard weight",
+                        )
+                        if categories_valid and masses_valid:
+                            standard_weight_mass = _sum_masses(
+                                item.nominal_mass_g for item in referenced
+                            )
+                            capacity = (
+                                instrument_snapshot.max_capacity_g
+                                if substitution_policy.capacity_basis
+                                == "INSTRUMENT_MAX"
+                                else selected.max_capacity_g
+                            )
+
+                            if not substitution.constant_load_substitution_used:
+                                check(
+                                    standard_weight_mass >= capacity,
+                                    "EQUIPMENT",
+                                    "Full standard-weight capacity is not available",
+                                )
+                            else:
+                                if substitution_policy.require_total_load_coverage:
+                                    check(
+                                        exact(
+                                            "add",
+                                            standard_weight_mass,
+                                            substitution.constant_load_mass_g,
+                                        )
+                                        >= capacity,
+                                        "LOAD_COVERAGE",
+                                        "Standard weights plus" \
+                                        " substitution load do not cover capacity",
+                                    )
+
+                                required_fraction = (
+                                    substitution_policy.base_minimum_standard_weight_fraction
+                                )
+                                if not _fraction_at_least(
+                                    standard_weight_mass,
+                                    capacity,
+                                    required_fraction,
+                                ):
+                                    repeatability = substitution.repeatability
+                                    check(
+                                        repeatability is not None,
+                                        "EQUIPMENT",
+                                        "Repeatability evidence required "
+                                        "for reduced standard weights",
+                                    )
+                                    if repeatability is not None:
+                                        placement_count_valid = (
+                                            len(repeatability.indications_g)
+                                            == substitution_policy.repeatability_placements
+                                        )
+                                        check(
+                                            placement_count_valid,
+                                            "EQUIPMENT",
+                                            "Repeatability placement count does " \
+                                            "not match verified policy",
+                                        )
+                                        if (
+                                            substitution_policy
+                                            .require_repeatability_load_approximation_confirmation
+                                        ):
+                                            check(
+                                                repeatability.approximately_at_substitution_point
+                                                is True,
+                                                "EVIDENCE",
+                                                "Repeatability load approximation is not confirmed",
+                                            )
+                                        if placement_count_valid:
+                                            repeatability_error = exact(
+                                                "subtract",
+                                                max(repeatability.indications_g),
+                                                min(repeatability.indications_g),
+                                            )
+                                            for reduction in (
+                                                substitution_policy.repeatability_reductions
+                                            ):
+                                                threshold = exact(
+                                                    "multiply",
+                                                    selected.verification_interval_e_g,
+                                                    reduction.max_repeatability_error_multiplier_e,
+                                                )
+                                                if (
+                                                    repeatability_error <= threshold
+                                                    and _fraction_less(
+                                                        reduction.minimum_standard_weight_fraction,
+                                                        required_fraction,
+                                                    )
+                                                ):
+                                                    required_fraction = (
+                                                        reduction.minimum_standard_weight_fraction
+                                                    )
+
+                                check(
+                                    _fraction_at_least(
+                                        standard_weight_mass,
+                                        capacity,
+                                        required_fraction,
+                                    ),
+                                    "EQUIPMENT",
+                                    "Standard-weight mass is below the verified minimum fraction",
+                                )
+
+                                if substitution_policy.require_evidence:
+                                    check(
+                                        bool(ctx.evidence_hashes),
+                                        "EVIDENCE",
+                                        "Load-substitution evidence missing",
+                                    )
 
         if isinstance(ctx, StaticTemperatureWeighingContext):
             static_policy, resolved_stages = _static_temperature_policy(
@@ -858,7 +1115,7 @@ def section1_registration():
                 ),
             )
         ),
-        implementation_version="section1-v2",
+        implementation_version="section1-v3",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),

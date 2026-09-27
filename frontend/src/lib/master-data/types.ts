@@ -48,6 +48,7 @@ export type InstrumentMetadata = {
   loadable_software_present?: boolean | null;
   battery_charging_during_operation?: boolean | null;
   vehicle_powered?: boolean | null;
+  conducted_rf_path_available?: boolean | null;
   vehicle_power_details?: string | null;
   declared_operating_conditions?: string | null;
   declared_installation?: string | null;

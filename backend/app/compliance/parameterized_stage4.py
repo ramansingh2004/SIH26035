@@ -9,6 +9,7 @@ from typing import Literal
 from pydantic import Field, StrictBool, model_validator
 
 from app.compliance.domain import Frozen, Number, PositiveInt, Text, ordered_unique
+from app.compliance.parameterized import PolicySelector, resolve_policy_case
 
 
 class VoltageTargetV2(Frozen):
@@ -81,26 +82,27 @@ class DisturbanceSeverityV2(Frozen):
         return self
 
 
-class DisturbancePolicyV2(Frozen):
-    schema_version: Literal["v2"] = "v2"
-    test_code: Literal[
-        "DISTURBANCE_VOLTAGE_DIP",
-        "DISTURBANCE_BURST",
-        "DISTURBANCE_SURGE",
-        "DISTURBANCE_ESD",
-        "DISTURBANCE_RADIATED_RF",
-        "DISTURBANCE_CONDUCTED_RF",
-        "DISTURBANCE_VEHICLE_SUPPLY",
-    ]
+class DisturbanceProfileV2(Frozen):
     procedure_variant: Text
     evaluation_context: Text
+    selector: PolicySelector = Field(default_factory=PolicySelector)
     severities: tuple[DisturbanceSeverityV2, ...] = Field(min_length=1)
     repetitions_per_severity: PositiveInt
     minimum_interval_seconds: Number | None = Field(None, ge=0)
+    deviation_limit_multiplier_e: Number = Field(ge=0)
+    deviation_operator: Literal["<", "<=", ">", ">=", "==", "!="]
+    deviation_semantics: Literal["SIGNED", "ABSOLUTE"]
     require_warm_up: StrictBool
     require_environment_stabilized: StrictBool
     require_peripherals_connected: StrictBool
+    require_no_load_deviation: StrictBool
+    require_environment: StrictBool
+    require_equipment: StrictBool
+    require_certificate: StrictBool
+    require_evidence: StrictBool
     require_fault_response_evidence: StrictBool
+    require_state_trace: StrictBool
+    require_monotonic_timestamps: StrictBool
     accepted_fault_responses: tuple[Text, ...] = ()
 
     @model_validator(mode="after")
@@ -116,6 +118,60 @@ class DisturbancePolicyV2(Frozen):
             tuple(sorted(set(self.accepted_fault_responses))),
         )
         return self
+
+
+class DisturbancePolicyV2(Frozen):
+    schema_version: Literal["v2"] = "v2"
+    test_code: Literal[
+        "DISTURBANCE_VOLTAGE_DIP",
+        "DISTURBANCE_BURST",
+        "DISTURBANCE_SURGE",
+        "DISTURBANCE_ESD",
+        "DISTURBANCE_RADIATED_RF",
+        "DISTURBANCE_CONDUCTED_RF",
+        "DISTURBANCE_VEHICLE_SUPPLY",
+    ]
+    profiles: tuple[DisturbanceProfileV2, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def unique_profiles(self):
+        keys = [
+            (item.procedure_variant, item.selector.model_dump_json())
+            for item in self.profiles
+        ]
+        if len(keys) != len(set(keys)):
+            raise ValueError("Duplicate disturbance v2 profile selector")
+        object.__setattr__(
+            self,
+            "profiles",
+            tuple(
+                item
+                for _, item in sorted(
+                    zip(keys, self.profiles, strict=True),
+                    key=lambda pair: pair[0],
+                )
+            ),
+        )
+        return self
+
+    def select(
+        self,
+        variant: str,
+        instrument,
+        evaluation_context: str,
+    ) -> DisturbanceProfileV2 | None:
+        candidates = tuple(
+            item
+            for item in self.profiles
+            if item.procedure_variant == variant
+        )
+        if not candidates:
+            return None
+        return resolve_policy_case(
+            candidates,
+            instrument,
+            evaluation_context,
+        )
 
 
 class DampHeatStageV2(Frozen):
@@ -203,6 +259,7 @@ __all__ = [
     "DampHeatPolicyV2",
     "DampHeatStageV2",
     "DisturbancePolicyV2",
+    "DisturbanceProfileV2",
     "DisturbanceSeverityV2",
     "EndurancePolicyV2",
     "SpanStabilityPolicyV2",

@@ -34,6 +34,7 @@ from app.compliance.domain import (
 )
 from app.compliance.evaluators import EvaluatorRegistration, RulePolicyRegistration
 from app.compliance.numbers import compare, exact
+from app.compliance.parameterized import PolicyResolutionError
 from app.compliance.parameterized_stage4 import DisturbancePolicyV2
 from app.compliance.registries import (
     ContextRegistration,
@@ -41,7 +42,12 @@ from app.compliance.registries import (
     ObservationSchemaRegistry,
     ProcedureContextRegistry,
 )
-from app.compliance.regulatory import dependencies, rule_policy
+from app.compliance.regulatory import (
+    DependencyResolution,
+    RegulatoryBlocked,
+    dependencies,
+    rule_policy_variant,
+)
 from app.compliance.stage4_native_schemas import (
     DisturbanceContextV2,
     DisturbanceObservationV2,
@@ -428,6 +434,40 @@ class DisturbanceEvaluator:
             procedure_variant=procedure_context.procedure_variant,
         )
 
+    def _profile(
+        self,
+        *,
+        instrument_snapshot,
+        procedure_context,
+        ruleset,
+    ):
+        kind, policy = rule_policy_variant(
+            ruleset,
+            self.policy_key,
+            (
+                ("disturbance_procedure_v1", DisturbancePolicy),
+                ("disturbance_procedure_v2", DisturbancePolicyV2),
+            ),
+        )
+        if policy.test_code != self.test_code:
+            return kind, None
+        if kind == "disturbance_procedure_v1":
+            return kind, policy.select(procedure_context.procedure_variant)
+        try:
+            return kind, policy.select(
+                procedure_context.procedure_variant,
+                instrument_snapshot,
+                procedure_context.evaluation_context,
+            )
+        except PolicyResolutionError as exc:
+            resolution = dependencies(ruleset, (self.policy_key,))
+            raise RegulatoryBlocked(
+                DependencyResolution(
+                    unresolved_rule_ids=(self.policy_key,),
+                    rule_references=resolution.rule_references,
+                )
+            ) from exc
+
     def validate_procedure(
         self,
         *,
@@ -436,26 +476,16 @@ class DisturbanceEvaluator:
         observations,
         ruleset,
     ):
-        policy = rule_policy(
-            ruleset,
-            self.policy_key,
-            "disturbance_procedure_v1",
-            DisturbancePolicy,
+        kind, profile = self._profile(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
+            ruleset=ruleset,
         )
         refs = dependencies(
             ruleset,
             self.required_rules(),
         ).rule_references
         issues = []
-        if policy.test_code != self.test_code:
-            return (
-                _issue(
-                    refs,
-                    "STAGE",
-                    "Disturbance policy belongs to another test code",
-                ),
-            )
-        profile = policy.select(procedure_context.procedure_variant)
         if profile is None:
             return (
                 _issue(
@@ -465,7 +495,86 @@ class DisturbanceEvaluator:
                 ),
             )
 
-        issues.extend(_common_issues(profile, procedure_context, refs))
+        if kind == "disturbance_procedure_v1":
+            issues.extend(_common_issues(profile, procedure_context, refs))
+        else:
+            def prerequisite(condition, category, reason, *, missing=False):
+                if not condition:
+                    issues.append(
+                        _issue(
+                            refs,
+                            category,
+                            reason,
+                            missing=missing,
+                        )
+                    )
+
+            prerequisite(
+                procedure_context.evaluation_context == profile.evaluation_context,
+                "STAGE",
+                "Evaluation context incompatible with verified disturbance profile",
+            )
+            prerequisite(
+                not profile.require_warm_up or procedure_context.warm_up_completed,
+                "STABILIZATION",
+                "Verified disturbance procedure requires completed warm-up",
+            )
+            prerequisite(
+                not profile.require_environment_stabilized
+                or procedure_context.environment_stabilized,
+                "STABILIZATION",
+                "Verified disturbance procedure requires stable environment",
+            )
+            prerequisite(
+                not profile.require_peripherals_connected
+                or procedure_context.peripherals_connected,
+                "EQUIPMENT",
+                "Verified disturbance procedure requires applicable peripherals/interfaces",
+            )
+            prerequisite(
+                not profile.require_no_load_deviation
+                or procedure_context.no_load_deviation_g is not None,
+                "LOAD_COVERAGE",
+                "Verified disturbance procedure requires no-load deviation",
+                missing=True,
+            )
+            prerequisite(
+                not profile.require_environment or bool(procedure_context.environment),
+                "ENVIRONMENT",
+                "Required environment evidence missing",
+                missing=True,
+            )
+            prerequisite(
+                not profile.require_equipment or bool(procedure_context.equipment),
+                "EQUIPMENT",
+                "Required disturbance equipment missing",
+                missing=True,
+            )
+            if profile.require_certificate:
+                prerequisite(
+                    bool(procedure_context.equipment)
+                    and all(
+                        item.calibration_certificate_no
+                        for item in procedure_context.equipment
+                    ),
+                    "EQUIPMENT",
+                    "Required calibration certificate identity missing",
+                    missing=True,
+                )
+            prerequisite(
+                not profile.require_evidence or bool(procedure_context.evidence_hashes),
+                "EVIDENCE",
+                "Required supporting disturbance evidence missing",
+                missing=True,
+            )
+            references = {item.standard_reference for item in profile.severities}
+            prerequisite(
+                len(references) == 1
+                and procedure_context.standard_identity in references,
+                "EVIDENCE",
+                "Runtime standard identity does not match verified disturbance profile",
+            )
+
         selected = instrument_snapshot.select_range(procedure_context.range_no)
 
         def check(
@@ -492,23 +601,35 @@ class DisturbanceEvaluator:
             "RANGE",
             "Disturbance test load exceeds selected range",
         )
-        check(
-            procedure_context.severity_cases == profile.required_severities,
-            "SEVERITY",
-            "Configured disturbance severities differ from verified profile",
-            missing=(len(procedure_context.severity_cases) < len(profile.required_severities)),
+        severities = (
+            profile.required_severities
+            if kind == "disturbance_procedure_v1"
+            else profile.severities
         )
-        if profile.require_waveform_reference:
+        if kind == "disturbance_procedure_v1":
             check(
-                all(item.waveform_reference for item in procedure_context.severity_cases),
-                "EVIDENCE",
-                "Verified disturbance severity requires waveform/configuration reference",
-                missing=True,
+                procedure_context.severity_cases == profile.required_severities,
+                "SEVERITY",
+                "Configured disturbance severities differ from verified profile",
+                missing=(
+                    len(procedure_context.severity_cases)
+                    < len(profile.required_severities)
+                ),
             )
+            if profile.require_waveform_reference:
+                check(
+                    all(
+                        item.waveform_reference
+                        for item in procedure_context.severity_cases
+                    ),
+                    "EVIDENCE",
+                    "Verified disturbance severity requires waveform/configuration reference",
+                    missing=True,
+                )
 
         expected = tuple(
             (severity.severity_id, repetition)
-            for severity in profile.required_severities
+            for severity in severities
             for repetition in range(1, profile.repetitions_per_severity + 1)
         )
         actual = tuple((row.severity_id, row.repetition_no) for row in observations.rows)
@@ -525,7 +646,8 @@ class DisturbanceEvaluator:
             missing=len(actual) < len(expected),
         )
 
-        known = {item.severity_id for item in profile.required_severities}
+        by_severity = {item.severity_id: item for item in severities}
+        known = set(by_severity)
         previous = None
         for row in observations.rows:
             check(
@@ -558,11 +680,85 @@ class DisturbanceEvaluator:
                     sequence=row.sequence_no,
                     missing=True,
                 )
+            if kind == "disturbance_procedure_v2":
+                severity = by_severity.get(row.severity_id)
+                if severity is not None:
+                    check(
+                        row.application == severity.application,
+                        "SEVERITY",
+                        "Disturbance application differs from verified severity",
+                        sequence=row.sequence_no,
+                    )
+                    if severity.port_category is not None:
+                        check(
+                            row.port_category == severity.port_category,
+                            "SEVERITY",
+                            "Disturbance port category differs from verified severity",
+                            sequence=row.sequence_no,
+                        )
+                    if severity.polarity in {"POSITIVE", "NEGATIVE"}:
+                        check(
+                            row.polarity == severity.polarity,
+                            "SEVERITY",
+                            "Disturbance polarity differs from verified severity",
+                            sequence=row.sequence_no,
+                        )
+                    if severity.phase_angles_deg:
+                        check(
+                            row.phase_angle_deg in severity.phase_angles_deg,
+                            "SEVERITY",
+                            "Disturbance phase angle is outside verified severity",
+                            sequence=row.sequence_no,
+                        )
+                    if (
+                        severity.frequency_start_mhz is not None
+                        or severity.frequency_end_mhz is not None
+                    ):
+                        check(
+                            row.frequency_mhz is not None,
+                            "SEVERITY",
+                            "Frequency evidence required by verified severity",
+                            sequence=row.sequence_no,
+                            missing=True,
+                        )
+                        if row.frequency_mhz is not None:
+                            if severity.frequency_start_mhz is not None:
+                                check(
+                                    row.frequency_mhz >= severity.frequency_start_mhz,
+                                    "SEVERITY",
+                                    "Frequency below verified severity range",
+                                    sequence=row.sequence_no,
+                                )
+                            if severity.frequency_end_mhz is not None:
+                                check(
+                                    row.frequency_mhz <= severity.frequency_end_mhz,
+                                    "SEVERITY",
+                                    "Frequency above verified severity range",
+                                    sequence=row.sequence_no,
+                                )
+
             if profile.require_monotonic_timestamps and previous is not None:
                 check(
                     row.measured_at >= previous,
                     "TIMING",
                     "Disturbance observation timestamp order invalid",
+                    sequence=row.sequence_no,
+                )
+            if (
+                kind == "disturbance_procedure_v2"
+                and profile.minimum_interval_seconds is not None
+                and previous is not None
+            ):
+                delta = row.measured_at - previous
+                microseconds = (
+                    (delta.days * 86400 + delta.seconds) * 1_000_000
+                    + delta.microseconds
+                )
+                elapsed = exact("multiply", str(microseconds), "0.000001")
+                check(
+                    elapsed >= profile.minimum_interval_seconds,
+                    "TIMING",
+                    "Disturbance event interval is below verified minimum",
                     sequence=row.sequence_no,
                 )
             previous = row.measured_at
@@ -576,13 +772,11 @@ class DisturbanceEvaluator:
         observations,
         ruleset,
     ):
-        policy = rule_policy(
-            ruleset,
-            self.policy_key,
-            "disturbance_procedure_v1",
-            DisturbancePolicy,
+        _kind, profile = self._profile(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
+            ruleset=ruleset,
         )
-        profile = policy.select(procedure_context.procedure_variant)
         if profile is None:
             raise ValueError("Verified disturbance profile unavailable")
         refs = dependencies(
@@ -705,7 +899,7 @@ def _registration(code):
                 ),
             )
         ),
-        implementation_version="section12-v1",
+        implementation_version="section12-v3",
         policy_schemas=(
             RulePolicyRegistration(
                 "applicability_policy_v1",

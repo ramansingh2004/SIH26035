@@ -94,6 +94,7 @@ class InstrumentMetadata(Schema):
     peripherals: list[Text] | None = Field(None, max_length=100)
     battery_charging_during_operation: bool | None = None
     vehicle_powered: bool | None = None
+    conducted_rf_path_available: bool | None = None
     vehicle_power_details: Description | None = None
     declared_operating_conditions: Description | None = None
     declared_installation: Description | None = None

@@ -46,6 +46,7 @@ class BooleanFact(Frozen):
         "data_storage_device_present",
         "battery_charging_during_operation",
         "vehicle_powered",
+        "conducted_rf_path_available",
     ]
     expected: StrictBool
 

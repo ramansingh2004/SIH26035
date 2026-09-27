@@ -179,6 +179,7 @@ class InstrumentSnapshot(Capacity):
     components: tuple[ComponentSnapshot, ...] | None = None
     battery_charging_during_operation: StrictBool | None = None
     vehicle_powered: StrictBool | None = None
+    conducted_rf_path_available: StrictBool | None = None
     vehicle_power_details: str | None = None
     declared_operating_conditions: str | None = None
     declared_installation: str | None = None
