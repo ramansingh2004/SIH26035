@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 
 from app.compliance.ruleset import load_ruleset
+from app.compliance.runtime_binding import runtime_binding_catalog_json
 from app.compliance.stage7_activation import (
     REQUIRED_REGISTERS,
     REQUIRED_SOURCE_IDS,
@@ -289,11 +290,18 @@ def export_pack(output: Path) -> dict:
                         }
                     )
                 ),
+                "implementation_version": registration.implementation_version,
+                "available_runtime_bindings_json": runtime_binding_catalog_json(
+                    registration
+                ),
                 "selected_procedure_schema_version": "",
                 "selected_observation_schema_version": "",
+                "selected_runtime_binding_sha256": "",
                 "evidence_reference": "",
                 "review_status": "PENDING",
                 "reviewed_by": "",
+                "reviewer_role": "",
+                "reviewer_organization": "",
                 "reviewed_at": "",
                 "independent_of_implementation": "false",
                 "review_notes": "",
@@ -342,7 +350,8 @@ After review, run:
 `uv run python -m scripts.validate_phase25_external_review --input <pack>`
 
 A passing review-pack validator still does not activate a ruleset. Runtime
-schema selection must be independently reviewed, and passing this validator does
+schema selection must be independently reviewed against the exported immutable
+runtime binding. A schema label alone never enables authority. Passing this validator does
 not authority-enable a schema version. The reviewed content must then be assembled
 into the immutable `verified-v1` artifact and pass the separate fail-closed Stage 7
 intake/registration/activation gates.

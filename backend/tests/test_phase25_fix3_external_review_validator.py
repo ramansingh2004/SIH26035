@@ -27,12 +27,27 @@ def _runtime_row(output: Path, code: str):
 
 
 def _complete_runtime_row(row, *, procedure="v2", observation="v2", independent="true"):
+    bindings = json.loads(row["available_runtime_bindings_json"])
+    selected = next(
+        (
+            item
+            for item in bindings
+            if item["procedure_schema_version"] == procedure
+            and item["observation_schema_version"] == observation
+        ),
+        None,
+    )
     row.update(
         selected_procedure_schema_version=procedure,
         selected_observation_schema_version=observation,
+        selected_runtime_binding_sha256=(
+            "" if selected is None else selected["runtime_binding_sha256"]
+        ),
         evidence_reference="SYNTHETIC FIX3 REVIEW EVIDENCE",
         review_status="VERIFIED",
         reviewed_by="SYNTHETIC INDEPENDENT REVIEWER",
+        reviewer_role="SYNTHETIC REVIEWER",
+        reviewer_organization="SYNTHETIC ORGANIZATION",
         reviewed_at="2026-09-27T15:30:00+00:00",
         independent_of_implementation=independent,
         review_notes="SYNTHETIC TEST FIXTURE ONLY",

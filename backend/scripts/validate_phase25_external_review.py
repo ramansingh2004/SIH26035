@@ -19,6 +19,11 @@ from app.compliance.checklist import (
     ChecklistApplicabilityPolicyV2,
 )
 from app.compliance.ruleset import load_ruleset
+from app.compliance.runtime_binding import (
+    RuntimeBindingError,
+    runtime_binding_catalog_json,
+    runtime_binding_hash,
+)
 from app.compliance.stage7_activation import (
     REQUIRED_REGISTERS,
     REQUIRED_SOURCE_IDS,
@@ -366,18 +371,36 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
         for field in (
             "selected_procedure_schema_version",
             "selected_observation_schema_version",
+            "selected_runtime_binding_sha256",
             "evidence_reference",
             "reviewed_by",
+            "reviewer_role",
+            "reviewer_organization",
             "reviewed_at",
         ):
-            _required(row[field], f"{prefix}:{field}", blockers)
-        if row["reviewed_at"]:
+            _required(row.get(field, ""), f"{prefix}:{field}", blockers)
+        if row.get("selected_runtime_binding_sha256"):
+            _sha(
+                row["selected_runtime_binding_sha256"],
+                f"{prefix}:selected_runtime_binding_sha256",
+                blockers,
+            )
+        if row.get("reviewed_at"):
             _time(row["reviewed_at"], f"{prefix}:reviewed_at", blockers)
 
-        if row["independent_of_implementation"].lower() != "true":
+        if row.get("independent_of_implementation", "").lower() != "true":
             blockers.append(f"INDEPENDENCE_REQUIRED:{prefix}")
 
         registration = registry.resolve(code)
+        if row.get("implementation_version") != registration.implementation_version:
+            blockers.append(
+                f"RUNTIME_SCHEMA_CANDIDATE_MISMATCH:{prefix}:implementation"
+            )
+        expected_binding_catalog = runtime_binding_catalog_json(registration)
+        if row.get("available_runtime_bindings_json") != expected_binding_catalog:
+            blockers.append(
+                f"RUNTIME_SCHEMA_CANDIDATE_MISMATCH:{prefix}:bindings"
+            )
         available_procedure = {
             item.procedure_schema_version for item in registration.contexts.registrations
         }
@@ -413,10 +436,25 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
             }
             if not procedure_protocols & observation_protocols:
                 blockers.append(f"RUNTIME_SCHEMA_PAIR_UNAVAILABLE:{prefix}")
+            else:
+                try:
+                    expected_binding = runtime_binding_hash(
+                        registration,
+                        procedure_version,
+                        observation_version,
+                    )
+                except RuntimeBindingError:
+                    blockers.append(f"RUNTIME_SCHEMA_PAIR_UNAVAILABLE:{prefix}")
+                else:
+                    if (
+                        row.get("selected_runtime_binding_sha256")
+                        != expected_binding
+                    ):
+                        blockers.append(f"RUNTIME_BINDING_MISMATCH:{prefix}")
 
-        # This validator checks the independent review selection against the
-        # implemented registry. Authority enablement remains a separate Stage 7
-        # fail-closed decision; schema labels are not regulatory conclusions.
+        # This validator checks the independently reviewed exact runtime binding
+        # against the implementation. Authority enablement remains a separate
+        # Stage 7 fail-closed decision.
 
     canonical = json.dumps(
         {

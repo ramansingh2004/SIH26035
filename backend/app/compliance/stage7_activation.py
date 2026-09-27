@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app.compliance.catalog import SECTIONS
 from app.compliance.ruleset import ROOT as CANDIDATE_ROOT
 from app.compliance.ruleset import RuleSet, load_ruleset
+from app.compliance.runtime_binding import RuntimeBindingError, runtime_binding_hash
 from app.compliance.suite import IMPLEMENTED_TEST_CODES, implemented_registry
 
 VERIFIED_ARTIFACT = "oiml_r76_2006/verified-v1"
@@ -137,7 +138,20 @@ class RuntimeSchemaSelection(Frozen):
     test_code: str = Field(min_length=1)
     procedure_schema_version: Literal["v1", "v2"]
     observation_schema_version: Literal["v1", "v2"]
+    runtime_binding_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    status: Literal["VERIFIED"]
+    reviewed_by: str = Field(min_length=1)
+    reviewer_role: str = Field(min_length=1)
+    reviewer_organization: str = Field(min_length=1)
+    reviewed_at: datetime
     evidence_reference: str = Field(min_length=1)
+    independent_of_implementation: Literal[True] = True
+
+    @model_validator(mode="after")
+    def timezone_required(self):
+        if self.reviewed_at.tzinfo is None:
+            raise ValueError("Runtime-schema review timestamp must include timezone")
+        return self
 
 
 class Stage7VerificationManifest(Frozen):
@@ -460,15 +474,27 @@ def verified_artifact_blockers(
         if selection.observation_schema_version not in observation_versions:
             blockers.add(f"STAGE7:RUNTIME_SCHEMA:{code}:OBSERVATION_UNAVAILABLE")
 
-        # Current authoritative HTTP/domain contracts remain v1. Candidate
-        # v2 registration alone never enables authoritative v2 execution.
-        if production and (
-            selection.procedure_schema_version != "v1"
-            or selection.observation_schema_version != "v1"
+        if (
+            selection.procedure_schema_version in procedure_versions
+            and selection.observation_schema_version in observation_versions
         ):
-            blockers.add(
-                f"STAGE7:RUNTIME_SCHEMA:{code}:V2_NOT_AUTHORITY_ENABLED"
-            )
+            try:
+                expected_binding = runtime_binding_hash(
+                    registration,
+                    selection.procedure_schema_version,
+                    selection.observation_schema_version,
+                )
+            except RuntimeBindingError:
+                blockers.add(f"STAGE7:RUNTIME_SCHEMA:{code}:PAIR_UNAVAILABLE")
+            else:
+                if selection.runtime_binding_sha256 != expected_binding:
+                    blockers.add(
+                        f"STAGE7:RUNTIME_SCHEMA:{code}:RUNTIME_BINDING_MISMATCH"
+                    )
+
+        # v2 is not enabled by its label. It is authority-eligible only when
+        # the exact runtime binding above is independently reviewed and still
+        # matches the implementation at Stage 7 intake.
 
     blockers.update(ruleset.activation_blockers())
     return tuple(sorted(blockers))

@@ -8,6 +8,7 @@ import pytest
 
 from app.compliance.phase8 import voltage_variation_registration
 from app.compliance.ruleset import RuleSet, load_ruleset
+from app.compliance.runtime_binding import runtime_binding_hash
 from app.compliance.stage7_activation import (
     REQUIRED_REGISTERS,
     REQUIRED_SOURCE_IDS,
@@ -16,6 +17,7 @@ from app.compliance.stage7_activation import (
     inspect_verified_artifact,
     verified_artifact_blockers,
 )
+from app.compliance.suite import implemented_registry
 from app.schemas.foundations import RuleRegistration
 from scripts.verify_phase25_stage7 import verify_stage7
 
@@ -254,7 +256,18 @@ def synthetic_verified_fixture():
                     "test_code": "WEIGHING_PERFORMANCE",
                     "procedure_schema_version": "v1",
                     "observation_schema_version": "v1",
+                    "runtime_binding_sha256": runtime_binding_hash(
+                        implemented_registry().resolve("WEIGHING_PERFORMANCE"),
+                        "v1",
+                        "v1",
+                    ),
+                    "status": "VERIFIED",
+                    "reviewed_by": "independent-test-verifier",
+                    "reviewer_role": "synthetic contract verifier",
+                    "reviewer_organization": "synthetic test organization",
+                    "reviewed_at": verified_at,
                     "evidence_reference": "synthetic-runtime-v1",
+                    "independent_of_implementation": True,
                 }
             ],
         }
@@ -432,8 +445,9 @@ def test_stage7_requires_oiml_and_india_authority_source_evidence():
     }
 
 
-def test_stage7_production_intake_blocks_v2_authority_enablement():
+def test_stage7_runtime_authority_requires_exact_reviewed_binding():
     source = (
         REPO / "backend" / "app" / "compliance" / "stage7_activation.py"
     ).read_text(encoding="utf-8")
-    assert "V2_NOT_AUTHORITY_ENABLED" in source
+    assert "RUNTIME_BINDING_MISMATCH" in source
+    assert "V2_NOT_AUTHORITY_ENABLED" not in source
