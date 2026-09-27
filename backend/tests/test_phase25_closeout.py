@@ -14,6 +14,8 @@ def test_closeout_export_is_candidate_only(tmp_path):
 
     assert result["registers"] == 17
     assert result["sources"] == 5
+    assert result["source_documents_seeded"] == 2
+    assert (output / "01a_source_documents.csv").is_file()
     assert result["rules"] > 0
     assert result["tests"] > 0
     assert result["checklist"] == 27

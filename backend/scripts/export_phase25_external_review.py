@@ -29,6 +29,20 @@ TEMPLATE_PATH = (
     / "oiml_r76_2006_verified"
     / "stage7_verification_manifest.template.json"
 )
+SINGLE_DOCUMENT_SOURCE_IDS = {
+    "SRC-R76-1-2006-E",
+    "SRC-R76-2-2007-E",
+}
+SOURCE_DOCUMENT_FIELDS = [
+    "source_id",
+    "document_id",
+    "identity",
+    "official_url",
+    "sha256",
+    "acquired_at",
+    "acquisition_reference",
+    "document_notes",
+]
 
 
 def _write_csv(path: Path, fieldnames: list[str], rows: list[dict]) -> None:
@@ -66,28 +80,48 @@ def export_pack(output: Path) -> dict:
     )
 
     source_rows = []
+    source_document_rows = []
     for row in template["source_evidence"]:
+        source_id = row["source_id"]
         source_rows.append(
             {
-                "source_id": row["source_id"],
+                "source_id": source_id,
                 "part": row["part"],
                 "edition": row["edition"],
-                "official_url": row["official_url"],
+                "discovery_url": row["official_url"],
                 "identity": "",
-                "sha256": "",
-                "acquired_at": "",
-                "acquisition_reference": "",
+                "current_through": "",
+                "amendment_set_complete": "false",
                 "verified_by": "",
                 "verified_at": "",
                 "evidence_reference": "",
                 "independent_of_implementation": "false",
                 "review_status": "PENDING",
+                "review_notes": "",
             }
         )
+        if source_id in SINGLE_DOCUMENT_SOURCE_IDS:
+            source_document_rows.append(
+                {
+                    "source_id": source_id,
+                    "document_id": "principal",
+                    "identity": "",
+                    "official_url": row["official_url"],
+                    "sha256": "",
+                    "acquired_at": "",
+                    "acquisition_reference": "",
+                    "document_notes": "",
+                }
+            )
     _write_csv(
         output / "01_source_evidence.csv",
         list(source_rows[0]),
         source_rows,
+    )
+    _write_csv(
+        output / "01a_source_documents.csv",
+        SOURCE_DOCUMENT_FIELDS,
+        source_document_rows,
     )
 
     register_rows = []
@@ -261,6 +295,7 @@ def export_pack(output: Path) -> dict:
                 "review_status": "PENDING",
                 "reviewed_by": "",
                 "reviewed_at": "",
+                "independent_of_implementation": "false",
                 "review_notes": "",
             }
         )
@@ -282,17 +317,22 @@ treat these candidate rows as authoritative.
 
 The reviewer completes:
 
-1. `01_source_evidence.csv`
-2. `02_register_signoff.csv`
-3. `03_rule_review.csv`
-4. `04_test_review.csv`
-5. `05_checklist_review.csv`
-6. `06_runtime_schema_review.csv`
+1. `01_source_evidence.csv` — logical source-family sign-off
+2. `01a_source_documents.csv` — one row per actual controlled PDF/Gazette document
+3. `02_register_signoff.csv`
+4. `03_rule_review.csv`
+5. `04_test_review.csv`
+6. `05_checklist_review.csv`
+7. `06_runtime_schema_review.csv`
 
 Do not overwrite candidate columns. Fill only the review/verified columns.
 
-The source acquisitions must be retained outside this CSV pack with their exact
-bytes and SHA-256 values.
+Each actual source document must have its own identity, official URL, SHA-256,
+acquisition timestamp and acquisition reference. A logical amended rule family
+must not be represented by one SHA-256. The independent reviewer must add all
+principal/amendment document rows needed for the family and explicitly attest in
+`01_source_evidence.csv` that the amendment set is complete through the stated
+`current_through` date. Exact source bytes must be retained outside this CSV pack.
 
 A developer, AI model, extraction script, or synthetic test is not an
 independent regulatory verifier.
@@ -301,9 +341,11 @@ After review, run:
 
 `uv run python -m scripts.validate_phase25_external_review --input <pack>`
 
-A passing review-pack validator still does not activate a ruleset. The reviewed
-content must then be assembled into the immutable `verified-v1` artifact and
-must pass the existing Stage 7 intake/registration/activation gates.
+A passing review-pack validator still does not activate a ruleset. Runtime
+schema selection must be independently reviewed, and passing this validator does
+not authority-enable a schema version. The reviewed content must then be assembled
+into the immutable `verified-v1` artifact and pass the separate fail-closed Stage 7
+intake/registration/activation gates.
 """
     (output / "README.md").write_text(readme, encoding="utf-8")
 
@@ -315,6 +357,7 @@ must pass the existing Stage 7 intake/registration/activation gates.
         "runtime_schemas": len(runtime_rows),
         "registers": len(register_rows),
         "sources": len(source_rows),
+        "source_documents_seeded": len(source_document_rows),
     }
 
 

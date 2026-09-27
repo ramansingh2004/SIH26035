@@ -63,7 +63,15 @@ from app.compliance.phase11 import EnduranceContext, EnduranceObservation
 from app.compliance.planning import RequirementPlan
 from app.compliance.repeatability import RepeatabilityContext, RepeatabilityObservation
 from app.compliance.tare import TareContext, TareObservation
-from app.compliance.weighing import MeasurementTime, WeighingContext, WeighingObservation
+from app.compliance.weighing import (
+    MeasurementTime,
+    StaticTemperatureWeighingContext,
+    StaticTemperatureWeighingObservation,
+    WeighingContext,
+    WeighingContextV2,
+    WeighingObservation,
+    WeighingObservationV2,
+)
 from app.schemas.identity import Page, Schema
 
 Reason = Annotated[str, Field(min_length=1, max_length=2000, pattern=r"\S")]
@@ -99,8 +107,19 @@ class SelectRun(ReasonRequest):
     run_id: UUID
 
 
+WeighingObservationV2Payload = Annotated[
+    WeighingObservationV2 | StaticTemperatureWeighingObservation,
+    Field(discriminator="protocol"),
+]
+
+WeighingObservationPayload = Annotated[
+    WeighingObservation | WeighingObservationV2Payload,
+    Field(discriminator="observation_schema_version"),
+]
+
+
 ObservationPayload = Annotated[
-    WeighingObservation
+    WeighingObservationPayload
     | TemperatureZeroObservation
     | EccentricityObservation
     | RepeatabilityObservation
@@ -154,7 +173,7 @@ class ObservationData(Schema):
         "SPAN_STABILITY",
         "ENDURANCE",
     ]
-    payload_schema_version: Literal["v1"]
+    payload_schema_version: Literal["v1", "v2"]
     payload: ObservationPayload
 
     @model_validator(mode="after")
@@ -345,8 +364,19 @@ class ApplicabilityView(Schema):
     confirmable: bool
 
 
+DigitalWeighingProcedurePayload = Annotated[
+    WeighingContext | WeighingContextV2,
+    Field(discriminator="procedure_schema_version"),
+]
+
+WeighingProcedurePayload = Annotated[
+    DigitalWeighingProcedurePayload | StaticTemperatureWeighingContext,
+    Field(discriminator="procedure_variant"),
+]
+
+
 ProcedurePayload = Annotated[
-    WeighingContext
+    WeighingProcedurePayload
     | TemperatureZeroContext
     | EccentricityContext
     | RepeatabilityContext

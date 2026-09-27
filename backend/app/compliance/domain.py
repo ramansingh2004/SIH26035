@@ -170,6 +170,10 @@ class InstrumentSnapshot(Capacity):
     is_price_computing: StrictBool | None = None
     is_labeling: StrictBool | None = None
     data_storage_device_present: StrictBool | None = None
+    printing_device_present: StrictBool | None = None
+    extended_indication_available: StrictBool | None = None
+    embedded_software_present: StrictBool | None = None
+    loadable_software_present: StrictBool | None = None
     interfaces: tuple[InterfaceSnapshot, ...] | None = None
     peripherals: tuple[Text, ...] | None = None
     components: tuple[ComponentSnapshot, ...] | None = None

@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from typing import Literal
 
@@ -44,30 +44,54 @@ REQUIRED_SOURCE_IDS = {
     "SRC-INDIA-LM-GENERAL",
     "SRC-INDIA-GATC",
 }
+SINGLE_DOCUMENT_SOURCE_IDS = {
+    "SRC-R76-1-2006-E",
+    "SRC-R76-2-2007-E",
+}
 
 
 class Frozen(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
-class SourceAcquisitionEvidence(Frozen):
+class SourceFamilyEvidence(Frozen):
     source_id: str = Field(min_length=1)
     part: str = Field(min_length=1)
     edition: str = Field(min_length=1)
     identity: str = Field(min_length=1)
+    # Landing/discovery URL for the logical source family. Exact document URLs
+    # are carried by SourceDocumentEvidence.
     official_url: str = Field(min_length=1)
-    sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
-    acquired_at: datetime
-    acquisition_reference: str = Field(min_length=1)
+    current_through: date
+    amendment_set_complete: Literal[True]
     verified_by: str = Field(min_length=1)
     verified_at: datetime
     evidence_reference: str = Field(min_length=1)
     independent_of_implementation: Literal[True] = True
 
     @model_validator(mode="after")
+    def review_time_is_coherent(self):
+        if self.verified_at.tzinfo is None:
+            raise ValueError("Source-family verification time must include timezone")
+        if self.current_through > self.verified_at.date():
+            raise ValueError("Source-family current-through date cannot follow verification")
+        return self
+
+
+class SourceDocumentEvidence(Frozen):
+    source_id: str = Field(min_length=1)
+    document_id: str = Field(min_length=1)
+    identity: str = Field(min_length=1)
+    official_url: str = Field(min_length=1)
+    sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    acquired_at: datetime
+    acquisition_reference: str = Field(min_length=1)
+    document_notes: str | None = None
+
+    @model_validator(mode="after")
     def timezone_required(self):
-        if self.acquired_at.tzinfo is None or self.verified_at.tzinfo is None:
-            raise ValueError("Source acquisition/verification times must include timezone")
+        if self.acquired_at.tzinfo is None:
+            raise ValueError("Source-document acquisition time must include timezone")
         return self
 
 
@@ -126,7 +150,8 @@ class Stage7VerificationManifest(Frozen):
     verified_configuration_hash: str = Field(pattern=r"^[a-f0-9]{64}$")
     evidence_package_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     regulatory_signoff: Literal[True]
-    source_evidence: tuple[SourceAcquisitionEvidence, ...] = Field(min_length=5)
+    source_evidence: tuple[SourceFamilyEvidence, ...] = Field(min_length=5)
+    source_documents: tuple[SourceDocumentEvidence, ...]
     register_signoffs: tuple[RegisterSignoff, ...] = Field(min_length=17)
     item_signoffs: tuple[ItemSignoff, ...] = Field(min_length=1)
     runtime_schemas: tuple[RuntimeSchemaSelection, ...] = Field(min_length=1)
@@ -143,14 +168,28 @@ class Stage7VerificationManifest(Frozen):
 
         source_ids = [item.source_id for item in self.source_evidence]
         if len(source_ids) != len(set(source_ids)):
-            raise ValueError("Duplicate source acquisition record")
+            raise ValueError("Duplicate source-family record")
 
-        source_keys = [
-            (item.part, item.edition, item.identity)
-            for item in self.source_evidence
+        source_scopes = [(item.part, item.edition) for item in self.source_evidence]
+        if len(source_scopes) != len(set(source_scopes)):
+            raise ValueError("Duplicate source-family part/edition")
+
+        document_keys = [
+            (item.source_id, item.document_id)
+            for item in self.source_documents
         ]
-        if len(source_keys) != len(set(source_keys)):
-            raise ValueError("Duplicate source identity")
+        if len(document_keys) != len(set(document_keys)):
+            raise ValueError("Duplicate source-document record")
+
+        family_by_id = {item.source_id: item for item in self.source_evidence}
+        documented_source_ids = {item.source_id for item in self.source_documents}
+        if not documented_source_ids <= family_by_id.keys():
+            raise ValueError("Source document references unknown source family")
+        if set(family_by_id) != documented_source_ids:
+            raise ValueError("Every source family requires controlled source documents")
+        for document in self.source_documents:
+            if document.acquired_at > family_by_id[document.source_id].verified_at:
+                raise ValueError("Source document acquired after source-family verification")
 
         runtime_codes = [item.test_code for item in self.runtime_schemas]
         if len(runtime_codes) != len(set(runtime_codes)):
@@ -170,6 +209,16 @@ class Stage7VerificationManifest(Frozen):
 
     def runtime_schema_map(self) -> dict[str, RuntimeSchemaSelection]:
         return {item.test_code: item for item in self.runtime_schemas}
+
+    def source_document_map(self) -> dict[str, tuple[SourceDocumentEvidence, ...]]:
+        return {
+            source.source_id: tuple(
+                document
+                for document in self.source_documents
+                if document.source_id == source.source_id
+            )
+            for source in self.source_evidence
+        }
 
 
 @dataclass(frozen=True)
@@ -191,8 +240,8 @@ def _item_key(item_type: str, key: str) -> tuple[str, str]:
     return item_type, key
 
 
-def _source_key(source) -> tuple[str, str, str]:
-    return source.part, source.edition, source.identity
+def _source_scope(source) -> tuple[str, str]:
+    return source.part, source.edition
 
 
 def _is_synthetic(ruleset: RuleSet) -> bool:
@@ -259,12 +308,20 @@ def verified_artifact_blockers(
     if production and not REQUIRED_SOURCE_IDS <= source_ids:
         blockers.add("STAGE7:REQUIRED_SOURCE_EVIDENCE_MISSING")
 
+    documents_by_source = manifest.source_document_map()
+    for source_id in source_ids:
+        documents = documents_by_source.get(source_id, ())
+        if not documents:
+            blockers.add(f"STAGE7:SOURCE_DOCUMENTS_MISSING:{source_id}")
+        if source_id in SINGLE_DOCUMENT_SOURCE_IDS and len(documents) != 1:
+            blockers.add(f"STAGE7:SINGLE_DOCUMENT_SOURCE_REQUIRED:{source_id}")
+
     source_map = {
-        (item.part, item.edition, item.identity): item
+        (item.part, item.edition): item
         for item in manifest.source_evidence
     }
     for source in ruleset.metadata.standard_parts:
-        evidence = source_map.get(_source_key(source))
+        evidence = source_map.get(_source_scope(source))
         if evidence is None:
             blockers.add(
                 "STAGE7:SOURCE_EVIDENCE_MISSING:"
@@ -273,9 +330,16 @@ def verified_artifact_blockers(
                 + source.edition
             )
             continue
-        if not source.digest or evidence.sha256 != source.digest:
+        matching_documents = [
+            document
+            for document in documents_by_source[evidence.source_id]
+            if document.identity == source.identity
+            and source.digest
+            and document.sha256 == source.digest
+        ]
+        if not matching_documents:
             blockers.add(
-                "STAGE7:SOURCE_DIGEST_MISMATCH:"
+                "STAGE7:SOURCE_DOCUMENT_MISMATCH:"
                 + source.part
                 + ":"
                 + source.edition
@@ -487,6 +551,9 @@ __all__ = [
     "MANIFEST_NAME",
     "REQUIRED_REGISTERS",
     "REQUIRED_SOURCE_IDS",
+    "SINGLE_DOCUMENT_SOURCE_IDS",
+    "SourceDocumentEvidence",
+    "SourceFamilyEvidence",
     "Stage7Readiness",
     "Stage7VerificationError",
     "Stage7VerificationManifest",

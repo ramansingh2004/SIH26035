@@ -20,7 +20,7 @@ from app.compliance.planning import RequirementPlanner
 from app.compliance.ruleset import RuleSet
 from app.compliance.suite import implemented_registry
 from app.compliance.weighing import CODE as WEIGHING_CODE
-from app.compliance.weighing import WeighingContext
+from app.compliance.weighing import initial_weighing_context
 from app.core.concurrency import etag, require_match
 from app.core.errors import AppError, denied, missing
 from app.models import (
@@ -522,22 +522,6 @@ class TestingService:
                     and slot.section_number <= 15
                     and slot.test_code not in groups
                 ):
-                    context = {}
-                    if slot.test_code == WEIGHING_CODE:
-                        if slot.range_no is None:
-                            reject(
-                                "INVALID_RANGE_PLAN",
-                                "Section 1 requires an explicit selected range",
-                                422,
-                            )
-                        context = normalize(
-                            WeighingContext(
-                                range_no=slot.range_no,
-                                scenario=slot.scenario,
-                                evaluation_context=row.evaluation_context,
-                                stages=(),
-                            )
-                        )
                     registration = self.engine_for(row).registry.find(slot.test_code)
                     if registration is None:
                         observation_version = procedure_version = "UNIMPLEMENTED"
@@ -560,6 +544,30 @@ class TestingService:
                                 "EVALUATOR_SCHEMA_AMBIGUOUS",
                                 "Implemented evaluator must resolve one runtime "
                                 "schema version for the slot",
+                                500,
+                            )
+                    context = {}
+                    if slot.test_code == WEIGHING_CODE:
+                        if slot.range_no is None:
+                            reject(
+                                "INVALID_RANGE_PLAN",
+                                "Section 1 requires an explicit selected range",
+                                422,
+                            )
+                        try:
+                            context = normalize(
+                                initial_weighing_context(
+                                    range_no=slot.range_no,
+                                    scenario=slot.scenario,
+                                    evaluation_context=row.evaluation_context,
+                                    procedure_variant=slot.procedure_variant,
+                                    procedure_schema_version=procedure_version,
+                                )
+                            )
+                        except ValueError:
+                            reject(
+                                "EVALUATOR_SCHEMA_AMBIGUOUS",
+                                "Section 1 runtime schema does not support the pinned slot",
                                 500,
                             )
                     run = TestRun(

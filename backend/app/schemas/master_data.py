@@ -86,6 +86,10 @@ class InstrumentMetadata(Schema):
     is_price_computing: bool | None = None
     is_labeling: bool | None = None
     data_storage_device_present: bool | None = None
+    printing_device_present: bool | None = None
+    extended_indication_available: bool | None = None
+    embedded_software_present: bool | None = None
+    loadable_software_present: bool | None = None
     interfaces: list[InterfacePort] | None = Field(None, max_length=100)
     peripherals: list[Text] | None = Field(None, max_length=100)
     battery_charging_during_operation: bool | None = None

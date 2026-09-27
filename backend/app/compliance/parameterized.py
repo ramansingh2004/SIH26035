@@ -157,7 +157,12 @@ def resolve_mass_expression(
 
 
 class TemperatureExpression(Frozen):
-    basis: Literal["ABSOLUTE_C", "DECLARED_MIN", "DECLARED_MAX"]
+    basis: Literal[
+        "ABSOLUTE_C",
+        "DECLARED_MIN",
+        "DECLARED_MAX",
+        "DECLARED_MEAN",
+    ]
     value: Number | None = None
 
     @model_validator(mode="after")
@@ -165,7 +170,7 @@ class TemperatureExpression(Frozen):
         if self.basis == "ABSOLUTE_C" and self.value is None:
             raise ValueError("Absolute temperature requires a value")
         if self.basis != "ABSOLUTE_C" and self.value is not None:
-            raise ValueError("Declared temperature bounds cannot carry an absolute value")
+            raise ValueError("Declared temperature expressions cannot carry an absolute value")
         return self
 
 
@@ -179,9 +184,26 @@ def resolve_temperature_expression(
         if instrument.declared_temp_min_c is None:
             raise PolicyResolutionError("Declared minimum temperature is required")
         return instrument.declared_temp_min_c
-    if instrument.declared_temp_max_c is None:
-        raise PolicyResolutionError("Declared maximum temperature is required")
-    return instrument.declared_temp_max_c
+    if expression.basis == "DECLARED_MAX":
+        if instrument.declared_temp_max_c is None:
+            raise PolicyResolutionError("Declared maximum temperature is required")
+        return instrument.declared_temp_max_c
+    if (
+        instrument.declared_temp_min_c is None
+        or instrument.declared_temp_max_c is None
+    ):
+        raise PolicyResolutionError(
+            "Declared temperature bounds are required for their mean"
+        )
+    return exact(
+        "multiply",
+        exact(
+            "add",
+            instrument.declared_temp_min_c,
+            instrument.declared_temp_max_c,
+        ),
+        "0.5",
+    )
 
 
 class MpeProfileSetV2(Frozen):
@@ -218,6 +240,64 @@ class DirectedLoadExpression(Frozen):
     load: MassExpression
 
 
+class StaticTemperatureStageV2(Frozen):
+    stage_code: Text
+    temperature: TemperatureExpression
+    include_when_declared_min_lte_c: Number | None = None
+
+
+class ResolvedStaticTemperatureStage(Frozen):
+    stage_code: Text
+    temperature_c: Number
+
+
+class StaticTemperatureProcedureV2(Frozen):
+    stage_sequence: tuple[StaticTemperatureStageV2, ...] = Field(min_length=2)
+    minimum_exposure_after_stability_seconds: Number = Field(ge=0)
+    maximum_transition_rate_c_per_minute: Number = Field(gt=0)
+    steady_temperature_span_fraction: Number = Field(gt=0)
+    steady_temperature_span_cap_c: Number = Field(gt=0)
+    steady_temperature_max_rate_c_per_hour: Number = Field(gt=0)
+    high_temperature_stage_code: Text
+    maximum_high_temperature_absolute_humidity_g_m3: Number = Field(gt=0)
+    require_free_air_conditions: StrictBool
+    require_class_i_barometric_pressure_accounting: StrictBool
+
+    @model_validator(mode="after")
+    def stage_contract(self):
+        codes = [stage.stage_code for stage in self.stage_sequence]
+        if len(codes) != len(set(codes)):
+            raise ValueError("Static-temperature stage codes must be unique")
+        if self.high_temperature_stage_code not in set(codes):
+            raise ValueError("High-temperature stage must exist in the stage sequence")
+        return self
+
+
+def resolve_static_temperature_stages(
+    procedure: StaticTemperatureProcedureV2,
+    instrument: InstrumentSnapshot,
+) -> tuple[ResolvedStaticTemperatureStage, ...]:
+    resolved = []
+    for stage in procedure.stage_sequence:
+        threshold = stage.include_when_declared_min_lte_c
+        if threshold is not None:
+            if instrument.declared_temp_min_c is None:
+                raise PolicyResolutionError(
+                    "Declared minimum temperature is required for conditional stage coverage"
+                )
+            if instrument.declared_temp_min_c > threshold:
+                continue
+        resolved.append(
+            ResolvedStaticTemperatureStage(
+                stage_code=stage.stage_code,
+                temperature_c=resolve_temperature_expression(stage.temperature, instrument),
+            )
+        )
+    if len(resolved) < 2:
+        raise PolicyResolutionError("Static-temperature sequence resolved to too few stages")
+    return tuple(resolved)
+
+
 class WeighingPolicyCaseV2(Frozen):
     selector: PolicySelector
     minimum_count: PositiveInt
@@ -239,6 +319,7 @@ class WeighingPolicyCaseV2(Frozen):
     require_certificate: StrictBool
     require_evidence: StrictBool
     require_monotonic_timestamps: StrictBool
+    static_temperature: StaticTemperatureProcedureV2 | None = None
 
 
 class WeighingPolicyV2(Frozen):
@@ -415,13 +496,17 @@ __all__ = [
     "PolicyResolutionError",
     "PolicySelector",
     "RepeatabilityPolicyV2",
+    "ResolvedStaticTemperatureStage",
     "SensitivityPolicyV2",
+    "StaticTemperatureProcedureV2",
+    "StaticTemperatureStageV2",
     "TemperatureExpression",
     "TemperatureZeroPolicyV2",
     "WeighingPolicyV2",
     "resolve_mass_expression",
     "resolve_mpe_profile",
     "resolve_policy_case",
+    "resolve_static_temperature_stages",
     "resolve_temperature_expression",
     "selector_state",
 ]

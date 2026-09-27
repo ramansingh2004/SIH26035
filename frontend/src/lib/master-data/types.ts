@@ -42,6 +42,10 @@ export type InstrumentMetadata = {
   is_price_computing?: boolean | null;
   is_labeling?: boolean | null;
   data_storage_device_present?: boolean | null;
+  printing_device_present?: boolean | null;
+  extended_indication_available?: boolean | null;
+  embedded_software_present?: boolean | null;
+  loadable_software_present?: boolean | null;
   battery_charging_during_operation?: boolean | null;
   vehicle_powered?: boolean | null;
   vehicle_power_details?: string | null;

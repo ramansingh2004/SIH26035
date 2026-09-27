@@ -11,9 +11,13 @@ import argparse
 import csv
 import hashlib
 import json
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
+from app.compliance.checklist import (
+    ChecklistApplicabilityPolicy,
+    ChecklistApplicabilityPolicyV2,
+)
 from app.compliance.ruleset import load_ruleset
 from app.compliance.stage7_activation import (
     REQUIRED_REGISTERS,
@@ -22,6 +26,19 @@ from app.compliance.stage7_activation import (
 from app.compliance.suite import IMPLEMENTED_TEST_CODES, implemented_registry
 
 SHA64 = set("0123456789abcdef")
+BACKEND = Path(__file__).resolve().parents[1]
+TEMPLATE_PATH = (
+    BACKEND
+    / "app"
+    / "compliance"
+    / "rules"
+    / "oiml_r76_2006_verified"
+    / "stage7_verification_manifest.template.json"
+)
+SINGLE_DOCUMENT_SOURCE_IDS = {
+    "SRC-R76-1-2006-E",
+    "SRC-R76-2-2007-E",
+}
 
 
 def _read(path: Path) -> list[dict[str, str]]:
@@ -49,6 +66,55 @@ def _time(value: str, label: str, blockers: list[str]) -> None:
         blockers.append(f"TIMEZONE_REQUIRED:{label}")
 
 
+def _strict_boolean(value: str, label: str, blockers: list[str]) -> None:
+    if value.strip().lower() not in {"true", "false"}:
+        blockers.append(f"INVALID_BOOLEAN:{label}")
+
+
+def _date(value: str, label: str, blockers: list[str]) -> None:
+    try:
+        date.fromisoformat(value)
+    except (TypeError, ValueError):
+        blockers.append(f"INVALID_DATE:{label}")
+
+
+def _validate_checklist_policy(value: str, prefix: str, blockers: list[str]) -> None:
+    try:
+        policy = json.loads(value)
+    except (json.JSONDecodeError, TypeError):
+        blockers.append(f"INVALID_POLICY_JSON:{prefix}")
+        return
+
+    if not isinstance(policy, dict):
+        blockers.append(f"INVALID_POLICY_STRUCTURE:{prefix}")
+        return
+
+    schema_version = policy.get("schema_version")
+    schema = {
+        "v1": ChecklistApplicabilityPolicy,
+        "v2": ChecklistApplicabilityPolicyV2,
+    }.get(schema_version)
+    if schema is None:
+        blockers.append(f"INVALID_POLICY_SCHEMA:{prefix}")
+        return
+
+    try:
+        schema.model_validate(policy)
+    except ValueError:
+        blockers.append(f"INVALID_POLICY_STRUCTURE:{prefix}")
+
+
+def _runtime_protocols(registrations, *, version: str) -> set[str]:
+    protocols: set[str] = set()
+    for item in registrations:
+        if item.procedure_schema_version != version:
+            continue
+        protocol = item.schema.model_fields["protocol"].default
+        if isinstance(protocol, str):
+            protocols.add(protocol)
+    return protocols
+
+
 def validate_pack(input_dir: Path) -> dict[str, object]:
     input_dir = input_dir.resolve()
     blockers: list[str] = []
@@ -56,6 +122,7 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
     required_files = (
         "00_summary.json",
         "01_source_evidence.csv",
+        "01a_source_documents.csv",
         "02_register_signoff.csv",
         "03_rule_review.csv",
         "04_test_review.csv",
@@ -80,28 +147,79 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
     if source_ids != REQUIRED_SOURCE_IDS:
         blockers.append("SOURCE_SET_MISMATCH")
 
-    for row in source_rows:
-        prefix = f"SOURCE:{row['source_id']}"
-        if row["review_status"] != "VERIFIED":
-            blockers.append(f"NOT_VERIFIED:{prefix}")
+    template = json.loads(TEMPLATE_PATH.read_text(encoding="utf-8"))
+    source_catalog = {row["source_id"]: row for row in template["source_evidence"]}
+
+    source_documents = _read(input_dir / "01a_source_documents.csv")
+    documents_by_source: dict[str, list[dict[str, str]]] = {
+        source_id: [] for source_id in REQUIRED_SOURCE_IDS
+    }
+    document_keys: set[tuple[str, str]] = set()
+    for row in source_documents:
+        source_id = row.get("source_id", "")
+        document_id = row.get("document_id", "")
+        prefix = f"SOURCE_DOCUMENT:{source_id or '<missing>'}:{document_id or '<missing>'}"
         for field in (
+            "source_id",
+            "document_id",
             "identity",
+            "official_url",
             "sha256",
             "acquired_at",
             "acquisition_reference",
+        ):
+            _required(row.get(field, ""), f"{prefix}:{field}", blockers)
+        if source_id not in REQUIRED_SOURCE_IDS:
+            blockers.append(f"UNKNOWN_SOURCE_DOCUMENT_FAMILY:{prefix}")
+            continue
+        key = (source_id, document_id)
+        if document_id and key in document_keys:
+            blockers.append(f"DUPLICATE_SOURCE_DOCUMENT:{prefix}")
+        document_keys.add(key)
+        documents_by_source[source_id].append(row)
+        if row.get("sha256"):
+            _sha(row["sha256"], f"{prefix}:sha256", blockers)
+        if row.get("acquired_at"):
+            _time(row["acquired_at"], f"{prefix}:acquired_at", blockers)
+
+    for row in source_rows:
+        source_id = row["source_id"]
+        prefix = f"SOURCE:{source_id}"
+        if row["review_status"] != "VERIFIED":
+            blockers.append(f"NOT_VERIFIED:{prefix}")
+        expected = source_catalog.get(source_id)
+        if expected is not None:
+            if row["part"] != expected["part"]:
+                blockers.append(f"SOURCE_CANDIDATE_MISMATCH:{prefix}:part")
+            if row["edition"] != expected["edition"]:
+                blockers.append(f"SOURCE_CANDIDATE_MISMATCH:{prefix}:edition")
+            if row["discovery_url"] != expected["official_url"]:
+                blockers.append(f"SOURCE_CANDIDATE_MISMATCH:{prefix}:discovery_url")
+        for field in (
+            "identity",
+            "current_through",
             "verified_by",
             "verified_at",
             "evidence_reference",
         ):
             _required(row[field], f"{prefix}:{field}", blockers)
-        if row["sha256"]:
-            _sha(row["sha256"], f"{prefix}:sha256", blockers)
-        if row["acquired_at"]:
-            _time(row["acquired_at"], f"{prefix}:acquired_at", blockers)
+        if row["current_through"]:
+            _date(row["current_through"], f"{prefix}:current_through", blockers)
         if row["verified_at"]:
             _time(row["verified_at"], f"{prefix}:verified_at", blockers)
+        if row["amendment_set_complete"].lower() != "true":
+            blockers.append(f"AMENDMENT_SET_COMPLETENESS_REQUIRED:{prefix}")
         if row["independent_of_implementation"].lower() != "true":
             blockers.append(f"INDEPENDENCE_REQUIRED:{prefix}")
+
+        documents = documents_by_source[source_id]
+        if not documents:
+            blockers.append(f"SOURCE_DOCUMENTS_REQUIRED:{prefix}")
+        if source_id in SINGLE_DOCUMENT_SOURCE_IDS:
+            if len(documents) != 1:
+                blockers.append(f"SINGLE_DOCUMENT_SOURCE_REQUIRED:{prefix}")
+            elif expected is not None and documents[0]["official_url"] != expected["official_url"]:
+                blockers.append(f"SOURCE_DOCUMENT_URL_MISMATCH:{prefix}")
 
     registers = _read(input_dir / "02_register_signoff.csv")
     register_ids = {row["register_id"] for row in registers}
@@ -184,6 +302,11 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
             _time(row["verified_at"], f"{prefix}:verified_at", blockers)
         if row["independent_of_implementation"].lower() != "true":
             blockers.append(f"INDEPENDENCE_REQUIRED:{prefix}")
+        _strict_boolean(
+            row["supported_after_review"],
+            f"{prefix}:supported_after_review",
+            blockers,
+        )
 
     checklist_rows = _read(input_dir / "05_checklist_review.csv")
     if {row["item_key"] for row in checklist_rows} != {
@@ -218,14 +341,16 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
             _time(row["verified_at"], f"{prefix}:verified_at", blockers)
         if row["independent_of_implementation"].lower() != "true":
             blockers.append(f"INDEPENDENCE_REQUIRED:{prefix}")
-        try:
-            policy = json.loads(row["verified_applicability_policy_json"])
-            if policy.get("schema_version") != "v1":
-                blockers.append(f"INVALID_POLICY_SCHEMA:{prefix}")
-        except Exception:
-            blockers.append(f"INVALID_POLICY_JSON:{prefix}")
-        if row["verified_evidence_required"].lower() not in {"true", "false"}:
-            blockers.append(f"INVALID_EVIDENCE_REQUIRED:{prefix}")
+        _validate_checklist_policy(
+            row["verified_applicability_policy_json"],
+            prefix,
+            blockers,
+        )
+        _strict_boolean(
+            row["verified_evidence_required"],
+            f"{prefix}:verified_evidence_required",
+            blockers,
+        )
 
     runtime_rows = _read(input_dir / "06_runtime_schema_review.csv")
     runtime_codes = {row["test_code"] for row in runtime_rows}
@@ -249,6 +374,9 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
         if row["reviewed_at"]:
             _time(row["reviewed_at"], f"{prefix}:reviewed_at", blockers)
 
+        if row["independent_of_implementation"].lower() != "true":
+            blockers.append(f"INDEPENDENCE_REQUIRED:{prefix}")
+
         registration = registry.resolve(code)
         available_procedure = {
             item.procedure_schema_version for item in registration.contexts.registrations
@@ -256,21 +384,45 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
         available_observation = {
             item.observation_schema_version for item in registration.observations.registrations
         }
-        if row["selected_procedure_schema_version"] not in available_procedure:
+        expected_procedure = ";".join(sorted(available_procedure))
+        expected_observation = ";".join(sorted(available_observation))
+        if row["available_procedure_schema_versions"] != expected_procedure:
+            blockers.append(f"RUNTIME_SCHEMA_CANDIDATE_MISMATCH:{prefix}:procedure")
+        if row["available_observation_schema_versions"] != expected_observation:
+            blockers.append(f"RUNTIME_SCHEMA_CANDIDATE_MISMATCH:{prefix}:observation")
+
+        procedure_version = row["selected_procedure_schema_version"]
+        observation_version = row["selected_observation_schema_version"]
+        if procedure_version not in available_procedure:
             blockers.append(f"PROCEDURE_SCHEMA_UNAVAILABLE:{prefix}")
-        if row["selected_observation_schema_version"] not in available_observation:
+        if observation_version not in available_observation:
             blockers.append(f"OBSERVATION_SCHEMA_UNAVAILABLE:{prefix}")
 
-        # Stage 7 currently keeps authoritative execution on v1.
-        if row["selected_procedure_schema_version"] != "v1":
-            blockers.append(f"AUTHORITATIVE_V1_REQUIRED:{prefix}:procedure")
-        if row["selected_observation_schema_version"] != "v1":
-            blockers.append(f"AUTHORITATIVE_V1_REQUIRED:{prefix}:observation")
+        if (
+            procedure_version in available_procedure
+            and observation_version in available_observation
+        ):
+            procedure_protocols = _runtime_protocols(
+                registration.contexts.registrations,
+                version=procedure_version,
+            )
+            observation_protocols = {
+                item.protocol
+                for item in registration.observations.registrations
+                if item.observation_schema_version == observation_version
+            }
+            if not procedure_protocols & observation_protocols:
+                blockers.append(f"RUNTIME_SCHEMA_PAIR_UNAVAILABLE:{prefix}")
+
+        # This validator checks the independent review selection against the
+        # implemented registry. Authority enablement remains a separate Stage 7
+        # fail-closed decision; schema labels are not regulatory conclusions.
 
     canonical = json.dumps(
         {
             "summary": summary,
             "sources": source_rows,
+            "source_documents": source_documents,
             "registers": registers,
             "rules": rule_rows,
             "tests": test_rows,
@@ -287,6 +439,7 @@ def validate_pack(input_dir: Path) -> dict[str, object]:
         "blockers": tuple(sorted(set(blockers))),
         "review_pack_sha256": hashlib.sha256(canonical).hexdigest(),
         "sources": len(source_rows),
+        "source_documents": len(source_documents),
         "registers": len(registers),
         "rules": len(rule_rows),
         "tests": len(test_rows),

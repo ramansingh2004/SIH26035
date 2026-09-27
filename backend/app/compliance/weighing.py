@@ -37,11 +37,14 @@ from app.compliance.numbers import (
     calculate_error,
     calculate_prerounding_indication,
     compare,
+    exact,
 )
 from app.compliance.parameterized import (
     MpeProfileSetV2,
     PolicyResolutionError,
     WeighingPolicyV2,
+    resolve_policy_case,
+    resolve_static_temperature_stages,
 )
 from app.compliance.registries import (
     ContextRegistration,
@@ -116,6 +119,77 @@ class WeighingObservation(Observation):
     zero_error_g: Number
     direction: Literal["UP", "DOWN"]
     measured_at: MeasurementTime
+
+
+class WeighingContextV2(WeighingContext):
+    procedure_schema_version: Literal["v2"] = "v2"
+    protocol: Literal["WEIGHING_V2"] = "WEIGHING_V2"
+
+
+class StaticTemperatureStageRecord(Frozen):
+    stage_code: Text
+    target_temperature_c: Number
+    temperature_stability_reached_at: MeasurementTime
+    weighing_started_at: MeasurementTime
+    weighing_completed_at: MeasurementTime
+    preloaded: StrictBool | None = None
+    weighing_stabilized: StrictBool | None = None
+    free_air_conditions: StrictBool | None = None
+    absolute_humidity_g_m3: Number | None = Field(None, ge=0)
+    barometric_pressure_accounted: StrictBool | None = None
+
+    @model_validator(mode="after")
+    def chronology(self):
+        if not (
+            self.temperature_stability_reached_at
+            <= self.weighing_started_at
+            <= self.weighing_completed_at
+        ):
+            raise ValueError("Static-temperature stage timestamps are out of order")
+        return self
+
+
+class StaticTemperatureWeighingContext(WeighingContextV2):
+    procedure_variant: Literal["STATIC_TEMPERATURE"] = "STATIC_TEMPERATURE"
+    protocol: Literal["WEIGHING_STATIC_TEMPERATURE_V2"] = (
+        "WEIGHING_STATIC_TEMPERATURE_V2"
+    )
+    temperature_stages: tuple[StaticTemperatureStageRecord, ...] = ()
+
+
+class WeighingObservationV2(WeighingObservation):
+    protocol: Literal["WEIGHING_V2"] = "WEIGHING_V2"
+    observation_schema_version: Literal["v2"] = "v2"
+
+
+class StaticTemperatureWeighingObservation(WeighingObservationV2):
+    protocol: Literal["WEIGHING_STATIC_TEMPERATURE_V2"] = (
+        "WEIGHING_STATIC_TEMPERATURE_V2"
+    )
+    temperature_stage: Text
+
+
+def initial_weighing_context(
+    *,
+    range_no: int,
+    scenario: str,
+    evaluation_context: str,
+    procedure_variant: str,
+    procedure_schema_version: str,
+):
+    common = dict(
+        range_no=range_no,
+        scenario=scenario,
+        evaluation_context=evaluation_context,
+        stages=(),
+    )
+    if procedure_schema_version == "v1" and procedure_variant == "DIGITAL_PRE_ROUNDING":
+        return WeighingContext(**common)
+    if procedure_schema_version == "v2" and procedure_variant == "DIGITAL_PRE_ROUNDING":
+        return WeighingContextV2(**common)
+    if procedure_schema_version == "v2" and procedure_variant == "STATIC_TEMPERATURE":
+        return StaticTemperatureWeighingContext(**common)
+    raise ValueError("Unsupported Section 1 procedure variant/schema selection")
 
 
 class CoveragePoint(Frozen):
@@ -207,6 +281,79 @@ def _weighing_policy(*, instrument_snapshot, procedure_context, ruleset):
         ) from exc
 
 
+def _static_temperature_policy(*, instrument_snapshot, procedure_context, ruleset):
+    kind, policy = rule_policy_variant(
+        ruleset,
+        POLICY,
+        (
+            ("weighing_procedure_v1", WeighingPolicy),
+            ("weighing_procedure_v2", WeighingPolicyV2),
+        ),
+    )
+    if kind != "weighing_procedure_v2":
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(POLICY,),
+                rule_references=dependencies(ruleset, (POLICY,)).rule_references,
+            )
+        )
+    try:
+        case = resolve_policy_case(
+            policy.cases,
+            instrument_snapshot,
+            procedure_context.evaluation_context,
+        )
+        if case.static_temperature is None:
+            raise PolicyResolutionError(
+                "Verified Section 1 policy does not define static-temperature coverage"
+            )
+        if (
+            instrument_snapshot.declared_temp_min_c is None
+            or instrument_snapshot.declared_temp_max_c is None
+        ):
+            raise PolicyResolutionError(
+                "Declared temperature bounds are required for static-temperature coverage"
+            )
+        return (
+            case.static_temperature,
+            resolve_static_temperature_stages(
+                case.static_temperature,
+                instrument_snapshot,
+            ),
+        )
+    except PolicyResolutionError as exc:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(POLICY,),
+                rule_references=dependencies(ruleset, (POLICY,)).rule_references,
+            )
+        ) from exc
+
+
+def _elapsed_seconds(later: datetime, earlier: datetime):
+    delta = later - earlier
+    microseconds = (
+        (delta.days * 86400 + delta.seconds) * 1_000_000 + delta.microseconds
+    )
+    return exact("multiply", str(microseconds), "0.000001")
+
+
+def _rate_within(
+    *,
+    earlier_temperature,
+    later_temperature,
+    elapsed_seconds,
+    limit,
+    seconds_per_limit_unit,
+):
+    if elapsed_seconds <= 0:
+        return False
+    delta = exact("subtract", later_temperature, earlier_temperature).copy_abs()
+    return exact("multiply", delta, seconds_per_limit_unit) <= exact(
+        "multiply", limit, elapsed_seconds
+    )
+
+
 @dataclass(frozen=True)
 class WeighingEvaluator:
     def required_rules(self, **kwargs):
@@ -222,7 +369,14 @@ class WeighingEvaluator:
             procedure_variant=procedure_context.procedure_variant,
         )
 
-    def validate_procedure(self, *, instrument_snapshot, procedure_context, observations, ruleset):
+    def validate_procedure(
+        self,
+        *,
+        instrument_snapshot,
+        procedure_context,
+        observations,
+        ruleset,
+    ):
         policy = _weighing_policy(
             instrument_snapshot=instrument_snapshot,
             procedure_context=procedure_context,
@@ -243,9 +397,11 @@ class WeighingEvaluator:
             if not condition:
                 issues.append(
                     ProcedureValidationIssue(
-                        code="MISSING_REQUIRED_OBSERVATIONS"
-                        if missing
-                        else "EVALUATION_NOT_POSSIBLE",
+                        code=(
+                            "MISSING_REQUIRED_OBSERVATIONS"
+                            if missing
+                            else "EVALUATION_NOT_POSSIBLE"
+                        ),
                         category=category,
                         reason=reason,
                         sequence_no=sequence,
@@ -253,12 +409,74 @@ class WeighingEvaluator:
                     )
                 )
 
-        check(
-            len(rows) >= policy.minimum_count,
-            "COUNT",
-            "Required observation count missing",
-            missing=True,
-        )
+        def validate_load_cycle(cycle_rows, *, label):
+            check(
+                len(cycle_rows) >= policy.minimum_count,
+                "COUNT",
+                f"Required observation count missing for {label}",
+                missing=True,
+            )
+            observed_stages = tuple(
+                row.direction
+                for index, row in enumerate(cycle_rows)
+                if index == 0 or cycle_rows[index - 1].direction != row.direction
+            )
+            check(
+                observed_stages == policy.stages,
+                "ORDER",
+                f"Loading/unloading stage order incomplete for {label}",
+            )
+            coverage = {(row.direction, row.load_g) for row in cycle_rows}
+            for point in policy.required_loads + policy.transition_loads:
+                check(
+                    (point.direction, point.load_g) in coverage,
+                    "LOAD_COVERAGE",
+                    f"Required load/transition missing for {label}",
+                    missing=True,
+                )
+            for direction in policy.stages:
+                if policy.require_max:
+                    check(
+                        (direction, selected.max_capacity_g) in coverage,
+                        "LOAD_COVERAGE",
+                        f"Max coverage missing for {label}",
+                        missing=True,
+                    )
+                if policy.require_min:
+                    check(
+                        selected.min_capacity_g is not None
+                        and (direction, selected.min_capacity_g) in coverage,
+                        "LOAD_COVERAGE",
+                        f"Min coverage missing for {label}",
+                        missing=True,
+                    )
+            for previous, row in zip(cycle_rows, cycle_rows[1:], strict=False):
+                if previous.direction == row.direction:
+                    check(
+                        (
+                            row.load_g >= previous.load_g
+                            if row.direction == "UP"
+                            else row.load_g <= previous.load_g
+                        ),
+                        "ORDER",
+                        f"Load order invalid for {label}",
+                        row.sequence_no,
+                    )
+                if policy.require_monotonic_timestamps:
+                    check(
+                        row.measured_at >= previous.measured_at,
+                        "TIMING",
+                        f"Measurement time order invalid for {label}",
+                        row.sequence_no,
+                    )
+            for row in cycle_rows:
+                check(
+                    row.load_g <= selected.max_capacity_g,
+                    "RANGE",
+                    "Load exceeds selected range",
+                    row.sequence_no,
+                )
+
         check(
             ctx.evaluation_context == policy.evaluation_context,
             "STAGE",
@@ -271,69 +489,9 @@ class WeighingEvaluator:
             "Indication/range classification not covered",
         )
         check(
-            ctx.stages == policy.stages, "STAGE", "Declared stages differ from verified procedure"
-        )
-        observed_stages = tuple(
-            r.direction
-            for i, r in enumerate(rows)
-            if i == 0 or rows[i - 1].direction != r.direction
-        )
-        check(observed_stages == policy.stages, "ORDER", "Loading/unloading stage order incomplete")
-        coverage = {(r.direction, r.load_g) for r in rows}
-        for point in policy.required_loads + policy.transition_loads:
-            check(
-                (point.direction, point.load_g) in coverage,
-                "LOAD_COVERAGE",
-                "Required load/transition missing",
-                missing=True,
-            )
-        for direction in policy.stages:
-            if policy.require_max:
-                check(
-                    (direction, selected.max_capacity_g) in coverage,
-                    "LOAD_COVERAGE",
-                    "Max coverage missing",
-                    missing=True,
-                )
-            if policy.require_min:
-                check(
-                    selected.min_capacity_g is not None
-                    and (direction, selected.min_capacity_g) in coverage,
-                    "LOAD_COVERAGE",
-                    "Min coverage missing",
-                    missing=True,
-                )
-        for previous, row in zip(rows, rows[1:], strict=False):
-            if previous.direction == row.direction:
-                check(
-                    row.load_g >= previous.load_g
-                    if row.direction == "UP"
-                    else row.load_g <= previous.load_g,
-                    "ORDER",
-                    "Load order invalid",
-                    row.sequence_no,
-                )
-            if policy.require_monotonic_timestamps:
-                check(
-                    row.measured_at >= previous.measured_at,
-                    "TIMING",
-                    "Measurement time order invalid",
-                    row.sequence_no,
-                )
-        for row in rows:
-            check(
-                row.load_g <= selected.max_capacity_g,
-                "RANGE",
-                "Load exceeds selected range",
-                row.sequence_no,
-            )
-        check(
-            not policy.require_preload or ctx.preloaded is True, "STAGE", "Preloading not confirmed"
-        )
-        check(
-            not policy.require_stabilization or ctx.stabilized is True,
-            "STABILIZATION",
-            "Stabilization not confirmed",
+            ctx.stages == policy.stages,
+            "STAGE",
+            "Declared stages differ from verified procedure",
         )
         check(
             ctx.warmed_up_seconds is not None
@@ -349,7 +507,11 @@ class WeighingEvaluator:
         )
         for environment in ctx.environment:
             for value, lower, upper in (
-                (environment.temperature_c, policy.temperature_min_c, policy.temperature_max_c),
+                (
+                    environment.temperature_c,
+                    policy.temperature_min_c,
+                    policy.temperature_max_c,
+                ),
                 (
                     environment.relative_humidity_percent,
                     policy.humidity_min_percent,
@@ -362,20 +524,245 @@ class WeighingEvaluator:
                         "ENVIRONMENT",
                         "Environment outside verified bounds",
                     )
-        check(not policy.require_equipment or bool(ctx.equipment), "EQUIPMENT", "Equipment missing")
+        check(
+            not policy.require_equipment or bool(ctx.equipment),
+            "EQUIPMENT",
+            "Equipment missing",
+        )
         if policy.require_certificate:
             check(
                 bool(ctx.equipment)
                 and all(
-                    e.calibration_certificate_no and e.certificate_content_hash
-                    for e in ctx.equipment
+                    item.calibration_certificate_no and item.certificate_content_hash
+                    for item in ctx.equipment
                 ),
                 "EQUIPMENT",
                 "Calibration evidence missing",
             )
         check(
-            not policy.require_evidence or bool(ctx.evidence_hashes), "EVIDENCE", "Evidence missing"
+            not policy.require_evidence or bool(ctx.evidence_hashes),
+            "EVIDENCE",
+            "Evidence missing",
         )
+
+        if isinstance(ctx, StaticTemperatureWeighingContext):
+            static_policy, resolved_stages = _static_temperature_policy(
+                instrument_snapshot=instrument_snapshot,
+                procedure_context=ctx,
+                ruleset=ruleset,
+            )
+            expected_codes = tuple(item.stage_code for item in resolved_stages)
+            stage_records = {item.stage_code: item for item in ctx.temperature_stages}
+            check(
+                tuple(item.stage_code for item in ctx.temperature_stages) == expected_codes,
+                "STAGE",
+                "Static-temperature stage sequence incomplete or out of order",
+                missing=True,
+            )
+            observed_codes = tuple(
+                row.temperature_stage
+                for index, row in enumerate(rows)
+                if index == 0
+                or rows[index - 1].temperature_stage != row.temperature_stage
+            )
+            check(
+                observed_codes == expected_codes,
+                "ORDER",
+                "Static-temperature observation sequence incomplete or out of order",
+                missing=True,
+            )
+
+            if policy.require_monotonic_timestamps:
+                for previous, row in zip(rows, rows[1:], strict=False):
+                    check(
+                        row.measured_at >= previous.measured_at,
+                        "TIMING",
+                        "Measurement time order invalid across temperature stages",
+                        row.sequence_no,
+                    )
+
+            declared_span = exact(
+                "subtract",
+                instrument_snapshot.declared_temp_max_c,
+                instrument_snapshot.declared_temp_min_c,
+            )
+            steady_span_limit = min(
+                exact(
+                    "multiply",
+                    declared_span,
+                    static_policy.steady_temperature_span_fraction,
+                ),
+                static_policy.steady_temperature_span_cap_c,
+            )
+
+            resolved_by_code = {item.stage_code: item for item in resolved_stages}
+            for code in expected_codes:
+                record = stage_records.get(code)
+                stage_rows = tuple(row for row in rows if row.temperature_stage == code)
+                check(
+                    bool(stage_rows),
+                    "COUNT",
+                    f"No weighing observations for {code}",
+                    missing=True,
+                )
+                if stage_rows:
+                    validate_load_cycle(stage_rows, label=code)
+                if record is None:
+                    continue
+                check(
+                    record.target_temperature_c == resolved_by_code[code].temperature_c,
+                    "ENVIRONMENT",
+                    f"Target temperature does not match verified policy for {code}",
+                )
+                check(
+                    _elapsed_seconds(
+                        record.weighing_started_at,
+                        record.temperature_stability_reached_at,
+                    )
+                    >= static_policy.minimum_exposure_after_stability_seconds,
+                    "TIMING",
+                    f"Required post-stability exposure not met for {code}",
+                )
+                check(
+                    not policy.require_preload or record.preloaded is True,
+                    "STAGE",
+                    f"Preloading not confirmed for {code}",
+                )
+                check(
+                    not policy.require_stabilization or record.weighing_stabilized is True,
+                    "STABILIZATION",
+                    f"Weighing stabilization not confirmed for {code}",
+                )
+                check(
+                    not static_policy.require_free_air_conditions
+                    or record.free_air_conditions is True,
+                    "ENVIRONMENT",
+                    f"Free-air conditions not confirmed for {code}",
+                )
+                if code == static_policy.high_temperature_stage_code:
+                    check(
+                        record.absolute_humidity_g_m3 is not None
+                        and record.absolute_humidity_g_m3
+                        <= static_policy.maximum_high_temperature_absolute_humidity_g_m3,
+                        "ENVIRONMENT",
+                        "High-temperature absolute humidity exceeds verified limit",
+                    )
+                if (
+                    static_policy.require_class_i_barometric_pressure_accounting
+                    and instrument_snapshot.accuracy_class == "I"
+                ):
+                    check(
+                        record.barometric_pressure_accounted is True,
+                        "ENVIRONMENT",
+                        f"Barometric-pressure accounting not confirmed for {code}",
+                    )
+
+                for row in stage_rows:
+                    check(
+                        record.weighing_started_at
+                        <= row.measured_at
+                        <= record.weighing_completed_at,
+                        "TIMING",
+                        f"Observation lies outside the declared weighing window for {code}",
+                        row.sequence_no,
+                    )
+
+                stage_environment = tuple(
+                    sorted(
+                        (
+                            item
+                            for item in ctx.environment
+                            if item.phase == code
+                            and item.temperature_c is not None
+                            and record.temperature_stability_reached_at
+                            <= item.measured_at
+                            <= record.weighing_completed_at
+                        ),
+                        key=lambda item: item.measured_at,
+                    )
+                )
+                if policy.require_environment:
+                    check(
+                        len(stage_environment) >= 2,
+                        "ENVIRONMENT",
+                        f"At least two traceable temperature readings are required for {code}",
+                        missing=True,
+                    )
+                if stage_environment:
+                    temperatures = [item.temperature_c for item in stage_environment]
+                    check(
+                        exact("subtract", max(temperatures), min(temperatures))
+                        <= steady_span_limit,
+                        "ENVIRONMENT",
+                        f"Temperature was not steady for {code}",
+                    )
+                    for previous, current in zip(
+                        stage_environment, stage_environment[1:], strict=False
+                    ):
+                        seconds = _elapsed_seconds(current.measured_at, previous.measured_at)
+                        check(
+                            _rate_within(
+                                earlier_temperature=previous.temperature_c,
+                                later_temperature=current.temperature_c,
+                                elapsed_seconds=seconds,
+                                limit=static_policy.steady_temperature_max_rate_c_per_hour,
+                                seconds_per_limit_unit="3600",
+                            ),
+                            "ENVIRONMENT",
+                            f"Steady-temperature rate exceeded for {code}",
+                        )
+                    if (
+                        static_policy.require_class_i_barometric_pressure_accounting
+                        and instrument_snapshot.accuracy_class == "I"
+                    ):
+                        check(
+                            all(item.pressure_hpa is not None for item in stage_environment),
+                            "ENVIRONMENT",
+                            f"Barometric-pressure readings missing for {code}",
+                            missing=True,
+                        )
+
+            records = list(ctx.temperature_stages)
+            for previous, current in zip(records, records[1:], strict=False):
+                check(
+                    previous.weighing_completed_at
+                    <= current.temperature_stability_reached_at,
+                    "TIMING",
+                    "Static-temperature stage chronology overlaps",
+                )
+
+            temperature_environment = sorted(
+                (item for item in ctx.environment if item.temperature_c is not None),
+                key=lambda item: item.measured_at,
+            )
+            for previous, current in zip(
+                temperature_environment, temperature_environment[1:], strict=False
+            ):
+                seconds = _elapsed_seconds(current.measured_at, previous.measured_at)
+                check(
+                    _rate_within(
+                        earlier_temperature=previous.temperature_c,
+                        later_temperature=current.temperature_c,
+                        elapsed_seconds=seconds,
+                        limit=static_policy.maximum_transition_rate_c_per_minute,
+                        seconds_per_limit_unit="60",
+                    ),
+                    "ENVIRONMENT",
+                    "Temperature transition rate exceeded verified policy",
+                )
+        else:
+            validate_load_cycle(rows, label="weighing procedure")
+            check(
+                not policy.require_preload or ctx.preloaded is True,
+                "STAGE",
+                "Preloading not confirmed",
+            )
+            check(
+                not policy.require_stabilization or ctx.stabilized is True,
+                "STABILIZATION",
+                "Stabilization not confirmed",
+            )
+
         return tuple(issues)
 
     def evaluate(self, *, instrument_snapshot, procedure_context, observations, ruleset):
@@ -448,12 +835,30 @@ def section1_registration():
         CODE,
         WeighingEvaluator(),
         ProcedureContextRegistry(
-            (ContextRegistration(CODE, "DIGITAL_PRE_ROUNDING", "v1", WeighingContext),)
+            (
+                ContextRegistration(CODE, "DIGITAL_PRE_ROUNDING", "v1", WeighingContext),
+                ContextRegistration(CODE, "DIGITAL_PRE_ROUNDING", "v2", WeighingContextV2),
+                ContextRegistration(
+                    CODE,
+                    "STATIC_TEMPERATURE",
+                    "v2",
+                    StaticTemperatureWeighingContext,
+                ),
+            )
         ),
         ObservationSchemaRegistry(
-            (ObservationRegistration(CODE, "WEIGHING_V1", "v1", WeighingObservation),)
+            (
+                ObservationRegistration(CODE, "WEIGHING_V1", "v1", WeighingObservation),
+                ObservationRegistration(CODE, "WEIGHING_V2", "v2", WeighingObservationV2),
+                ObservationRegistration(
+                    CODE,
+                    "WEIGHING_STATIC_TEMPERATURE_V2",
+                    "v2",
+                    StaticTemperatureWeighingObservation,
+                ),
+            )
         ),
-        implementation_version="section1-v1",
+        implementation_version="section1-v2",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),

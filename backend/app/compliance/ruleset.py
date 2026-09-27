@@ -11,7 +11,10 @@ from typing import Annotated, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator, model_validator
 
-from app.compliance.checklist import ChecklistApplicabilityPolicy
+from app.compliance.checklist import (
+    ChecklistApplicabilityPolicy,
+    ChecklistApplicabilityPolicyV2,
+)
 
 TODO = "TODO_REGULATORY_VALIDATION"
 FILES = ("classes", "mpe", "applicability", "voltage", "disturbances", "endurance", "checklist")
@@ -142,7 +145,11 @@ class ChecklistDefinition(Frozen):
     group: Literal["GENERAL", "DIRECT_SALES", "ELECTRONIC", "SOFTWARE_CONTROLLED"]
     text: str
     source: Source
-    applicability: Literal["TODO_REGULATORY_VALIDATION"] | ChecklistApplicabilityPolicy = TODO
+    applicability: (
+        Literal["TODO_REGULATORY_VALIDATION"]
+        | ChecklistApplicabilityPolicy
+        | ChecklistApplicabilityPolicyV2
+    ) = TODO
     evidence_required: bool | None = None
     verification: Verification = Verification()
 

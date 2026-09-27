@@ -1,9 +1,9 @@
 """Pure Phase 13 rules-driven checklist engine."""
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import StrictBool, model_validator
+from pydantic import Field, StrictBool, model_validator
 
 from app.compliance.domain import (
     Applicability,
@@ -20,6 +20,10 @@ CHECKLIST_FEATURES = (
     "is_electronic",
     "is_software_controlled",
     "data_storage_device_present",
+    "printing_device_present",
+    "extended_indication_available",
+    "embedded_software_present",
+    "loadable_software_present",
     "battery_charging_during_operation",
     "vehicle_powered",
 )
@@ -33,6 +37,10 @@ class ChecklistCondition(Frozen):
         "is_electronic",
         "is_software_controlled",
         "data_storage_device_present",
+        "printing_device_present",
+        "extended_indication_available",
+        "embedded_software_present",
+        "loadable_software_present",
         "battery_charging_during_operation",
         "vehicle_powered",
     ]
@@ -54,6 +62,155 @@ class ChecklistApplicabilityPolicy(Frozen):
         if len(features) != len(set(features)):
             raise ValueError("Duplicate checklist applicability feature")
         return self
+
+
+class ChecklistAlways(Frozen):
+    kind: Literal["always"]
+
+
+class ChecklistBooleanFact(Frozen):
+    kind: Literal["boolean"]
+    feature: Literal[
+        "is_self_indicating",
+        "is_electronic",
+        "is_software_controlled",
+        "zero_tracking_available",
+        "is_direct_sales",
+        "is_price_computing",
+        "is_labeling",
+        "data_storage_device_present",
+        "printing_device_present",
+        "extended_indication_available",
+        "embedded_software_present",
+        "loadable_software_present",
+        "battery_charging_during_operation",
+        "vehicle_powered",
+    ]
+    expected: StrictBool
+
+
+class ChecklistChoiceFact(Frozen):
+    kind: Literal["choice"]
+    feature: Literal[
+        "range_type",
+        "indication_type",
+        "power_supply_type",
+        "tare_type",
+        "zero_setting_type",
+    ]
+    expected: Text
+
+
+class ChecklistPresenceFact(Frozen):
+    kind: Literal["present"]
+    feature: Literal[
+        "tare_type",
+        "zero_setting_type",
+        "software_identifier",
+        "interfaces",
+        "peripherals",
+        "components",
+    ]
+    expected: StrictBool = True
+
+
+class ChecklistInterfaceChoiceFact(Frozen):
+    kind: Literal["interface_choice"]
+    attribute: Literal["name", "interface_type", "purpose"]
+    expected: Text
+
+
+class ChecklistInterfaceBooleanFact(Frozen):
+    kind: Literal["interface_boolean"]
+    attribute: Literal["externally_accessible"]
+    expected: StrictBool
+
+
+class ChecklistPeripheralFact(Frozen):
+    kind: Literal["peripheral"]
+    expected: Text
+
+
+class ChecklistAllFacts(Frozen):
+    kind: Literal["all"]
+    conditions: tuple["ChecklistPredicate", ...] = Field(min_length=1)
+
+
+class ChecklistAnyFact(Frozen):
+    kind: Literal["any"]
+    conditions: tuple["ChecklistPredicate", ...] = Field(min_length=1)
+
+
+class ChecklistNotFact(Frozen):
+    kind: Literal["not"]
+    condition: "ChecklistPredicate"
+
+
+ChecklistPredicate = Annotated[
+    ChecklistAlways
+    | ChecklistBooleanFact
+    | ChecklistChoiceFact
+    | ChecklistPresenceFact
+    | ChecklistInterfaceChoiceFact
+    | ChecklistInterfaceBooleanFact
+    | ChecklistPeripheralFact
+    | ChecklistAllFacts
+    | ChecklistAnyFact
+    | ChecklistNotFact,
+    Field(discriminator="kind"),
+]
+ChecklistAllFacts.model_rebuild()
+ChecklistAnyFact.model_rebuild()
+ChecklistNotFact.model_rebuild()
+
+
+def checklist_predicate_value(
+    predicate: ChecklistPredicate, instrument: InstrumentSnapshot
+) -> bool | None:
+    if isinstance(predicate, ChecklistAlways):
+        return True
+    if isinstance(predicate, (ChecklistBooleanFact, ChecklistChoiceFact)):
+        value = getattr(instrument, predicate.feature)
+        return None if value is None else value == predicate.expected
+    if isinstance(predicate, ChecklistPresenceFact):
+        value = getattr(instrument, predicate.feature)
+        return None if value is None else bool(value) is predicate.expected
+    if isinstance(
+        predicate, (ChecklistInterfaceChoiceFact, ChecklistInterfaceBooleanFact)
+    ):
+        interfaces = instrument.interfaces
+        if interfaces is None:
+            return None
+        states = []
+        for item in interfaces:
+            value = getattr(item, predicate.attribute)
+            states.append(None if value is None else value == predicate.expected)
+        if True in states:
+            return True
+        if None in states:
+            return None
+        return False
+    if isinstance(predicate, ChecklistPeripheralFact):
+        peripherals = instrument.peripherals
+        return None if peripherals is None else predicate.expected in peripherals
+    if isinstance(predicate, ChecklistNotFact):
+        value = checklist_predicate_value(predicate.condition, instrument)
+        return None if value is None else not value
+    values = [checklist_predicate_value(item, instrument) for item in predicate.conditions]
+    if isinstance(predicate, ChecklistAllFacts):
+        return False if False in values else None if None in values else True
+    return True if True in values else None if None in values else False
+
+
+class ChecklistApplicabilityCaseV2(Frozen):
+    when: ChecklistPredicate
+    decision: Literal["REQUIRED", "NOT_APPLICABLE"]
+    reason: Text
+
+
+class ChecklistApplicabilityPolicyV2(Frozen):
+    schema_version: Literal["v2"]
+    cases: tuple[ChecklistApplicabilityCaseV2, ...] = Field(min_length=1)
 
 
 class ChecklistRuleInput(Frozen):
@@ -110,42 +267,79 @@ class ChecklistEngine:
                 reason="Checklist applicability is not verified",
                 unresolved_rule_ids=(rule.rule_key,),
             )
-        try:
-            policy = ChecklistApplicabilityPolicy.model_validate(expression)
-        except Exception:
+        version = expression.get("schema_version")
+        if version == "v1":
+            try:
+                policy = ChecklistApplicabilityPolicy.model_validate(expression)
+            except Exception:
+                return ApplicabilityDecision(
+                    applicability=Applicability.REQUIRES_REVIEW,
+                    reason="Checklist applicability policy is invalid",
+                    unresolved_rule_ids=(rule.rule_key,),
+                )
+
+            values = []
+            unknown = []
+            for condition in policy.conditions:
+                value = getattr(instrument, condition.feature)
+                if value is None:
+                    unknown.append(condition.feature)
+                else:
+                    values.append(value is condition.equals)
+            if unknown:
+                return ApplicabilityDecision(
+                    applicability=Applicability.REQUIRES_REVIEW,
+                    reason=(
+                        "Checklist applicability requires unknown instrument facts: "
+                        + ", ".join(sorted(unknown))
+                    ),
+                    unresolved_rule_ids=(rule.rule_key,),
+                    feature=",".join(sorted(unknown)),
+                )
+
+            matched = all(values) if policy.mode == "ALL" else any(values)
+            if not policy.conditions:
+                matched = True
+
+            applicability = policy.when_match if matched else policy.when_not_match
+            return ApplicabilityDecision(
+                applicability=Applicability(applicability),
+                reason=(policy.match_reason if matched else policy.no_match_reason),
+            )
+
+        if version == "v2":
+            try:
+                policy = ChecklistApplicabilityPolicyV2.model_validate(expression)
+            except Exception:
+                return ApplicabilityDecision(
+                    applicability=Applicability.REQUIRES_REVIEW,
+                    reason="Checklist applicability policy is invalid",
+                    unresolved_rule_ids=(rule.rule_key,),
+                )
+
+            for case in policy.cases:
+                matched = checklist_predicate_value(case.when, instrument)
+                if matched is None:
+                    return ApplicabilityDecision(
+                        applicability=Applicability.REQUIRES_REVIEW,
+                        reason="Checklist applicability requires unknown instrument facts",
+                        unresolved_rule_ids=(rule.rule_key,),
+                    )
+                if matched:
+                    return ApplicabilityDecision(
+                        applicability=Applicability(case.decision),
+                        reason=case.reason,
+                    )
             return ApplicabilityDecision(
                 applicability=Applicability.REQUIRES_REVIEW,
-                reason="Checklist applicability policy is invalid",
+                reason="No verified checklist applicability case covers these facts",
                 unresolved_rule_ids=(rule.rule_key,),
             )
 
-        values = []
-        unknown = []
-        for condition in policy.conditions:
-            value = getattr(instrument, condition.feature)
-            if value is None:
-                unknown.append(condition.feature)
-            else:
-                values.append(value is condition.equals)
-        if unknown:
-            return ApplicabilityDecision(
-                applicability=Applicability.REQUIRES_REVIEW,
-                reason=(
-                    "Checklist applicability requires unknown instrument facts: "
-                    + ", ".join(sorted(unknown))
-                ),
-                unresolved_rule_ids=(rule.rule_key,),
-                feature=",".join(sorted(unknown)),
-            )
-
-        matched = all(values) if policy.mode == "ALL" else any(values)
-        if not policy.conditions:
-            matched = True
-
-        applicability = policy.when_match if matched else policy.when_not_match
         return ApplicabilityDecision(
-            applicability=Applicability(applicability),
-            reason=(policy.match_reason if matched else policy.no_match_reason),
+            applicability=Applicability.REQUIRES_REVIEW,
+            reason="Checklist applicability policy is invalid",
+            unresolved_rule_ids=(rule.rule_key,),
         )
 
     @staticmethod
