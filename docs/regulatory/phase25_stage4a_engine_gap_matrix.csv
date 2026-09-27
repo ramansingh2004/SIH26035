@@ -1,0 +1,6 @@
+section,family,existing_owner,existing_strength,remaining_source_native_gap,next_step
+11,VOLTAGE_VARIATION,phase8.py,v1 strong explicit-voltage mechanics,source-derived voltage branches; three-phase sequencing; v2 schema/policy compatibility,4B
+12,ELECTRICAL_DISTURBANCES,phase10.py,generic severity/profile/repetition/fault-response mechanics,exact standard identity; port/applicability branches; phase angles; ESD direct/indirect; RF sweep; vehicle pulse semantics,4B
+13,DAMP_HEAT,phase9.py,stage/load/environment/MPE mechanics,class/e applicability; reference/high-temperature derivation; >=5 load semantics; explicit two-day stabilized exposure,4B
+14,SPAN_STABILITY,phase9.py,long-duration interval/power/correction/trend mechanics,near-Max derivation; 5h/16h recovery branches; first-measurement averaging; source-native trend trigger,4B
+15,ENDURANCE,phase11.py,cycle/load/pre-post durability mechanics,class/Max applicability; after-all-tests ordering; equilibrium/normal-force evidence; verified durability semantics,4B

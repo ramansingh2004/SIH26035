@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "bundle_id": "OIML_R76_2006_2007_PHASE25_STAGE4B",
+  "standard_code": "OIML_R76",
+  "edition": "R76-1:2006 / R76-2:2007",
+  "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+  "activation_allowed": false,
+  "independent_verifier": "PENDING",
+  "sources": [
+    {
+      "source_id": "SRC-R76-1-2006-E",
+      "part": "R76-1",
+      "edition": "2006",
+      "official_url": "https://www.oiml.org/en/files/pdf_r/r076-1-e06.pdf",
+      "digest": null,
+      "acquisition_status": "PENDING_CONTROLLED_ACQUISITION"
+    },
+    {
+      "source_id": "SRC-R76-2-2007-E",
+      "part": "R76-2",
+      "edition": "2007",
+      "official_url": "https://www.oiml.org/en/files/pdf_r/r076-2-e07.pdf",
+      "digest": null,
+      "acquisition_status": "PENDING_CONTROLLED_ACQUISITION"
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "STAGE4B_VOLTAGE_VARIATION",
+      "family": "VOLTAGE_VARIATION",
+      "register_ids": [
+        "REG-12"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "A.5.4",
+            "A.5.4.1",
+            "A.5.4.2",
+            "A.5.4.3",
+            "A.5.4.4"
+          ],
+          "report_sections": []
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "11"
+          ],
+          "report_sections": [
+            "11"
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "target_policy_kind": "voltage_variation_procedure_v2",
+        "context_schema": "VoltageVariationContextV2",
+        "observation_schema": "VoltageVariationObservationV2",
+        "status": "SCHEMA_PRESENT_SEMANTIC_DERIVATION_PENDING",
+        "blockers": [
+          "independent sign-off pending",
+          "source-derived voltage target resolution pending",
+          "three-phase sequencing semantics pending verified activation"
+        ]
+      },
+      "details": {
+        "ac_mains_candidate": {
+          "lower": "0.85 * Unom or 0.85 * Umin",
+          "upper": "1.10 * Unom or 1.10 * Umax"
+        },
+        "external_supply_candidate": {
+          "lower": "minimum operating voltage",
+          "upper": "1.20 * Unom or 1.20 * Umax"
+        },
+        "battery_no_charging_candidate": {
+          "lower": "minimum operating voltage",
+          "upper": "Unom or Umax"
+        },
+        "vehicle_supply_candidate": {
+          "12V_upper_v": 16,
+          "24V_upper_v": 32,
+          "lower": "minimum operating voltage"
+        },
+        "available_indication_limit_candidate": "MPE"
+      }
+    },
+    {
+      "fact_id": "STAGE4B_ELECTRICAL_DISTURBANCES",
+      "family": "ELECTRICAL_DISTURBANCES",
+      "register_ids": [
+        "REG-13"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "B.3",
+            "B.3.1",
+            "B.3.2",
+            "B.3.3",
+            "B.3.4",
+            "B.3.5",
+            "B.3.6",
+            "B.3.7.1",
+            "B.3.7.2"
+          ],
+          "report_sections": []
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "12.1",
+            "12.2",
+            "12.3",
+            "12.4",
+            "12.5",
+            "12.6",
+            "12.7"
+          ],
+          "report_sections": [
+            "12.1",
+            "12.2",
+            "12.3",
+            "12.4",
+            "12.5",
+            "12.6",
+            "12.7"
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "target_policy_kind": "disturbance_procedure_v2",
+        "context_schema": "DisturbanceContextV2",
+        "observation_schema": "DisturbanceObservationV2",
+        "status": "SCHEMA_PRESENT_SEMANTIC_DERIVATION_PENDING",
+        "blockers": [
+          "independent sign-off pending",
+          "external IEC/ISO source identity/version review pending",
+          "port/applicability and sweep/pulse execution semantics pending"
+        ]
+      },
+      "details": {
+        "acceptance_candidate": "indication difference <= e OR accepted significant-fault response",
+        "voltage_dip_candidate": [
+          "0%/0.5 cycle",
+          "0%/1 cycle",
+          "40%/10 cycles",
+          "70%/25 cycles",
+          "80%/250 cycles",
+          "0%/250 cycles short interruption"
+        ],
+        "burst_candidate": "Level 2; 1 kV power, 0.5 kV I/O; both polarities",
+        "surge_candidate": "Level 2; 0.5 kV L-L, 1 kV L-earth",
+        "esd_candidate": "Level 3; 6 kV contact, 8 kV air",
+        "radiated_rf_candidate": "80 MHz-2 GHz; conditional 26 MHz lower; 10 V/m; 80% AM 1 kHz",
+        "conducted_rf_candidate": "0.15-80 MHz; 10 V emf; 80% AM 1 kHz",
+        "vehicle_supply_candidate": "ISO 7637 Level IV pulse families"
+      }
+    },
+    {
+      "fact_id": "STAGE4B_DAMP_HEAT",
+      "family": "DAMP_HEAT",
+      "register_ids": [
+        "REG-14"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "B.2"
+          ],
+          "report_sections": []
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "13"
+          ],
+          "report_sections": [
+            "13"
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "target_policy_kind": "damp_heat_procedure_v2",
+        "context_schema": "DampHeatContextV2",
+        "observation_schema": "DampHeatObservationV2",
+        "status": "SCHEMA_PRESENT_SEMANTIC_DERIVATION_PENDING",
+        "blockers": [
+          "independent sign-off pending",
+          "reference/high temperature derivation pending",
+          "minimum-five-load selection semantics pending"
+        ]
+      },
+      "details": {
+        "excluded_class_candidate": "I",
+        "class_ii_e_lt_1g_excluded_candidate": true,
+        "minimum_distinct_loads_candidate": 5,
+        "reference_rh_percent_candidate": 50,
+        "high_rh_percent_candidate": 85,
+        "high_humidity_exposure_seconds_candidate": 172800,
+        "indication_limit_candidate": "MPE"
+      }
+    },
+    {
+      "fact_id": "STAGE4B_SPAN_STABILITY",
+      "family": "SPAN_STABILITY",
+      "register_ids": [
+        "REG-14"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "B.4"
+          ],
+          "report_sections": []
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "14"
+          ],
+          "report_sections": [
+            "14"
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "target_policy_kind": "span_stability_procedure_v2",
+        "context_schema": "SpanStabilityContextV2",
+        "observation_schema": "SpanStabilityObservationV2",
+        "status": "SCHEMA_PRESENT_SEMANTIC_DERIVATION_PENDING",
+        "blockers": [
+          "independent sign-off pending",
+          "close-to-Max derivation pending",
+          "recovery and first-measurement averaging semantics pending verified execution"
+        ]
+      },
+      "details": {
+        "excluded_class_candidate": "I",
+        "test_load_semantics_candidate": "CLOSE_TO_MAX",
+        "maximum_duration_seconds_candidate": 2419200,
+        "minimum_measurements_candidate": 8,
+        "interval_seconds_candidate": {
+          "minimum": 43200,
+          "maximum": 864000
+        },
+        "power_disconnections_candidate": 2,
+        "minimum_power_disconnection_seconds_candidate": 28800,
+        "normal_recovery_seconds_candidate": 18000,
+        "post_environmental_recovery_seconds_candidate": 57600,
+        "first_measurement_repeat_count_candidate": 5,
+        "variation_limit_candidate": "max(0.5e, 0.5*abs(initial-verification MPE))"
+      }
+    },
+    {
+      "fact_id": "STAGE4B_ENDURANCE",
+      "family": "ENDURANCE",
+      "register_ids": [
+        "REG-14"
+      ],
+      "source_refs": [
+        {
+          "source_id": "SRC-R76-1-2006-E",
+          "clauses": [
+            "A.6",
+            "3.9.4.3"
+          ],
+          "report_sections": []
+        },
+        {
+          "source_id": "SRC-R76-2-2007-E",
+          "clauses": [
+            "15"
+          ],
+          "report_sections": [
+            "15"
+          ]
+        }
+      ],
+      "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+      "activation_allowed": false,
+      "runtime_projection": {
+        "target_policy_kind": "endurance_procedure_v2",
+        "context_schema": "EnduranceContextV2",
+        "observation_schema": "EnduranceObservationV2",
+        "status": "SCHEMA_PRESENT_SEMANTIC_DERIVATION_PENDING",
+        "blockers": [
+          "independent sign-off pending",
+          "after-all-tests workflow evidence pending",
+          "equilibrium/normal-force evidence semantics pending",
+          "durability limit semantics pending independent verification"
+        ]
+      },
+      "details": {
+        "applicable_classes_candidate": [
+          "II",
+          "III",
+          "IIII"
+        ],
+        "maximum_capacity_limit_g_candidate": 100000,
+        "required_cycles_candidate": 100000,
+        "cycling_load_fraction_candidate": "approximately 0.5 Max",
+        "after_other_tests_candidate": true,
+        "require_loaded_unloaded_equilibrium_candidate": true,
+        "require_normal_loading_force_candidate": true,
+        "durability_formula_candidate": "ABS_CORRECTED_ERROR_CHANGE"
+      }
+    }
+  ]
+}

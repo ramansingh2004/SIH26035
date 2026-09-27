@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "vector_set": "PHASE25_STAGE4B_MECHANICS_V1",
+  "authority": "NON_AUTHORITATIVE_MECHANICS_ONLY",
+  "review_status": "PENDING_INDEPENDENT_REVIEW",
+  "regulatory_signoff": false,
+  "vectors": [
+    {
+      "id": "VOLTAGE_PASS",
+      "family": "VOLTAGE_VARIATION",
+      "expected_passed": true,
+      "verification_interval_e_g": "10",
+      "limits": [
+        {
+          "load_g": "1000",
+          "value": "5"
+        }
+      ],
+      "observations": [
+        {
+          "sequence_no": 1,
+          "target_id": "LOW",
+          "applied_voltage_v": "195",
+          "load_g": "1000",
+          "operational_state": "INDICATING",
+          "functions_operational": true,
+          "indication_g": "1004",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:voltage_corrected_error": "4"
+      }
+    },
+    {
+      "id": "VOLTAGE_FAIL",
+      "family": "VOLTAGE_VARIATION",
+      "expected_passed": false,
+      "verification_interval_e_g": "10",
+      "limits": [
+        {
+          "load_g": "1000",
+          "value": "5"
+        }
+      ],
+      "observations": [
+        {
+          "sequence_no": 1,
+          "target_id": "LOW",
+          "applied_voltage_v": "195",
+          "load_g": "1000",
+          "operational_state": "INDICATING",
+          "functions_operational": true,
+          "indication_g": "1006",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:voltage_corrected_error": "6"
+      }
+    },
+    {
+      "id": "DISTURBANCE_PASS",
+      "family": "ELECTRICAL_DISTURBANCES",
+      "expected_passed": true,
+      "deviation_limit": "10",
+      "accepted_fault_responses": [
+        "ERROR_INDICATION"
+      ],
+      "observations": [
+        {
+          "sequence_no": 1,
+          "test_code": "DISTURBANCE_ESD",
+          "severity_id": "ESD-1",
+          "repetition_no": 1,
+          "application": "CONTACT",
+          "reference_indication_g": "1000",
+          "disturbed_indication_g": "1008",
+          "fault_detected": false,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:disturbance_deviation": "8"
+      }
+    },
+    {
+      "id": "DISTURBANCE_FAIL",
+      "family": "ELECTRICAL_DISTURBANCES",
+      "expected_passed": false,
+      "deviation_limit": "10",
+      "accepted_fault_responses": [
+        "ERROR_INDICATION"
+      ],
+      "observations": [
+        {
+          "sequence_no": 1,
+          "test_code": "DISTURBANCE_ESD",
+          "severity_id": "ESD-1",
+          "repetition_no": 1,
+          "application": "CONTACT",
+          "reference_indication_g": "1000",
+          "disturbed_indication_g": "1012",
+          "fault_detected": false,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:disturbance_deviation": "12"
+      }
+    },
+    {
+      "id": "DAMP_HEAT_PASS",
+      "family": "DAMP_HEAT",
+      "expected_passed": true,
+      "verification_interval_e_g": "10",
+      "limits": [
+        {
+          "load_g": "1000",
+          "value": "5"
+        }
+      ],
+      "observations": [
+        {
+          "sequence_no": 1,
+          "stage": "HIGH_HUMIDITY",
+          "load_g": "1000",
+          "indication_g": "1004",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "temperature_c": "40",
+          "relative_humidity_percent": "85",
+          "stabilization_elapsed_s": "3600",
+          "exposure_elapsed_s": "172800",
+          "stabilized": true,
+          "functions_operational": true,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:high_humidity_corrected_error": "4"
+      }
+    },
+    {
+      "id": "DAMP_HEAT_FAIL",
+      "family": "DAMP_HEAT",
+      "expected_passed": false,
+      "verification_interval_e_g": "10",
+      "limits": [
+        {
+          "load_g": "1000",
+          "value": "5"
+        }
+      ],
+      "observations": [
+        {
+          "sequence_no": 1,
+          "stage": "HIGH_HUMIDITY",
+          "load_g": "1000",
+          "indication_g": "1006",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "temperature_c": "40",
+          "relative_humidity_percent": "85",
+          "stabilization_elapsed_s": "3600",
+          "exposure_elapsed_s": "172800",
+          "stabilized": true,
+          "functions_operational": true,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "1:high_humidity_corrected_error": "6"
+      }
+    },
+    {
+      "id": "SPAN_PASS",
+      "family": "SPAN_STABILITY",
+      "expected_passed": true,
+      "verification_interval_e_g": "10",
+      "variation_limit": "5",
+      "observations": [
+        {
+          "sequence_no": 1,
+          "measurement_no": 1,
+          "repeat_no": 1,
+          "elapsed_s": "0",
+          "recovery_elapsed_s": "18000",
+          "after_environmental_test": false,
+          "power_disconnection_event": false,
+          "load_g": "1000",
+          "zero_indication_g": "0",
+          "zero_additional_load_g": "5",
+          "loaded_indication_g": "1000",
+          "loaded_additional_load_g": "5",
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "measurement_no": 2,
+          "repeat_no": 1,
+          "elapsed_s": "43200",
+          "recovery_elapsed_s": "18000",
+          "after_environmental_test": false,
+          "power_disconnection_event": false,
+          "load_g": "1000",
+          "zero_indication_g": "0",
+          "zero_additional_load_g": "5",
+          "loaded_indication_g": "1004",
+          "loaded_additional_load_g": "5",
+          "measured_at": "2026-09-27T22:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "span_variation": "4"
+      }
+    },
+    {
+      "id": "SPAN_FAIL",
+      "family": "SPAN_STABILITY",
+      "expected_passed": false,
+      "verification_interval_e_g": "10",
+      "variation_limit": "5",
+      "observations": [
+        {
+          "sequence_no": 1,
+          "measurement_no": 1,
+          "repeat_no": 1,
+          "elapsed_s": "0",
+          "recovery_elapsed_s": "18000",
+          "after_environmental_test": false,
+          "power_disconnection_event": false,
+          "load_g": "1000",
+          "zero_indication_g": "0",
+          "zero_additional_load_g": "5",
+          "loaded_indication_g": "1000",
+          "loaded_additional_load_g": "5",
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "measurement_no": 2,
+          "repeat_no": 1,
+          "elapsed_s": "43200",
+          "recovery_elapsed_s": "18000",
+          "after_environmental_test": false,
+          "power_disconnection_event": false,
+          "load_g": "1000",
+          "zero_indication_g": "0",
+          "zero_additional_load_g": "5",
+          "loaded_indication_g": "1006",
+          "loaded_additional_load_g": "5",
+          "measured_at": "2026-09-27T22:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "span_variation": "6"
+      }
+    },
+    {
+      "id": "ENDURANCE_PASS",
+      "family": "ENDURANCE",
+      "expected_passed": true,
+      "verification_interval_e_g": "10",
+      "limits": [
+        {
+          "load_g": "1000",
+          "value": "5"
+        }
+      ],
+      "observations": [
+        {
+          "sequence_no": 1,
+          "phase": "INITIAL",
+          "point_id": "P1",
+          "load_g": "1000",
+          "indication_g": "1000",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "stabilized": true,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "phase": "FINAL",
+          "point_id": "P1",
+          "load_g": "1000",
+          "indication_g": "1004",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "stabilized": true,
+          "measured_at": "2026-09-27T11:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "P1:durability_error": "4"
+      }
+    },
+    {
+      "id": "ENDURANCE_FAIL",
+      "family": "ENDURANCE",
+      "expected_passed": false,
+      "verification_interval_e_g": "10",
+      "limits": [
+        {
+          "load_g": "1000",
+          "value": "5"
+        }
+      ],
+      "observations": [
+        {
+          "sequence_no": 1,
+          "phase": "INITIAL",
+          "point_id": "P1",
+          "load_g": "1000",
+          "indication_g": "1000",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "stabilized": true,
+          "measured_at": "2026-09-27T10:00:00+00:00"
+        },
+        {
+          "sequence_no": 2,
+          "phase": "FINAL",
+          "point_id": "P1",
+          "load_g": "1000",
+          "indication_g": "1006",
+          "additional_load_g": "5",
+          "zero_error_g": "0",
+          "stabilized": true,
+          "measured_at": "2026-09-27T11:00:00+00:00"
+        }
+      ],
+      "expected": {
+        "P1:durability_error": "6"
+      }
+    }
+  ]
+}

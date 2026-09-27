@@ -1,0 +1,12 @@
+section,evaluator_code,register_id,r76_1_refs,r76_2_report_section,verification_status,activation_allowed,candidate_summary
+11,VOLTAGE_VARIATION,REG-12,A.5.4;A.5.4.1-A.5.4.4,11,SOURCE_MAPPED_NOT_VERIFIED,false,Four supply-profile branches; source-derived voltage limits; MPE/function/switch-off behavior.
+12.1,DISTURBANCE_VOLTAGE_DIP,REG-13,B.3;B.3.1,12.1,SOURCE_MAPPED_NOT_VERIFIED,false,"10 repetitions >=10 s apart; 0%/0.5, 0%/1, 40%/10, 70%/25, 80%/250, interruption 0%/250."
+12.2,DISTURBANCE_BURST,REG-13,B.3;B.3.2,12.2,SOURCE_MAPPED_NOT_VERIFIED,false,"Power and I/O lines; positive/negative; >=1 min; Level 2; 1 kV power, 0.5 kV I/O."
+12.3,DISTURBANCE_SURGE,REG-13,B.3;B.3.3,12.3,SOURCE_MAPPED_NOT_VERIFIED,false,"Installation-applicability branch; >=3 positive/negative; Level 2; 0.5 kV L-L, 1 kV L-earth."
+12.4,DISTURBANCE_ESD,REG-13,B.3;B.3.4,12.4,SOURCE_MAPPED_NOT_VERIFIED,false,"Direct/indirect; >=10 discharges; >=10 s interval; Level 3; 6 kV contact, 8 kV air."
+12.5,DISTURBANCE_RADIATED_RF,REG-13,B.3;B.3.5,12.5,SOURCE_MAPPED_NOT_VERIFIED,false,"80 MHz-2 GHz, conditional 26 MHz lower bound, 10 V/m, 80% AM 1 kHz."
+12.6,DISTURBANCE_CONDUCTED_RF,REG-13,B.3;B.3.6,12.6,SOURCE_MAPPED_NOT_VERIFIED,false,"0.15-80 MHz, 10 V emf, 80% AM 1 kHz."
+12.7,DISTURBANCE_VEHICLE_SUPPLY,REG-13,B.3;B.3.7.1;B.3.7.2,12.7,SOURCE_MAPPED_NOT_VERIFIED,false,ISO 7637-2:2004 / ISO 7637-3 source branches; Level IV pulse families for 12/24 V systems.
+13,DAMP_HEAT,REG-14,B.2,13,SOURCE_MAPPED_NOT_VERIFIED,false,"Applicability exclusions; >=5 loads; reference/50%, high-temp/85% for two days after stabilization, final reference/50%."
+14,SPAN_STABILITY,REG-14,B.4,14,SOURCE_MAPPED_NOT_VERIFIED,false,"Not class I; >=8 measurements; near Max; 28 d max period; power disconnections; max(0.5e,0.5|MPE|); trend extension."
+15,ENDURANCE,REG-14,A.6;3.9.4.3,15,SOURCE_MAPPED_NOT_VERIFIED,false,"Classes II/III/IIII, Max<=100 kg; after other tests; ~50% Max, 100000 cycles; pre/post weighing."

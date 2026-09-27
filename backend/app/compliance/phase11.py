@@ -34,6 +34,8 @@ from app.compliance.numbers import (
     compare,
     exact,
 )
+from app.compliance.parameterized import MpeProfileSetV2
+from app.compliance.parameterized_stage4 import EndurancePolicyV2
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
@@ -41,6 +43,10 @@ from app.compliance.registries import (
     ProcedureContextRegistry,
 )
 from app.compliance.regulatory import MpeProfile, calculate_mpe, dependencies, rule_policy
+from app.compliance.stage4_native_schemas import (
+    EnduranceContextV2,
+    EnduranceObservationV2,
+)
 from app.compliance.weighing import MeasurementTime, WeighingEnvironment, WeighingEquipment
 
 ENDURANCE = "ENDURANCE"
@@ -469,15 +475,31 @@ def endurance_registration():
         ENDURANCE,
         EnduranceEvaluator(),
         ProcedureContextRegistry(
-            (ContextRegistration(ENDURANCE, "MECHANICAL_CYCLING", "v1", EnduranceContext),)
+            (
+                ContextRegistration(
+                    ENDURANCE, "MECHANICAL_CYCLING", "v1", EnduranceContext
+                ),
+                ContextRegistration(
+                    ENDURANCE, "MECHANICAL_CYCLING", "v2", EnduranceContextV2
+                ),
+            )
         ),
         ObservationSchemaRegistry(
-            (ObservationRegistration(ENDURANCE, "ENDURANCE_V1", "v1", EnduranceObservation),)
+            (
+                ObservationRegistration(
+                    ENDURANCE, "ENDURANCE_V1", "v1", EnduranceObservation
+                ),
+                ObservationRegistration(
+                    ENDURANCE, "ENDURANCE_V2", "v2", EnduranceObservationV2
+                ),
+            )
         ),
         implementation_version="section15-v1",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("endurance_procedure_v1", EndurancePolicy),
+            RulePolicyRegistration("endurance_procedure_v2", EndurancePolicyV2),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),
+            RulePolicyRegistration("mpe_profile_set_v2", MpeProfileSetV2),
         ),
     )

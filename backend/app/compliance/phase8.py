@@ -42,6 +42,7 @@ from app.compliance.parameterized import (
     TemperatureZeroPolicyV2,
 )
 from app.compliance.parameterized_stage3 import TiltingPolicyV2, WarmUpPolicyV2
+from app.compliance.parameterized_stage4 import VoltageVariationPolicyV2
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
@@ -64,6 +65,10 @@ from app.compliance.stage3_native_schemas import (
     TiltingObservationV2,
     WarmUpContextV2,
     WarmUpObservationV2,
+)
+from app.compliance.stage4_native_schemas import (
+    VoltageVariationContextV2,
+    VoltageVariationObservationV2,
 )
 from app.compliance.weighing import (
     MeasurementTime,
@@ -1891,6 +1896,15 @@ def voltage_variation_registration():
                 )
                 for variant in variants
             )
+            + tuple(
+                ContextRegistration(
+                    VOLTAGE_VARIATION,
+                    variant,
+                    "v2",
+                    VoltageVariationContextV2,
+                )
+                for variant in variants
+            )
         ),
         ObservationSchemaRegistry(
             (
@@ -1899,6 +1913,12 @@ def voltage_variation_registration():
                     "VOLTAGE_VARIATION_V1",
                     "v1",
                     VoltageVariationObservation,
+                ),
+                ObservationRegistration(
+                    VOLTAGE_VARIATION,
+                    "VOLTAGE_VARIATION_V2",
+                    "v2",
+                    VoltageVariationObservationV2,
                 ),
             )
         ),
@@ -1913,8 +1933,16 @@ def voltage_variation_registration():
                 VoltageVariationPolicy,
             ),
             RulePolicyRegistration(
+                "voltage_variation_procedure_v2",
+                VoltageVariationPolicyV2,
+            ),
+            RulePolicyRegistration(
                 "mpe_profile_v1",
                 MpeProfile,
+            ),
+            RulePolicyRegistration(
+                "mpe_profile_set_v2",
+                MpeProfileSetV2,
             ),
         ),
     )

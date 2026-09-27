@@ -71,6 +71,7 @@ class EvaluatorRegistration:
     implementation_version: str
     synthetic_fixture: bool = False
     policy_schemas: tuple[RulePolicyRegistration, ...] = ()
+    runtime_schema_version: str = "v1"
 
     def __post_init__(self):
         if not fullmatch(r"[A-Za-z0-9_.-]+", self.implementation_version):
@@ -87,6 +88,34 @@ class EvaluatorRegistration:
                 r.test_code != self.test_code for r in registry.registrations
             ):
                 raise ValueError("Evaluator/schema test-code mismatch")
+
+
+    def runtime_schema_versions(
+        self,
+        procedure_variant: str,
+    ) -> tuple[str, str]:
+        contexts = [
+            item
+            for item in self.contexts.registrations
+            if item.procedure_variant == procedure_variant
+            and item.procedure_schema_version == self.runtime_schema_version
+        ]
+
+        observation_versions = {
+            item.observation_schema_version
+            for item in self.observations.registrations
+            if item.observation_schema_version == self.runtime_schema_version
+        }
+
+        if len(contexts) != 1 or len(observation_versions) != 1:
+            raise ValueError(
+                "Evaluator runtime schema selection is ambiguous"
+            )
+
+        return (
+            contexts[0].procedure_schema_version,
+            next(iter(observation_versions)),
+        )
 
 
 @dataclass(frozen=True)

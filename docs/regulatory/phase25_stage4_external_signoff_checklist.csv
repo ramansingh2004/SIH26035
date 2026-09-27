@@ -1,0 +1,8 @@
+gate_id,requirement,status,owner
+GATE-4-01,Controlled acquisition and approved digest for pinned R76-1:2006 source,PENDING,Independent regulatory workflow
+GATE-4-02,Controlled acquisition and approved digest for pinned R76-2:2007 source,PENDING,Independent regulatory workflow
+GATE-4-03,Independent clause/value review for REG-12,PENDING,Human/domain-expert sign-off
+GATE-4-04,Independent clause/value review for REG-13,PENDING,Human/domain-expert sign-off
+GATE-4-05,Independent clause/value review for REG-14,PENDING,Human/domain-expert sign-off
+GATE-4-06,Controlled review of referenced IEC/ISO identities and editions for Section 12,PENDING,Independent regulatory workflow
+GATE-4-07,Independent review of Stage 4 mechanics vectors,PENDING,Independent test-vector review

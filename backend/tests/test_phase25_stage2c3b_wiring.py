@@ -273,8 +273,8 @@ def test_stage2c3b_section4_resolves_single_load_v2_policies():
             discrimination,
         ),
     )
-    assert d.test_load_g == decimal_value("10000")
-    assert d.extra_load_g == decimal_value("14")
+    assert d.loads[0].test_load_g == decimal_value("10000")
+    assert d.loads[0].extra_load_g == decimal_value("14")
 
     sensitivity = SensitivityPolicyV2(
         schema_version="v2",
@@ -316,8 +316,8 @@ def test_stage2c3b_section4_resolves_single_load_v2_policies():
             sensitivity,
         ),
     )
-    assert s.test_load_g == decimal_value("20000")
-    assert s.extra_load_g == decimal_value("10")
+    assert s.loads[0].test_load_g == decimal_value("20000")
+    assert s.loads[0].extra_load_g == decimal_value("10")
 
 
 def test_stage2c3b_section5_resolves_v2_repeatability_policy():

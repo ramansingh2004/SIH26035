@@ -542,24 +542,20 @@ class TestingService:
                     if registration is None:
                         observation_version = procedure_version = "UNIMPLEMENTED"
                     else:
-                        contexts = [
-                            item
-                            for item in registration.contexts.registrations
-                            if item.procedure_variant == slot.procedure_variant
-                        ]
-                        observation_versions = {
-                            item.observation_schema_version
-                            for item in registration.observations.registrations
-                        }
-                        if len(contexts) != 1 or len(observation_versions) != 1:
+                        try:
+                            (
+                                procedure_version,
+                                observation_version,
+                            ) = registration.runtime_schema_versions(
+                                slot.procedure_variant
+                            )
+                        except ValueError:
                             reject(
                                 "EVALUATOR_SCHEMA_AMBIGUOUS",
-                                "Implemented evaluator must resolve one schema version "
-                                "for the slot",
+                                "Implemented evaluator must resolve one runtime "
+                                "schema version for the slot",
                                 500,
                             )
-                        procedure_version = contexts[0].procedure_schema_version
-                        observation_version = next(iter(observation_versions))
                     run = TestRun(
                         id=uuid4(),
                         test_session_id=row.id,

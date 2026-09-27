@@ -34,6 +34,7 @@ from app.compliance.domain import (
 )
 from app.compliance.evaluators import EvaluatorRegistration, RulePolicyRegistration
 from app.compliance.numbers import compare, exact
+from app.compliance.parameterized_stage4 import DisturbancePolicyV2
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
@@ -41,6 +42,10 @@ from app.compliance.registries import (
     ProcedureContextRegistry,
 )
 from app.compliance.regulatory import dependencies, rule_policy
+from app.compliance.stage4_native_schemas import (
+    DisturbanceContextV2,
+    DisturbanceObservationV2,
+)
 from app.compliance.weighing import (
     MeasurementTime,
     WeighingEnvironment,
@@ -668,6 +673,14 @@ def _registration(code):
             schema,
         )
         for variant, schema in CONTEXT_SCHEMAS[code]
+    ) + tuple(
+        ContextRegistration(
+            code,
+            variant,
+            "v2",
+            DisturbanceContextV2,
+        )
+        for variant, _schema in CONTEXT_SCHEMAS[code]
     )
     return EvaluatorRegistration(
         code,
@@ -684,6 +697,12 @@ def _registration(code):
                     "v1",
                     OBSERVATION_SCHEMAS[code],
                 ),
+                ObservationRegistration(
+                    code,
+                    "DISTURBANCE_V2",
+                    "v2",
+                    DisturbanceObservationV2,
+                ),
             )
         ),
         implementation_version="section12-v1",
@@ -695,6 +714,10 @@ def _registration(code):
             RulePolicyRegistration(
                 "disturbance_procedure_v1",
                 DisturbancePolicy,
+            ),
+            RulePolicyRegistration(
+                "disturbance_procedure_v2",
+                DisturbancePolicyV2,
             ),
         ),
     )

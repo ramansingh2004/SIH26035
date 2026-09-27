@@ -36,6 +36,11 @@ from app.compliance.numbers import (
     compare,
     exact,
 )
+from app.compliance.parameterized import MpeProfileSetV2
+from app.compliance.parameterized_stage4 import (
+    DampHeatPolicyV2,
+    SpanStabilityPolicyV2,
+)
 from app.compliance.registries import (
     ContextRegistration,
     ObservationRegistration,
@@ -47,6 +52,12 @@ from app.compliance.regulatory import (
     calculate_mpe,
     dependencies,
     rule_policy,
+)
+from app.compliance.stage4_native_schemas import (
+    DampHeatContextV2,
+    DampHeatObservationV2,
+    SpanStabilityContextV2,
+    SpanStabilityObservationV2,
 )
 from app.compliance.weighing import (
     MeasurementTime,
@@ -528,6 +539,12 @@ def damp_heat_registration():
                     "v1",
                     DampHeatContext,
                 ),
+                ContextRegistration(
+                    DAMP_HEAT,
+                    "STEADY_STATE",
+                    "v2",
+                    DampHeatContextV2,
+                ),
             )
         ),
         ObservationSchemaRegistry(
@@ -537,6 +554,12 @@ def damp_heat_registration():
                     "DAMP_HEAT_V1",
                     "v1",
                     DampHeatObservation,
+                ),
+                ObservationRegistration(
+                    DAMP_HEAT,
+                    "DAMP_HEAT_V2",
+                    "v2",
+                    DampHeatObservationV2,
                 ),
             )
         ),
@@ -551,8 +574,16 @@ def damp_heat_registration():
                 DampHeatPolicy,
             ),
             RulePolicyRegistration(
+                "damp_heat_procedure_v2",
+                DampHeatPolicyV2,
+            ),
+            RulePolicyRegistration(
                 "mpe_profile_v1",
                 MpeProfile,
+            ),
+            RulePolicyRegistration(
+                "mpe_profile_set_v2",
+                MpeProfileSetV2,
             ),
         ),
     )
@@ -1058,6 +1089,12 @@ def span_stability_registration():
                     "v1",
                     SpanStabilityContext,
                 ),
+                ContextRegistration(
+                    SPAN_STABILITY,
+                    "LONG_DURATION",
+                    "v2",
+                    SpanStabilityContextV2,
+                ),
             )
         ),
         ObservationSchemaRegistry(
@@ -1067,6 +1104,12 @@ def span_stability_registration():
                     "SPAN_STABILITY_V1",
                     "v1",
                     SpanStabilityObservation,
+                ),
+                ObservationRegistration(
+                    SPAN_STABILITY,
+                    "SPAN_STABILITY_V2",
+                    "v2",
+                    SpanStabilityObservationV2,
                 ),
             )
         ),
@@ -1081,8 +1124,16 @@ def span_stability_registration():
                 SpanStabilityPolicy,
             ),
             RulePolicyRegistration(
+                "span_stability_procedure_v2",
+                SpanStabilityPolicyV2,
+            ),
+            RulePolicyRegistration(
                 "mpe_profile_v1",
                 MpeProfile,
+            ),
+            RulePolicyRegistration(
+                "mpe_profile_set_v2",
+                MpeProfileSetV2,
             ),
         ),
     )
