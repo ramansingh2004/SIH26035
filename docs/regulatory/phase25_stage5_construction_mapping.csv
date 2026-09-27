@@ -1,0 +1,9 @@
+internal_category,candidate_scope,r76_1_clause_family,r76_2_report_section,verification_status,activation_allowed
+GENERAL,Overall construction description and additional instrument information.,A.2;A.3;4.1;8.2,16,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false
+RECEPTOR_LOAD_CELLS,"Load receptor, load-transmitting/load-measuring devices and module identity.",3.10;4.1.1.3;8.2.1;A.2,16;17.1,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false
+INDICATOR_DISPLAY,Indicator/display construction and primary-indication characteristics.,4.2;4.3;4.4;A.2,16;17.1,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false
+PRINTER_PERIPHERALS,"Printing, storage, peripheral and connected-device construction.",4.4.2;5.3.6;A.2,16;17.1;17.3,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false
+POWER_INTERFACES,"Power arrangements, interfaces and external-equipment construction.",5.3.5;5.3.6;A.2,16;17.3,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false
+TILT_ZERO_TARE,"Tilt/level, zero-setting and tare-related devices.",3.9.1.1;4.5;4.6;4.7;A.2,16;17.1;17.2,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false
+SEALS_SECURITY_SOFTWARE,"Securing, sealing, software security and identification.",4.1.2.4;5.5;7.2;A.3.3;Annex G,16;17.1;17.4,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false
+DOCUMENTS_PHOTOS,"Documentation, photographs, component descriptions and manufacturer references.",8.2.1;8.2.2;A.1;A.2,16;17.1,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false

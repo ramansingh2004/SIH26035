@@ -1,0 +1,569 @@
+{
+  "schema_version": 1,
+  "bundle_id": "OIML_R76_2006_2007_PHASE25_STAGE5",
+  "standard_code": "OIML_R76",
+  "edition": "R76-1:2006 / R76-2:2007",
+  "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+  "activation_allowed": false,
+  "independent_verifier": "PENDING",
+  "register_ids": [
+    "REG-15"
+  ],
+  "sources": [
+    {
+      "source_id": "SRC-R76-1-2006-E",
+      "part": "R76-1",
+      "edition": "2006",
+      "official_url": "https://www.oiml.org/en/files/pdf_r/r076-1-e06.pdf",
+      "digest": null,
+      "acquisition_status": "PENDING_CONTROLLED_ACQUISITION"
+    },
+    {
+      "source_id": "SRC-R76-2-2007-E",
+      "part": "R76-2",
+      "edition": "2007",
+      "official_url": "https://www.oiml.org/en/files/pdf_r/r076-2-e07.pdf",
+      "digest": null,
+      "acquisition_status": "PENDING_CONTROLLED_ACQUISITION"
+    }
+  ],
+  "section16": {
+    "status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+    "activation_allowed": false,
+    "source_refs": {
+      "R76-1": [
+        "A.2",
+        "A.3",
+        "8.2",
+        "3.10",
+        "4.1",
+        "7"
+      ],
+      "R76-2": [
+        "16"
+      ]
+    },
+    "report_semantics": {
+      "purpose": "Capture additional construction description/information not already contained in the report or accompanying approval/certificate.",
+      "candidate_capture_examples": [
+        "complete-instrument image",
+        "main-component description",
+        "remarks useful to initial/subsequent verification authorities",
+        "manufacturer references"
+      ]
+    },
+    "internal_capture_categories": [
+      {
+        "category": "GENERAL",
+        "candidate_scope": "Overall construction description and additional instrument information.",
+        "r76_1_refs": [
+          "A.2",
+          "A.3",
+          "4.1",
+          "8.2"
+        ],
+        "r76_2_refs": [
+          "16"
+        ]
+      },
+      {
+        "category": "RECEPTOR_LOAD_CELLS",
+        "candidate_scope": "Load receptor, load-transmitting/load-measuring devices and module identity.",
+        "r76_1_refs": [
+          "3.10",
+          "4.1.1.3",
+          "8.2.1",
+          "A.2"
+        ],
+        "r76_2_refs": [
+          "16",
+          "17.1"
+        ]
+      },
+      {
+        "category": "INDICATOR_DISPLAY",
+        "candidate_scope": "Indicator/display construction and primary-indication characteristics.",
+        "r76_1_refs": [
+          "4.2",
+          "4.3",
+          "4.4",
+          "A.2"
+        ],
+        "r76_2_refs": [
+          "16",
+          "17.1"
+        ]
+      },
+      {
+        "category": "PRINTER_PERIPHERALS",
+        "candidate_scope": "Printing, storage, peripheral and connected-device construction.",
+        "r76_1_refs": [
+          "4.4.2",
+          "5.3.6",
+          "A.2"
+        ],
+        "r76_2_refs": [
+          "16",
+          "17.1",
+          "17.3"
+        ]
+      },
+      {
+        "category": "POWER_INTERFACES",
+        "candidate_scope": "Power arrangements, interfaces and external-equipment construction.",
+        "r76_1_refs": [
+          "5.3.5",
+          "5.3.6",
+          "A.2"
+        ],
+        "r76_2_refs": [
+          "16",
+          "17.3"
+        ]
+      },
+      {
+        "category": "TILT_ZERO_TARE",
+        "candidate_scope": "Tilt/level, zero-setting and tare-related devices.",
+        "r76_1_refs": [
+          "3.9.1.1",
+          "4.5",
+          "4.6",
+          "4.7",
+          "A.2"
+        ],
+        "r76_2_refs": [
+          "16",
+          "17.1",
+          "17.2"
+        ]
+      },
+      {
+        "category": "SEALS_SECURITY_SOFTWARE",
+        "candidate_scope": "Securing, sealing, software security and identification.",
+        "r76_1_refs": [
+          "4.1.2.4",
+          "5.5",
+          "7.2",
+          "A.3.3",
+          "Annex G"
+        ],
+        "r76_2_refs": [
+          "16",
+          "17.1",
+          "17.4"
+        ]
+      },
+      {
+        "category": "DOCUMENTS_PHOTOS",
+        "candidate_scope": "Documentation, photographs, component descriptions and manufacturer references.",
+        "r76_1_refs": [
+          "8.2.1",
+          "8.2.2",
+          "A.1",
+          "A.2"
+        ],
+        "r76_2_refs": [
+          "16",
+          "17.1"
+        ]
+      }
+    ],
+    "runtime_projection": {
+      "owner": "ConstructionService",
+      "rule_kind": "construction_item_v1",
+      "status": "ENGINE_PRESENT_CANDIDATE_RULES_NOT_RUNTIME_LOADED",
+      "blockers": [
+        "REG-15 independent clause/item verification pending",
+        "candidate-v1 contains no authoritative Section 16 construction_item_v1 rules",
+        "evidence/applicability requirements not independently verified"
+      ]
+    }
+  },
+  "section17": {
+    "status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+    "activation_allowed": false,
+    "source_refs": {
+      "R76-2": [
+        "17",
+        "17.1",
+        "17.2",
+        "17.3",
+        "17.4"
+      ]
+    },
+    "principles": {
+      "summary_not_procedure": true,
+      "does_not_substitute_r76_1": true,
+      "non_self_indicating_branch": "Use R76-1 clause 6 in lieu of the Section 17 checklist.",
+      "non_mandatory_device_branch": "Existence/applicability must be captured explicitly where relevant."
+    },
+    "groups": {
+      "GENERAL": "17.1",
+      "DIRECT_SALES": "17.2",
+      "ELECTRONIC": "17.3",
+      "SOFTWARE_CONTROLLED": "17.4"
+    },
+    "domains": [
+      {
+        "key": "GENERAL_MARKINGS",
+        "group": "GENERAL",
+        "r76_1_refs": [
+          "7.1",
+          "A.3.2"
+        ],
+        "r76_2_report_section": "17.1",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "GENERAL_SEALING",
+        "group": "GENERAL",
+        "r76_1_refs": [
+          "4.1.2.4",
+          "7.2",
+          "A.3.3"
+        ],
+        "r76_2_report_section": "17.1",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "GENERAL_DOCUMENTATION",
+        "group": "GENERAL",
+        "r76_1_refs": [
+          "8.2.1",
+          "8.2.2",
+          "A.1",
+          "A.2"
+        ],
+        "r76_2_report_section": "17.1",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "GENERAL_INDICATION",
+        "group": "GENERAL",
+        "r76_1_refs": [
+          "4.2",
+          "4.3",
+          "4.4"
+        ],
+        "r76_2_report_section": "17.1",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "GENERAL_PRINTING",
+        "group": "GENERAL",
+        "r76_1_refs": [
+          "4.4.2",
+          "4.13",
+          "4.14"
+        ],
+        "r76_2_report_section": "17.1",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "GENERAL_ZERO_SETTING",
+        "group": "GENERAL",
+        "r76_1_refs": [
+          "4.5"
+        ],
+        "r76_2_report_section": "17.1",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "GENERAL_TARE",
+        "group": "GENERAL",
+        "r76_1_refs": [
+          "4.6",
+          "4.7"
+        ],
+        "r76_2_report_section": "17.1",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "GENERAL_RANGES",
+        "group": "GENERAL",
+        "r76_1_refs": [
+          "4.10",
+          "4.11"
+        ],
+        "r76_2_report_section": "17.1",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "GENERAL_EXTENDED_INDICATION",
+        "group": "GENERAL",
+        "r76_1_refs": [
+          "4.4.3"
+        ],
+        "r76_2_report_section": "17.1",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "GENERAL_INTERFACES",
+        "group": "GENERAL",
+        "r76_1_refs": [
+          "5.3.6"
+        ],
+        "r76_2_report_section": "17.1",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "DIRECT_SALES_CUSTOMER_VISIBILITY",
+        "group": "DIRECT_SALES",
+        "r76_1_refs": [
+          "4.13.1",
+          "4.13.6"
+        ],
+        "r76_2_report_section": "17.2",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "DIRECT_SALES_PRICE_DISPLAY",
+        "group": "DIRECT_SALES",
+        "r76_1_refs": [
+          "4.14.1",
+          "4.14.2",
+          "4.14.3"
+        ],
+        "r76_2_report_section": "17.2",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "DIRECT_SALES_TARE_RESTRICTIONS",
+        "group": "DIRECT_SALES",
+        "r76_1_refs": [
+          "4.13.3",
+          "4.13.4"
+        ],
+        "r76_2_report_section": "17.2",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "DIRECT_SALES_AUTOMATIC_FUNCTIONS",
+        "group": "DIRECT_SALES",
+        "r76_1_refs": [
+          "4.5.4",
+          "4.13.3.3"
+        ],
+        "r76_2_report_section": "17.2",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "DIRECT_SALES_LABELING",
+        "group": "DIRECT_SALES",
+        "r76_1_refs": [
+          "4.16"
+        ],
+        "r76_2_report_section": "17.2",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "DIRECT_SALES_TRANSACTIONS",
+        "group": "DIRECT_SALES",
+        "r76_1_refs": [
+          "4.14.4"
+        ],
+        "r76_2_report_section": "17.2",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "ELECTRONIC_FAULT_HANDLING",
+        "group": "ELECTRONIC",
+        "r76_1_refs": [
+          "5.1.1",
+          "5.2"
+        ],
+        "r76_2_report_section": "17.3",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "ELECTRONIC_POWER_UP",
+        "group": "ELECTRONIC",
+        "r76_1_refs": [
+          "5.3.1"
+        ],
+        "r76_2_report_section": "17.3",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "ELECTRONIC_DISPLAY_TEST",
+        "group": "ELECTRONIC",
+        "r76_1_refs": [
+          "5.3.1"
+        ],
+        "r76_2_report_section": "17.3",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "ELECTRONIC_INTERFACES",
+        "group": "ELECTRONIC",
+        "r76_1_refs": [
+          "5.3.6"
+        ],
+        "r76_2_report_section": "17.3",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "ELECTRONIC_PERIPHERALS",
+        "group": "ELECTRONIC",
+        "r76_1_refs": [
+          "5.3.6"
+        ],
+        "r76_2_report_section": "17.3",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "ELECTRONIC_BATTERY",
+        "group": "ELECTRONIC",
+        "r76_1_refs": [
+          "5.3.5"
+        ],
+        "r76_2_report_section": "17.3",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "ELECTRONIC_FUNCTIONAL_INTEGRITY",
+        "group": "ELECTRONIC",
+        "r76_1_refs": [
+          "5.1",
+          "5.2",
+          "5.3"
+        ],
+        "r76_2_report_section": "17.3",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "SOFTWARE_CONTROLLED_EMBEDDED_SOFTWARE",
+        "group": "SOFTWARE_CONTROLLED",
+        "r76_1_refs": [
+          "5.5.1",
+          "G.1"
+        ],
+        "r76_2_report_section": "17.4",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "SOFTWARE_CONTROLLED_LOADABLE_SOFTWARE",
+        "group": "SOFTWARE_CONTROLLED",
+        "r76_1_refs": [
+          "5.5.2.2",
+          "G.2"
+        ],
+        "r76_2_report_section": "17.4",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "SOFTWARE_CONTROLLED_SOFTWARE_IDENTIFICATION",
+        "group": "SOFTWARE_CONTROLLED",
+        "r76_1_refs": [
+          "5.5.1",
+          "5.5.2.2",
+          "G.1",
+          "G.2.4"
+        ],
+        "r76_2_report_section": "17.4",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      },
+      {
+        "key": "SOFTWARE_CONTROLLED_DATA_STORAGE",
+        "group": "SOFTWARE_CONTROLLED",
+        "r76_1_refs": [
+          "5.5.3",
+          "G.3"
+        ],
+        "r76_2_report_section": "17.4",
+        "verification_status": "SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF",
+        "activation_allowed": false,
+        "applicability_status": "PENDING_INDEPENDENT_VERIFICATION",
+        "evidence_required": null
+      }
+    ],
+    "runtime_projection": {
+      "owner": "ChecklistEngine / ChecklistService",
+      "status": "ENGINE_PRESENT_CANDIDATE_ROWS_REVIEW_BLOCKED",
+      "blockers": [
+        "REG-15 independent checklist wording/clause verification pending",
+        "applicability policies remain unverified",
+        "evidence-required flags remain unresolved",
+        "non-self-indicating replacement branch requires authoritative workflow mapping"
+      ]
+    }
+  }
+}

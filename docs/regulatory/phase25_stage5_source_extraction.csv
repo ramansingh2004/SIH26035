@@ -1,0 +1,8 @@
+section,project_family,register_id,r76_1_refs,r76_2_report_section,verification_status,activation_allowed,candidate_summary
+16,CONSTRUCTION_EXAMINATION,REG-15,A.2;A.3;8.2;3.10;4.1;7,16,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false,Construction description/information supplementary to the report and approval/certificate.
+17,CHECKLIST_OVERVIEW,REG-15,multiple R76-1 clauses,17,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false,Checklist summarizes examinations and does not substitute for R76-1 requirements.
+17.1,CHECKLIST_GENERAL,REG-15,4;5;7;8;A.1-A.3,17.1,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false,General checklist group; non-self-indicating instruments follow R76-1 clause 6 instead.
+17.2,CHECKLIST_DIRECT_SALES,REG-15,4.5.4;4.8.1;4.13;4.14;4.16,17.2,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false,"Direct-sales, price-computing and labeling checklist group."
+17.3,CHECKLIST_ELECTRONIC,REG-15,5.1;5.2;5.3,17.3,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false,Electronic-instrument checklist group.
+17.4,CHECKLIST_SOFTWARE,REG-15,5.5;Annex G,17.4,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false,Software-controlled digital-device/instrument checklist group.
+17.NSI,NON_SELF_INDICATING_BRANCH,REG-15,6,17 preface,SOURCE_MAPPED_PENDING_INDEPENDENT_SIGNOFF,false,R76-1 clause 6 applies in lieu of Section 17 checklist for non-self-indicating instruments.

@@ -1,0 +1,10 @@
+gate_id,requirement,status,owner
+GATE-5-01,Controlled R76-1:2006 acquisition and approved SHA-256 digest,PENDING,Independent regulatory workflow
+GATE-5-02,Controlled R76-2:2007 acquisition and approved SHA-256 digest,PENDING,Independent regulatory workflow
+GATE-5-03,Independent Section 16 clause/content review,PENDING,Human/domain-expert sign-off
+GATE-5-04,Independent Section 17.1 general-checklist review,PENDING,Human/domain-expert sign-off
+GATE-5-05,Independent Section 17.2 direct-sales review,PENDING,Human/domain-expert sign-off
+GATE-5-06,Independent Section 17.3 electronic review,PENDING,Human/domain-expert sign-off
+GATE-5-07,Independent Section 17.4 software review,PENDING,Human/domain-expert sign-off
+GATE-5-08,Authoritative non-self-indicating branch mapping,PENDING,Human/domain-expert + workflow review
+GATE-5-09,Authoritative evidence/applicability requirements for checklist rows,PENDING,Human/domain-expert sign-off
