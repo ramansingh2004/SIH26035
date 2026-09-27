@@ -93,24 +93,37 @@ class EvaluatorRegistration:
     def runtime_schema_versions(
         self,
         procedure_variant: str,
+        *,
+        procedure_schema_version: str | None = None,
+        observation_schema_version: str | None = None,
     ) -> tuple[str, str]:
+        if (procedure_schema_version is None) != (
+            observation_schema_version is None
+        ):
+            raise ValueError(
+                "Runtime procedure/observation schema versions must be selected together"
+            )
+
+        procedure_version = procedure_schema_version or self.runtime_schema_version
+        observation_version = (
+            observation_schema_version or self.runtime_schema_version
+        )
+
         contexts = [
             item
             for item in self.contexts.registrations
             if item.procedure_variant == procedure_variant
-            and item.procedure_schema_version == self.runtime_schema_version
+            and item.procedure_schema_version == procedure_version
         ]
 
         observation_versions = {
             item.observation_schema_version
             for item in self.observations.registrations
-            if item.observation_schema_version == self.runtime_schema_version
+            if item.observation_schema_version == observation_version
         }
 
         if len(contexts) != 1 or len(observation_versions) != 1:
-            raise ValueError(
-                "Evaluator runtime schema selection is ambiguous"
-            )
+            raise ValueError("Evaluator runtime schema selection is ambiguous")
 
         return (
             contexts[0].procedure_schema_version,

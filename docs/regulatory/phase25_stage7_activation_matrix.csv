@@ -1,0 +1,23 @@
+gate,required_for_verified_registration,required_for_activation,current_state
+trusted fixed artifact directory,true,true,READY
+candidate configuration hash binding,true,true,READY
+verified configuration hash binding,true,true,READY
+evidence package SHA-256,true,true,AWAITING_EXTERNAL_PACKAGE
+controlled source acquisition,true,true,AWAITING_EXTERNAL_PACKAGE
+source digest agreement,true,true,AWAITING_EXTERNAL_PACKAGE
+REG-01 through REG-17 independent signoff,true,true,AWAITING_EXTERNAL_PACKAGE
+item-level rule/test/checklist signoff,true,true,AWAITING_EXTERNAL_PACKAGE
+all encoded clauses/digests present,true,true,AWAITING_EXTERNAL_PACKAGE
+all rule blockers cleared,true,true,AWAITING_EXTERNAL_PACKAGE
+all parameters resolved,true,true,AWAITING_EXTERNAL_PACKAGE
+Section 16 verified construction catalog,true,true,AWAITING_EXTERNAL_PACKAGE
+Section 17 verified checklist/applicability/evidence,true,true,AWAITING_EXTERNAL_PACKAGE
+supported test set matches implemented evaluators,true,true,AWAITING_EXTERNAL_PACKAGE
+explicit runtime schema map,true,true,AWAITING_EXTERNAL_PACKAGE
+synthetic/demo rejection,true,true,READY
+normal activation_blockers empty,true,true,AWAITING_EXTERNAL_PACKAGE
+database artifact immutability,true,true,READY
+manifest hash binding,true,true,READY
+validate-before-activate,true,true,READY
+India authority-source evidence,true,true,AWAITING_EXTERNAL_PACKAGE
+authoritative runtime schema remains v1,true,true,READY

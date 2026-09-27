@@ -5,6 +5,12 @@ from uuid import uuid4
 
 from app.compliance.demo import DEMO_ARTIFACT, is_demo_ruleset, load_demo_ruleset
 from app.compliance.ruleset import RuleSet, load_ruleset
+from app.compliance.stage7_activation import (
+    VERIFIED_ARTIFACT,
+    VERIFIED_VERSION,
+    Stage7VerificationError,
+    load_verified_ruleset,
+)
 from app.core.concurrency import etag, require_match
 from app.core.errors import AppError, denied, missing
 from app.models import ChecklistRule, RuleDefinition, RuleSetRecord, TestDefinitionRecord
@@ -34,6 +40,69 @@ def provenance(item):
         verified_at=verification.verified_at,
         verification_evidence=verification.evidence,
     )
+
+
+def _load_stage7_verified():
+    try:
+        return load_verified_ruleset()
+    except Stage7VerificationError as exc:
+        raise AppError(
+            409,
+            "RULESET_NOT_VERIFIED",
+            "Independent Stage 7 verification package is incomplete or invalid",
+            {"blockers": list(exc.blockers)},
+        ) from exc
+
+
+def _trusted_artifact(artifact):
+    if artifact == "oiml_r76_2006/candidate-v1":
+        return load_ruleset(), None
+    if artifact == DEMO_ARTIFACT:
+        return load_demo_ruleset(), None
+    if artifact == VERIFIED_ARTIFACT:
+        return _load_stage7_verified()
+    raise AppError(422, "INVALID_INPUT", "Unknown trusted ruleset artifact")
+
+
+def _trusted_snapshot(candidate):
+    if is_demo_ruleset(candidate):
+        return load_demo_ruleset(), None
+    if candidate.metadata.version == VERIFIED_VERSION:
+        return _load_stage7_verified()
+
+    trusted = load_ruleset()
+    if candidate.metadata.version != trusted.metadata.version:
+        raise AppError(
+            409,
+            "RULESET_ARTIFACT_MISMATCH",
+            "Registered artifact version is not a trusted server artifact",
+        )
+    return trusted, None
+
+
+def _validation_summary(ruleset, stage7_manifest=None):
+    blockers = list(ruleset.activation_blockers())
+    summary = {
+        "schema_version": 1,
+        "structurally_valid": True,
+        "authoritative": False,
+        "synthetic_demo_only": is_demo_ruleset(ruleset),
+        "blockers": (
+            ["SYNTHETIC_DEMO_ONLY"]
+            if is_demo_ruleset(ruleset)
+            else blockers
+        ),
+    }
+    if stage7_manifest is not None:
+        summary["stage7_external_verification"] = "VERIFIED"
+        summary["stage7_manifest_hash"] = stage7_manifest.manifest_hash
+        summary.update(
+            {
+                item.register_id: item.status
+                for item in stage7_manifest.register_signoffs
+            }
+        )
+    return summary
 
 
 class RulesetService:
@@ -79,12 +148,7 @@ class RulesetService:
         actor_id=None,
         artifact="oiml_r76_2006/candidate-v1",
     ):
-        if artifact == "oiml_r76_2006/candidate-v1":
-            ruleset = load_ruleset()
-        elif artifact == DEMO_ARTIFACT:
-            ruleset = load_demo_ruleset()
-        else:
-            raise AppError(422, "INVALID_INPUT", "Unknown trusted ruleset artifact")
+        ruleset, stage7_manifest = _trusted_artifact(artifact)
         # Server allowlist only; no client paths or arbitrary configuration.
         await self.repo.ruleset_lock()
         existing = await self.repo.ruleset_version(ruleset.metadata)
@@ -93,9 +157,23 @@ class RulesetService:
                 raise AppError(
                     409, "RULESET_VERSION_CONFLICT", "Artifact differs from registered version"
                 )
+            if stage7_manifest is not None and (
+                (existing.validation_summary or {}).get("stage7_manifest_hash")
+                != stage7_manifest.manifest_hash
+            ):
+                raise AppError(
+                    409,
+                    "RULESET_VERSION_CONFLICT",
+                    "External verification manifest differs from registered version",
+                )
             return existing
         m = ruleset.metadata
         snapshot = ruleset.snapshot()
+        runtime_schemas = (
+            stage7_manifest.runtime_schema_map()
+            if stage7_manifest is not None
+            else {}
+        )
         row = RuleSetRecord(
             id=uuid4(),
             standard_code=m.standard_code,
@@ -107,17 +185,10 @@ class RulesetService:
             configuration_snapshot=snapshot,
             supported_test_codes=list(m.supported_test_codes),
             source_reference=m.source_reference,
-            validation_summary={
-                "schema_version": 1,
-                "structurally_valid": True,
-                "authoritative": False,
-                "synthetic_demo_only": is_demo_ruleset(ruleset),
-                "blockers": (
-                    ["SYNTHETIC_DEMO_ONLY"]
-                    if is_demo_ruleset(ruleset)
-                    else list(ruleset.activation_blockers())
-                ),
-            },
+            validation_summary=_validation_summary(
+                ruleset,
+                stage7_manifest,
+            ),
             created_by=actor_id,
         )
         self.repo.add(row)
@@ -155,8 +226,20 @@ class RulesetService:
                     supported=test.code in m.supported_test_codes,
                     implemented=test.implemented,
                     applicability_metadata={"schema_version": 1, "status": test.applicability},
-                    default_observation_schema_version="v1" if test.implemented else None,
-                    default_procedure_schema_version="v1" if test.implemented else None,
+                    default_observation_schema_version=(
+                        runtime_schemas[test.code].observation_schema_version
+                        if test.code in runtime_schemas
+                        else "v1"
+                        if test.implemented
+                        else None
+                    ),
+                    default_procedure_schema_version=(
+                        runtime_schemas[test.code].procedure_schema_version
+                        if test.code in runtime_schemas
+                        else "v1"
+                        if test.implemented
+                        else None
+                    ),
                     description=(
                         "Deterministic evaluator declared; regulatory gate applies."
                         if test.implemented
@@ -214,13 +297,18 @@ class RulesetService:
                 raise missing()
             require_match(match, etag(row.lock_version))
             candidate = RuleSet.model_validate(row.configuration_snapshot)
-            # Stored configuration must match the trusted versioned artifact, including provenance.
-            trusted = (
-                load_demo_ruleset() if is_demo_ruleset(candidate) else load_ruleset()
+            # Stored configuration and Stage 7 sign-off package must still
+            # match the fixed trusted server artifact before lifecycle actions.
+            trusted, stage7_manifest = _trusted_snapshot(candidate)
+            manifest_mismatch = (
+                stage7_manifest is not None
+                and (row.validation_summary or {}).get("stage7_manifest_hash")
+                != stage7_manifest.manifest_hash
             )
             if (
                 candidate.configuration_hash != row.configuration_hash
                 or row.configuration_hash != trusted.configuration_hash
+                or manifest_mismatch
             ):
                 raise AppError(
                     409, "RULESET_ARTIFACT_MISMATCH", "Registered artifact integrity failed"
@@ -233,6 +321,13 @@ class RulesetService:
                         409,
                         "SYNTHETIC_DEMO_ACTIVATION_FORBIDDEN",
                         "Synthetic SIH demo rulesets can never be activated",
+                    )
+                if stage7_manifest is not None and (
+                    row.validation_summary or {}).get("authoritative") is not True:
+                    raise AppError(
+                        409,
+                        "RULESET_NOT_VALIDATED",
+                        "Verified Stage 7 artifact must pass validation before activation",
                     )
                 if blockers:
                     raise AppError(
@@ -251,19 +346,11 @@ class RulesetService:
                     raise AppError(409, "RULESET_STATE_CONFLICT", "Only active rulesets can retire")
                 row.ruleset_status = "RETIRED"
             elif action == "validate":
-                row.validation_summary = {
-                    "schema_version": 1,
-                    "structurally_valid": True,
-                    "authoritative": (
-                        not blockers and not is_demo_ruleset(candidate)
-                    ),
-                    "synthetic_demo_only": is_demo_ruleset(candidate),
-                    "blockers": (
-                        ["SYNTHETIC_DEMO_ONLY"]
-                        if is_demo_ruleset(candidate)
-                        else list(blockers)
-                    ),
-                }
+                summary = _validation_summary(candidate, stage7_manifest)
+                summary["authoritative"] = (
+                    not blockers and not is_demo_ruleset(candidate)
+                )
+                row.validation_summary = summary
             row.lock_version += 1
             await self.repo.flush()
             self.audit.record(

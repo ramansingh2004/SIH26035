@@ -1,0 +1,31 @@
+gate_id,requirement,status,owner
+GATE-7-01,Controlled R76-1:2006 acquisition + approved SHA-256,PENDING,Independent regulatory workflow
+GATE-7-02,Controlled R76-2:2007 acquisition + approved SHA-256,PENDING,Independent regulatory workflow
+GATE-7-03,Final verified artifact assembled from reviewed content,PENDING,Regulatory artifact owner
+GATE-7-04,Verified artifact configuration hash frozen,PENDING,Regulatory artifact owner
+GATE-7-05,External evidence package SHA-256 frozen,PENDING,Independent regulatory workflow
+GATE-7-REG-01,Independent sign-off for REG-01,PENDING,Human/domain-expert verifier
+GATE-7-REG-02,Independent sign-off for REG-02,PENDING,Human/domain-expert verifier
+GATE-7-REG-03,Independent sign-off for REG-03,PENDING,Human/domain-expert verifier
+GATE-7-REG-04,Independent sign-off for REG-04,PENDING,Human/domain-expert verifier
+GATE-7-REG-05,Independent sign-off for REG-05,PENDING,Human/domain-expert verifier
+GATE-7-REG-06,Independent sign-off for REG-06,PENDING,Human/domain-expert verifier
+GATE-7-REG-07,Independent sign-off for REG-07,PENDING,Human/domain-expert verifier
+GATE-7-REG-08,Independent sign-off for REG-08,PENDING,Human/domain-expert verifier
+GATE-7-REG-09,Independent sign-off for REG-09,PENDING,Human/domain-expert verifier
+GATE-7-REG-10,Independent sign-off for REG-10,PENDING,Human/domain-expert verifier
+GATE-7-REG-11,Independent sign-off for REG-11,PENDING,Human/domain-expert verifier
+GATE-7-REG-12,Independent sign-off for REG-12,PENDING,Human/domain-expert verifier
+GATE-7-REG-13,Independent sign-off for REG-13,PENDING,Human/domain-expert verifier
+GATE-7-REG-14,Independent sign-off for REG-14,PENDING,Human/domain-expert verifier
+GATE-7-REG-15,Independent sign-off for REG-15,PENDING,Human/domain-expert verifier
+GATE-7-REG-16,Independent sign-off for REG-16,PENDING,Human/domain-expert verifier
+GATE-7-REG-17,Independent sign-off for REG-17,PENDING,Human/domain-expert verifier
+GATE-7-23,Every rule/test/checklist item has exact-clause item sign-off,PENDING,Human/domain-expert verifier
+GATE-7-24,Section 16 authoritative construction catalog verified,PENDING,Human/domain-expert verifier
+GATE-7-25,Section 17 authoritative checklist/applicability/evidence verified,PENDING,Human/domain-expert verifier
+GATE-7-26,Runtime schema selection reviewed for every supported deterministic test,PENDING,Independent technical + regulatory review
+GATE-7-27,Verified-v1 registration acceptance,PENDING,System gate after external sign-off
+GATE-7-28,Verified-v1 activation acceptance,PENDING,System gate after external sign-off
+GATE-7-10,Controlled India authority-source evidence for REG-01/REG-17,PENDING,National legal-metrology expert
+GATE-7-11,Confirm authoritative runtime remains v1 until separate v2 workflow enablement,PENDING,Independent regulatory + engineering review

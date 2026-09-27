@@ -547,7 +547,13 @@ class TestingService:
                                 procedure_version,
                                 observation_version,
                             ) = registration.runtime_schema_versions(
-                                slot.procedure_variant
+                                slot.procedure_variant,
+                                procedure_schema_version=(
+                                    definition.default_procedure_schema_version
+                                ),
+                                observation_schema_version=(
+                                    definition.default_observation_schema_version
+                                ),
                             )
                         except ValueError:
                             reject(
