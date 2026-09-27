@@ -51,15 +51,20 @@ activation.
 
 ## Runtime schema activation
 
-Existing candidate/demo behavior remains v1.
+Candidate/demo behavior remains unchanged until a verified artifact is
+independently reviewed, accepted by Stage 7, registered, validated and
+activated.
 
-The external manifest records the intended procedure/observation schema for
-every supported test, and the selected versions are persisted into the immutable
-test-definition catalog.
+The external manifest records the exact independently reviewed
+procedure/observation schema pair for every supported deterministic test,
+together with the runtime-binding SHA-256, reviewer identity, role,
+organization, timestamp and evidence reference.
 
-For the current authoritative HTTP/domain workflow, Stage 7 accepts only v1
-runtime selection. Candidate v2 schema registration remains non-authoritative
-and is explicitly blocked by `V2_NOT_AUTHORITY_ENABLED`.
+Stage 7 recomputes the binding against the current evaluator implementation and
+rejects drift. A schema label such as `v1` or `v2` never confers authority by
+itself. A registered pair is authority-eligible only when that exact pair is
+independently reviewed, its binding still matches at intake, and every other
+regulatory/source/activation gate passes.
 
 ## Current regulatory state
 

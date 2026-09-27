@@ -20,4 +20,4 @@ database artifact immutability,true,true,READY
 manifest hash binding,true,true,READY
 validate-before-activate,true,true,READY
 India authority-source evidence,true,true,AWAITING_EXTERNAL_PACKAGE
-authoritative runtime schema remains v1,true,true,READY
+runtime binding drift detection,true,true,READY

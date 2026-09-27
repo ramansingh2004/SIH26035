@@ -28,4 +28,4 @@ GATE-7-26,Runtime schema selection reviewed for every supported deterministic te
 GATE-7-27,Verified-v1 registration acceptance,PENDING,System gate after external sign-off
 GATE-7-28,Verified-v1 activation acceptance,PENDING,System gate after external sign-off
 GATE-7-10,Controlled India authority-source evidence for REG-01/REG-17,PENDING,National legal-metrology expert
-GATE-7-11,Confirm authoritative runtime remains v1 until separate v2 workflow enablement,PENDING,Independent regulatory + engineering review
+GATE-7-11,Confirm each selected runtime binding SHA-256 still matches the independently reviewed implementation at Stage 7 intake,PENDING,Independent regulatory + engineering review
