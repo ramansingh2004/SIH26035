@@ -72,17 +72,10 @@ CONSTRUCTION_ITEMS = (
     "component descriptions and manufacturer references."),
 )
 
-# These registrations expose a v2 schema, but their current evaluator still
-# loads the v1 procedure policy directly. Do not offer a v2 authoritative rule
-# until evaluator dispatch is explicitly upgraded.
-V1_ONLY_PROCEDURE_RULES = frozenset(
-    {
-        "SECTION11_VOLTAGE_PROCEDURE",
-        "SECTION13_DAMP_HEAT_PROCEDURE",
-        "SECTION14_SPAN_STABILITY_PROCEDURE",
-        "SECTION15_ENDURANCE_PROCEDURE",
-    }
-)
+# Fix 11 wires native-v2 execution for the former Stage-4 v1-only procedure
+# slots. Keep the symbol for backwards-compatible tests/imports, but no current
+# executable procedure rule is restricted by this historical Fix-10 set.
+V1_ONLY_PROCEDURE_RULES = frozenset()
 
 
 @dataclass(frozen=True)

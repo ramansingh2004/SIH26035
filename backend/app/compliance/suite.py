@@ -17,16 +17,16 @@ from app.compliance.phase7 import (
 from app.compliance.phase8 import (
     temperature_zero_registration,
     tilting_registration,
-    voltage_variation_registration,
     warm_up_registration,
 )
-from app.compliance.phase9 import (
-    damp_heat_registration,
-    span_stability_registration,
-)
 from app.compliance.phase10 import disturbance_registrations
-from app.compliance.phase11 import endurance_registration
 from app.compliance.repeatability import section5_registration
+from app.compliance.stage4_verified_runtime import (
+    damp_heat_registration,
+    endurance_registration,
+    span_stability_registration,
+    voltage_variation_registration,
+)
 from app.compliance.tare import section9_registration
 from app.compliance.weighing import section1_registration
 
