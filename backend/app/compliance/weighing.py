@@ -338,6 +338,7 @@ def _static_temperature_policy(*, instrument_snapshot, procedure_context, rulese
             policy.cases,
             instrument_snapshot,
             procedure_context.evaluation_context,
+            range_no=procedure_context.range_no,
         )
         if case.static_temperature is None:
             raise PolicyResolutionError(
@@ -387,6 +388,7 @@ def _standard_weight_substitution_policy(
             policy.cases,
             instrument_snapshot,
             procedure_context.evaluation_context,
+            range_no=procedure_context.range_no,
         )
         return case.standard_weight_substitution
     except PolicyResolutionError as exc:
@@ -1115,7 +1117,7 @@ def section1_registration():
                 ),
             )
         ),
-        implementation_version="section1-v3",
+        implementation_version="section1-fix12-v2",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),

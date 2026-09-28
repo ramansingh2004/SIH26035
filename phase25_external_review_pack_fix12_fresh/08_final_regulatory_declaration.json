@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "candidate_configuration_hash": "e795f71177ad2c0745417d92cd0010b6d895607a3768c3a21bf9bbe283c5a26b",
+  "assembly_contract_version": "verified-blueprint-v1",
+  "regulatory_signoff": false,
+  "signed_by": null,
+  "signer_role": null,
+  "signer_organization": null,
+  "signed_at": null,
+  "evidence_reference": null,
+  "independent_of_implementation": false,
+  "review_notes": ""
+}

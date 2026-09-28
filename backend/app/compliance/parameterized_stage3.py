@@ -22,8 +22,10 @@ class Stage3Selector(Frozen):
     indication_types: tuple[Text, ...] = ()
     range_types: tuple[Text, ...] = ()
     power_supply_types: tuple[Text, ...] = ()
+    load_receptor_types: tuple[Text, ...] = ()
     is_electronic: StrictBool | None = None
     is_mobile: StrictBool | None = None
+    is_portable: StrictBool | None = None
     level_indicator_available: StrictBool | None = None
     automatic_tilt_sensor: StrictBool | None = None
 
@@ -35,6 +37,7 @@ class Stage3Selector(Frozen):
             self.indication_types,
             self.range_types,
             self.power_supply_types,
+            self.load_receptor_types,
         ):
             if len(values) != len(set(values)):
                 raise ValueError("Stage 3 selector contains duplicate values")
@@ -62,12 +65,14 @@ def stage3_selector_state(
             choice(selector.indication_types, instrument.indication_type),
             choice(selector.range_types, instrument.range_type),
             choice(selector.power_supply_types, instrument.power_supply_type),
+            choice(selector.load_receptor_types, instrument.load_receptor_type),
         )
     )
 
     for expected, actual in (
         (selector.is_electronic, instrument.is_electronic),
         (selector.is_mobile, instrument.is_mobile),
+        (selector.is_portable, instrument.is_portable),
         (selector.level_indicator_available, instrument.level_indicator_available),
         (selector.automatic_tilt_sensor, instrument.automatic_tilt_sensor),
     ):
@@ -379,6 +384,8 @@ class TiltingPolicyCaseV2(CommonEvidencePolicyV2):
     test_tilt: TiltTarget
     required_loads: tuple[LoadTarget, ...] = Field(min_length=1)
     unloaded_limit: LimitTarget
+    unloaded_operator: Operator
+    unloaded_semantics: Semantics
     loaded_limit: LimitTarget
     require_reference_position: StrictBool
     require_zero_tracking_disabled: StrictBool

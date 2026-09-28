@@ -122,7 +122,9 @@ def resolve_discrimination_policy_v2(
     range_no: int,
     mpe_for_load: MpeForLoad | None = None,
 ) -> ResolvedDiscriminationPolicyV2:
-    case = resolve_policy_case(policy.cases, instrument, evaluation_context)
+    case = resolve_policy_case(
+    policy.cases, instrument, evaluation_context, range_no=range_no
+)
     test_loads = tuple(
         _test_load(expression, instrument, range_no) for expression in case.test_loads
     )
@@ -181,7 +183,9 @@ def resolve_sensitivity_policy_v2(
     range_no: int,
     mpe_for_load: MpeForLoad | None = None,
 ) -> ResolvedSensitivityPolicyV2:
-    case = resolve_policy_case(policy.cases, instrument, evaluation_context)
+    case = resolve_policy_case(
+    policy.cases, instrument, evaluation_context, range_no=range_no
+)
     test_loads = tuple(
         _test_load(expression, instrument, range_no) for expression in case.test_loads
     )

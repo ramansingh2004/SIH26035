@@ -22,13 +22,28 @@ class PolicyResolutionError(ValueError):
     """A parameterized policy cannot be selected or resolved deterministically."""
 
 
+
+class PolicyNumericCondition(Frozen):
+    feature: Literal[
+        "MAX_CAPACITY_G",
+        "MIN_CAPACITY_E",
+        "SUPPORT_POINT_COUNT",
+        "DECLARED_TEMP_MIN_C",
+        "DECLARED_TEMP_MAX_C",
+    ]
+    operator: Operator
+    value: Number
+
+
 class PolicySelector(Frozen):
     accuracy_classes: tuple[AccuracyClass, ...] = ()
     evaluation_contexts: tuple[Text, ...] = ()
     indication_types: tuple[Text, ...] = ()
     range_types: tuple[Text, ...] = ()
+    load_receptor_types: tuple[Text, ...] = ()
     self_indicating: StrictBool | None = None
     conducted_rf_path_available: StrictBool | None = None
+    numeric_conditions: tuple[PolicyNumericCondition, ...] = ()
 
     @model_validator(mode="after")
     def unique_values(self):
@@ -37,19 +52,42 @@ class PolicySelector(Frozen):
             self.evaluation_contexts,
             self.indication_types,
             self.range_types,
+            self.load_receptor_types,
         ):
             if len(values) != len(set(values)):
                 raise ValueError("Policy selector contains duplicate values")
+        keys = [
+            (item.feature, item.operator, item.value)
+            for item in self.numeric_conditions
+        ]
+        if len(keys) != len(set(keys)):
+            raise ValueError("Policy selector contains duplicate numeric conditions")
         return self
+
+
+def _selector_compare(actual, expected, operator: str) -> bool:
+    if operator == "<":
+        return actual < expected
+    if operator == "<=":
+        return actual <= expected
+    if operator == ">":
+        return actual > expected
+    if operator == ">=":
+        return actual >= expected
+    if operator == "==":
+        return actual == expected
+    if operator == "!=":
+        return actual != expected
+    raise PolicyResolutionError("Unknown policy-selector operator")
 
 
 def selector_state(
     selector: PolicySelector,
     instrument: InstrumentSnapshot,
     evaluation_context: str,
+    *,
+    range_no: int | None = None,
 ) -> bool | None:
-    """Return True, False or unknown without inventing missing instrument facts."""
-
     states: list[bool | None] = []
 
     def choice(allowed, value):
@@ -59,12 +97,15 @@ def selector_state(
             return None
         return value in allowed
 
+    selected = instrument if range_no is None else instrument.select_range(range_no)
+
     states.extend(
         (
             choice(selector.accuracy_classes, instrument.accuracy_class),
             choice(selector.evaluation_contexts, evaluation_context),
             choice(selector.indication_types, instrument.indication_type),
             choice(selector.range_types, instrument.range_type),
+            choice(selector.load_receptor_types, instrument.load_receptor_type),
         )
     )
 
@@ -83,6 +124,64 @@ def selector_state(
             is selector.conducted_rf_path_available
         )
 
+    for condition in selector.numeric_conditions:
+        if condition.feature == "MAX_CAPACITY_G":
+            actual = selected.max_capacity_g
+            states.append(
+                _selector_compare(actual, condition.value, condition.operator)
+            )
+        elif condition.feature == "MIN_CAPACITY_E":
+            if selected.min_capacity_g is None:
+                states.append(None)
+                continue
+            right = exact(
+                "multiply",
+                selected.verification_interval_e_g,
+                condition.value,
+            )
+            states.append(
+                _selector_compare(
+                    selected.min_capacity_g,
+                    right,
+                    condition.operator,
+                )
+            )
+        elif condition.feature == "SUPPORT_POINT_COUNT":
+            if instrument.support_point_count is None:
+                states.append(None)
+                continue
+            states.append(
+                _selector_compare(
+                    instrument.support_point_count,
+                    condition.value,
+                    condition.operator,
+                )
+            )
+        elif condition.feature == "DECLARED_TEMP_MIN_C":
+            if instrument.declared_temp_min_c is None:
+                states.append(None)
+                continue
+            states.append(
+                _selector_compare(
+                    instrument.declared_temp_min_c,
+                    condition.value,
+                    condition.operator,
+                )
+            )
+        elif condition.feature == "DECLARED_TEMP_MAX_C":
+            if instrument.declared_temp_max_c is None:
+                states.append(None)
+                continue
+            states.append(
+                _selector_compare(
+                    instrument.declared_temp_max_c,
+                    condition.value,
+                    condition.operator,
+                )
+            )
+        else:
+            raise PolicyResolutionError("Unknown policy-selector feature")
+
     if False in states:
         return False
     if None in states:
@@ -90,13 +189,22 @@ def selector_state(
     return True
 
 
-def resolve_policy_case(cases, instrument: InstrumentSnapshot, evaluation_context: str):
-    """Select exactly one policy case; unknown or overlapping cases are blocked."""
-
+def resolve_policy_case(
+    cases,
+    instrument: InstrumentSnapshot,
+    evaluation_context: str,
+    *,
+    range_no: int | None = None,
+):
     matched = []
     unresolved = []
     for case in cases:
-        state = selector_state(case.selector, instrument, evaluation_context)
+        state = selector_state(
+            case.selector,
+            instrument,
+            evaluation_context,
+            range_no=range_no,
+        )
         if state is True:
             matched.append(case)
         elif state is None:
@@ -456,6 +564,9 @@ class EccentricityPolicyCaseV2(Frozen):
         "ROLLING_LOAD",
     ]
     explicit_positions: tuple[EccentricityPositionV2, ...] = ()
+    required_rolling_directions: tuple[
+        Literal["FORWARD", "REVERSE"], ...
+    ] = ()
     allowed_receptor_types: tuple[Text, ...] = Field(min_length=1)
     required_support_count: PositiveInt | None = None
     require_position_coordinates: StrictBool
@@ -475,10 +586,29 @@ class EccentricityPolicyCaseV2(Frozen):
             item.rolling_direction is not None for item in self.explicit_positions
         ):
             raise ValueError("Weights eccentricity positions cannot carry rolling direction")
-        if self.procedure_variant =="ROLLING_LOAD" and self.position_strategy == "EXPLICIT" and any(
-            item.rolling_direction is None for item in self.explicit_positions
+        if (
+            self.procedure_variant == "ROLLING_LOAD"
+            and self.position_strategy == "EXPLICIT"
+            and any(item.rolling_direction is None for item in self.explicit_positions)
         ):
             raise ValueError("Explicit rolling-load positions require rolling direction")
+        if self.position_strategy == "ROLLING_LOAD":
+            if self.procedure_variant != "ROLLING_LOAD":
+                raise ValueError(
+                    "ROLLING_LOAD position strategy requires rolling-load procedure"
+                )
+            if not self.required_rolling_directions:
+                raise ValueError(
+                    "ROLLING_LOAD strategy requires verified rolling directions"
+                )
+        elif self.required_rolling_directions:
+            raise ValueError(
+                "Rolling directions are valid only for ROLLING_LOAD strategy"
+            )
+        if len(self.required_rolling_directions) != len(
+            set(self.required_rolling_directions)
+        ):
+            raise ValueError("Duplicate rolling direction")
         return self
 
 

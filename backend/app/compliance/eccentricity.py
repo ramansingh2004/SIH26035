@@ -197,6 +197,7 @@ def _eccentricity_policy(*, instrument_snapshot, procedure_context, ruleset):
             instrument=instrument_snapshot,
             evaluation_context=procedure_context.evaluation_context,
             range_no=procedure_context.range_no,
+            procedure_context=procedure_context,
         )
     except PolicyResolutionError as exc:
         raise RegulatoryBlocked(
@@ -458,7 +459,7 @@ def section3_registration():
         ObservationSchemaRegistry(
             (ObservationRegistration(CODE, "ECCENTRICITY_V1", "v1", EccentricityObservation),)
         ),
-        implementation_version="section3-v1",
+        implementation_version="section3-fix12-v2",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),

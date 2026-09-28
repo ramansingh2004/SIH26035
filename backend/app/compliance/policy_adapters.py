@@ -57,7 +57,12 @@ def adapt_weighing_policy(
     evaluation_context: str,
     range_no: int,
 ) -> WeighingPolicy:
-    case = resolve_policy_case(policy.cases, instrument, evaluation_context)
+    case = resolve_policy_case(
+        policy.cases,
+        instrument,
+        evaluation_context,
+        range_no=range_no,
+    )
     required_loads = tuple(
         CoveragePoint(
             direction=item.direction,
@@ -100,13 +105,29 @@ def adapt_weighing_policy(
     )
 
 
+
+
 def adapt_temperature_zero_policy(
     policy: TemperatureZeroPolicyV2,
     *,
     instrument: InstrumentSnapshot,
     evaluation_context: str,
+    range_no: int | None = None,
 ) -> TemperatureZeroPolicy:
-    case = resolve_policy_case(policy.cases, instrument, evaluation_context)
+    if range_no is None and any(
+        case.selector.numeric_conditions for case in policy.cases
+    ):
+        raise PolicyResolutionError(
+            "range_no is required when temperature-zero policy cases use "
+            "selected-range numeric conditions"
+        )
+
+    case = resolve_policy_case(
+        policy.cases,
+        instrument,
+        evaluation_context,
+        range_no=range_no,
+    )
     sequence = tuple(
         resolve_temperature_expression(item, instrument)
         for item in case.temperature_sequence
@@ -132,18 +153,78 @@ def adapt_temperature_zero_policy(
     )
 
 
+
+
 def adapt_eccentricity_policy(
     policy: EccentricityPolicyV2,
     *,
     instrument: InstrumentSnapshot,
     evaluation_context: str,
     range_no: int,
+    procedure_context=None,
 ) -> EccentricityPolicy:
-    case = resolve_policy_case(policy.cases, instrument, evaluation_context)
-    if case.position_strategy != "EXPLICIT":
-        raise PolicyResolutionError(
-            "Geometry-derived eccentricity positions require native v2 evaluator support"
+    case = resolve_policy_case(
+        policy.cases,
+        instrument,
+        evaluation_context,
+        range_no=range_no,
+    )
+
+    if case.position_strategy == "EXPLICIT":
+        requirements = tuple(
+            PositionRequirement(
+                position_code=item.position_code,
+                rolling_direction=item.rolling_direction,
+            )
+            for item in case.explicit_positions
         )
+    else:
+        if procedure_context is None:
+            raise PolicyResolutionError(
+                "Geometry-derived eccentricity positions require procedure context"
+            )
+        positions = tuple(procedure_context.positions)
+        if not positions:
+            raise PolicyResolutionError(
+                "Geometry-derived eccentricity policy requires declared positions"
+            )
+        support_count = procedure_context.support_count
+
+        if case.position_strategy == "UP_TO_FOUR_SUPPORTS":
+            if support_count is None or support_count > 4:
+                raise PolicyResolutionError(
+                    "UP_TO_FOUR_SUPPORTS requires support count <= 4"
+                )
+            requirements = tuple(
+                PositionRequirement(position_code=item.position_code)
+                for item in positions
+            )
+        elif case.position_strategy == "MORE_THAN_FOUR_SUPPORTS":
+            if support_count is None or support_count <= 4:
+                raise PolicyResolutionError(
+                    "MORE_THAN_FOUR_SUPPORTS requires support count > 4"
+                )
+            requirements = tuple(
+                PositionRequirement(position_code=item.position_code)
+                for item in positions
+            )
+        elif case.position_strategy == "SPECIAL_RECEPTOR":
+            requirements = tuple(
+                PositionRequirement(position_code=item.position_code)
+                for item in positions
+            )
+        elif case.position_strategy == "ROLLING_LOAD":
+            requirements = tuple(
+                PositionRequirement(
+                    position_code=item.position_code,
+                    rolling_direction=direction,
+                )
+                for item in positions
+                for direction in case.required_rolling_directions
+            )
+        else:
+            raise PolicyResolutionError("Unknown eccentricity position strategy")
+
     return EccentricityPolicy(
         schema_version="v1",
         evaluation_context=evaluation_context,
@@ -151,14 +232,8 @@ def adapt_eccentricity_policy(
         range_type=_required_text("range_type", instrument.range_type),
         procedure_variant=case.procedure_variant,
         test_load_g=resolve_mass_expression(case.test_load, instrument, range_no),
-        minimum_count=case.minimum_count,
-        required_positions=tuple(
-            PositionRequirement(
-                position_code=item.position_code,
-                rolling_direction=item.rolling_direction,
-            )
-            for item in case.explicit_positions
-        ),
+        minimum_count=max(case.minimum_count, len(requirements)),
+        required_positions=requirements,
         allowed_receptor_types=case.allowed_receptor_types,
         required_support_count=case.required_support_count,
         require_position_coordinates=case.require_position_coordinates,
@@ -170,6 +245,8 @@ def adapt_eccentricity_policy(
     )
 
 
+
+
 def adapt_discrimination_policy(
     policy: DiscriminationPolicyV2,
     *,
@@ -178,7 +255,12 @@ def adapt_discrimination_policy(
     range_no: int,
     mpe_g=None,
 ) -> DiscriminationPolicy:
-    case = resolve_policy_case(policy.cases, instrument, evaluation_context)
+    case = resolve_policy_case(
+        policy.cases,
+        instrument,
+        evaluation_context,
+        range_no=range_no,
+    )
     if len(case.test_loads) != 1:
         raise PolicyResolutionError(
             "Multi-load discrimination requires native v2 evaluator support"
@@ -218,6 +300,8 @@ def adapt_discrimination_policy(
     )
 
 
+
+
 def adapt_sensitivity_policy(
     policy: SensitivityPolicyV2,
     *,
@@ -226,7 +310,12 @@ def adapt_sensitivity_policy(
     range_no: int,
     mpe_g=None,
 ) -> SensitivityPolicy:
-    case = resolve_policy_case(policy.cases, instrument, evaluation_context)
+    case = resolve_policy_case(
+        policy.cases,
+        instrument,
+        evaluation_context,
+        range_no=range_no,
+    )
     if len(case.test_loads) != 1:
         raise PolicyResolutionError(
             "Multi-load sensitivity requires native v2 evaluator support"
@@ -254,6 +343,8 @@ def adapt_sensitivity_policy(
     )
 
 
+
+
 def adapt_repeatability_policy(
     policy: RepeatabilityPolicyV2,
     *,
@@ -261,7 +352,12 @@ def adapt_repeatability_policy(
     evaluation_context: str,
     range_no: int,
 ) -> RepeatabilityPolicy:
-    case = resolve_policy_case(policy.cases, instrument, evaluation_context)
+    case = resolve_policy_case(
+        policy.cases,
+        instrument,
+        evaluation_context,
+        range_no=range_no,
+    )
     return RepeatabilityPolicy(
         schema_version="v1",
         evaluation_context=evaluation_context,
@@ -288,6 +384,8 @@ def adapt_repeatability_policy(
         require_evidence=case.require_evidence,
         require_monotonic_timestamps=case.require_monotonic_timestamps,
     )
+
+
 
 
 __all__ = [

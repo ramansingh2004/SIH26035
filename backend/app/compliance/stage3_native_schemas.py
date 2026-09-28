@@ -181,6 +181,12 @@ class TiltingContextV2(Stage3EvidenceContextV2):
     directions: tuple[TiltDirection, ...] = Field(min_length=1)
     reference_position_confirmed: StrictBool
     zero_tracking_disabled: StrictBool
+    level_indicator_limit: Number | None = None
+    automatic_tilt_sensor_limit: Number | None = None
+    close_to_max_load_g: Number | None = Field(None, ge=0)
+    close_to_max_confirmed: StrictBool | None = None
+    function_operating_range_load_g: Number | None = Field(None, ge=0)
+    function_operating_range_confirmed: StrictBool | None = None
     protection_behavior_checked: StrictBool | None = None
 
     @model_validator(mode="after")

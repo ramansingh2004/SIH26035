@@ -495,7 +495,7 @@ def discrimination_registration():
                 ),
             )
         ),
-        implementation_version="section4-discrimination-v1",
+        implementation_version="section4-discrimination-fix12-v2",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),
@@ -782,7 +782,7 @@ def sensitivity_registration():
         ObservationSchemaRegistry(
             (ObservationRegistration(SENSITIVITY, "SENSITIVITY_V1", "v1", SensitivityObservation),)
         ),
-        implementation_version="section4-sensitivity-v1",
+        implementation_version="section4-sensitivity-fix12-v2",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),

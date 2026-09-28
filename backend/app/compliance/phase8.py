@@ -41,7 +41,12 @@ from app.compliance.parameterized import (
     PolicyResolutionError,
     TemperatureZeroPolicyV2,
 )
-from app.compliance.parameterized_stage3 import TiltingPolicyV2, WarmUpPolicyV2
+from app.compliance.parameterized_stage3 import (
+    TiltingPolicyV2,
+    WarmUpPolicyV2,
+    resolve_load_target,
+    resolve_stage3_case,
+)
 from app.compliance.parameterized_stage4 import VoltageVariationPolicyV2
 from app.compliance.registries import (
     ContextRegistration,
@@ -55,6 +60,7 @@ from app.compliance.regulatory import (
     RegulatoryBlocked,
     calculate_mpe,
     calculate_mpe_compatible,
+    compatible_mpe_profile,
     dependencies,
     rule_policy,
     rule_policy_variant,
@@ -245,6 +251,7 @@ def _temperature_zero_policy(*, instrument_snapshot, procedure_context, ruleset)
             policy,
             instrument=instrument_snapshot,
             evaluation_context=procedure_context.evaluation_context,
+            range_no=procedure_context.range_no,
         )
     except PolicyResolutionError as exc:
         raise RegulatoryBlocked(
@@ -537,7 +544,7 @@ def temperature_zero_registration():
                 ),
             )
         ),
-        implementation_version="section2-v1",
+        implementation_version="section2-fix12-v2",
         policy_schemas=(
             RulePolicyRegistration(
                 "applicability_policy_v1",
@@ -631,6 +638,7 @@ class TiltingPolicy(CommonInfluencePolicy):
     required_display_operational: StrictBool | None = None
     required_printing_inhibited: StrictBool | None = None
     required_transmission_inhibited: StrictBool | None = None
+    require_zero_tracking_disabled: StrictBool = False
 
     @model_validator(mode="after")
     def canonical_policy(self):
@@ -650,6 +658,195 @@ class TiltingPolicy(CommonInfluencePolicy):
             tuple(sorted(self.required_loads_g)),
         )
         return self
+
+
+def _resolve_tilt_target(target, procedure_context):
+    if target.basis in {"ABSOLUTE", "FIXED_RATIO"}:
+        return target.value
+    if target.basis == "LEVEL_INDICATOR_LIMIT":
+        value = getattr(procedure_context, "level_indicator_limit", None)
+        if value is None:
+            raise PolicyResolutionError(
+                "Level-indicator limit is required by the verified tilt policy"
+            )
+        return value
+    if target.basis == "AUTOMATIC_SENSOR_LIMIT":
+        value = getattr(procedure_context, "automatic_tilt_sensor_limit", None)
+        if value is None:
+            raise PolicyResolutionError(
+                "Automatic tilt-sensor limit is required by the verified policy"
+            )
+        return value
+    raise PolicyResolutionError("Unknown tilt target basis")
+
+
+def _resolve_tilting_load(
+    target,
+    *,
+    instrument_snapshot,
+    procedure_context,
+    ruleset,
+):
+    if target.basis in {"ABSOLUTE_G", "MIN", "MAX", "MAX_FRACTION"}:
+        return resolve_load_target(
+            target,
+            instrument_snapshot,
+            procedure_context.range_no,
+        )
+
+    selected = instrument_snapshot.select_range(procedure_context.range_no)
+
+    if target.basis == "MPE_TRANSITION":
+        profile = compatible_mpe_profile(
+            accuracy_class=instrument_snapshot.accuracy_class,
+            evaluation_context=procedure_context.evaluation_context,
+            ruleset=ruleset,
+            rule_id=TILTING_MPE,
+        )
+        transitions = tuple(band.lower_e for band in profile.bands[1:])
+        index = target.transition_index - 1
+        if index < 0 or index >= len(transitions):
+            raise PolicyResolutionError(
+                "Requested MPE transition does not exist in the verified profile"
+            )
+        return exact(
+            "multiply",
+            transitions[index],
+            selected.verification_interval_e_g,
+        )
+
+    if target.basis == "CLOSE_TO_MAX":
+        value = getattr(procedure_context, "close_to_max_load_g", None)
+        confirmed = getattr(procedure_context, "close_to_max_confirmed", None)
+        if value is None or confirmed is not True:
+            raise PolicyResolutionError(
+                "Close-to-Max load requires a confirmed test-plan fact"
+            )
+        if value > selected.max_capacity_g:
+            raise PolicyResolutionError("Close-to-Max load exceeds selected Max")
+        return value
+
+    if target.basis == "FUNCTION_OPERATING_RANGE":
+        value = getattr(
+            procedure_context,
+            "function_operating_range_load_g",
+            None,
+        )
+        confirmed = getattr(
+            procedure_context,
+            "function_operating_range_confirmed",
+            None,
+        )
+        if value is None or confirmed is not True:
+            raise PolicyResolutionError(
+                "Function-operating-range load requires a confirmed test-plan fact"
+            )
+        if value > selected.max_capacity_g:
+            raise PolicyResolutionError(
+                "Function-operating-range load exceeds selected Max"
+            )
+        return value
+
+    raise PolicyResolutionError("Unsupported tilting load target")
+
+
+def _tilting_policy(*, instrument_snapshot, procedure_context, ruleset):
+    kind, policy = rule_policy_variant(
+        ruleset,
+        TILTING_POLICY,
+        (
+            ("tilting_procedure_v1", TiltingPolicy),
+            ("tilting_procedure_v2", TiltingPolicyV2),
+        ),
+    )
+    if kind == "tilting_procedure_v1":
+        return policy
+
+    try:
+        case = resolve_stage3_case(
+            policy.cases,
+            instrument_snapshot,
+            procedure_context.evaluation_context,
+        )
+        if case.tilt_mode != procedure_context.tilt_mode:
+            raise PolicyResolutionError(
+                "Selected tilting policy case does not match procedure mode"
+            )
+        if case.unloaded_limit.basis != "SELECTED_E":
+            raise PolicyResolutionError(
+                "Native tilting requires SELECTED_E unloaded limit"
+            )
+        if case.loaded_limit.basis != "MPE" or case.loaded_limit.multiplier != 1:
+            raise PolicyResolutionError(
+                "Native tilting requires a 1 x MPE loaded limit"
+            )
+
+        required_loads = tuple(
+            _resolve_tilting_load(
+                target,
+                instrument_snapshot=instrument_snapshot,
+                procedure_context=procedure_context,
+                ruleset=ruleset,
+            )
+            for target in case.required_loads
+        )
+        if len(required_loads) != len(set(required_loads)):
+            raise PolicyResolutionError(
+                "Tilting load targets resolve to duplicate loads"
+            )
+
+        return TiltingPolicy(
+            schema_version="v1",
+            evaluation_context=procedure_context.evaluation_context,
+            minimum_count=(
+                len(required_loads)
+                * len(case.required_directions)
+                * 2
+            ),
+            require_environment=case.require_environment,
+            require_equipment=case.require_equipment,
+            require_certificate=case.require_certificate,
+            require_evidence=case.require_evidence,
+            require_monotonic_timestamps=case.require_monotonic_timestamps,
+            tilt_mode=case.tilt_mode,
+            required_directions=case.required_directions,
+            required_loads_g=required_loads,
+            reference_tilt_value=_resolve_tilt_target(
+                case.reference_tilt,
+                procedure_context,
+            ),
+            test_tilt_value=_resolve_tilt_target(
+                case.test_tilt,
+                procedure_context,
+            ),
+            unloaded_limit_multiplier_e=case.unloaded_limit.multiplier,
+            unloaded_operator=case.unloaded_operator,
+            unloaded_semantics=case.unloaded_semantics,
+            require_reference_position=case.require_reference_position,
+            required_warning=case.protection.warning_required,
+            required_display_operational=(
+                case.protection.display_operational_required
+            ),
+            required_printing_inhibited=(
+                case.protection.printing_inhibited_required
+            ),
+            required_transmission_inhibited=(
+                case.protection.transmission_inhibited_required
+            ),
+            require_zero_tracking_disabled=(
+                case.require_zero_tracking_disabled
+            ),
+        )
+    except (PolicyResolutionError, ValueError) as exc:
+        raise RegulatoryBlocked(
+            DependencyResolution(
+                unresolved_rule_ids=(TILTING_POLICY,),
+                rule_references=dependencies(
+                    ruleset,
+                    (TILTING_POLICY,),
+                ).rule_references,
+            )
+        ) from exc
 
 
 @dataclass(frozen=True)
@@ -686,13 +883,10 @@ class TiltingEvaluator:
         observations,
         ruleset,
     ):
-        policy = load_stage3_policy_for_runtime(
+        policy = _tilting_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
             ruleset=ruleset,
-            key=TILTING_POLICY,
-            legacy_kind="tilting_procedure_v1",
-            legacy_schema=TiltingPolicy,
-            v2_kind="tilting_procedure_v2",
-            v2_schema=TiltingPolicyV2,
         )
         refs = dependencies(
             ruleset,
@@ -748,6 +942,12 @@ class TiltingEvaluator:
                 "STAGE",
                 "Reference position was not confirmed",
             )
+        if policy.require_zero_tracking_disabled:
+            check(
+                getattr(procedure_context, "zero_tracking_disabled", None) is True,
+                "FUNCTIONAL",
+                "Verified tilting procedure requires zero tracking to be disabled",
+            )
 
         for load in policy.required_loads_g:
             check(
@@ -795,6 +995,13 @@ class TiltingEvaluator:
                 "Observed tilt value differs from verified stage",
                 row.sequence_no,
             )
+            if policy.require_zero_tracking_disabled:
+                check(
+                    getattr(row, "zero_tracking_active", None) is False,
+                    "FUNCTIONAL",
+                    "Zero tracking must remain disabled during tilting observations",
+                    row.sequence_no,
+                )
             if policy.require_monotonic_timestamps and previous is not None:
                 check(
                     row.measured_at >= previous,
@@ -862,13 +1069,10 @@ class TiltingEvaluator:
         observations,
         ruleset,
     ):
-        policy = load_stage3_policy_for_runtime(
+        policy = _tilting_policy(
+            instrument_snapshot=instrument_snapshot,
+            procedure_context=procedure_context,
             ruleset=ruleset,
-            key=TILTING_POLICY,
-            legacy_kind="tilting_procedure_v1",
-            legacy_schema=TiltingPolicy,
-            v2_kind="tilting_procedure_v2",
-            v2_schema=TiltingPolicyV2,
         )
         refs = dependencies(
             ruleset,
@@ -1083,7 +1287,7 @@ def tilting_registration():
                 ),
             )
         ),
-        implementation_version="section8-v1",
+        implementation_version="section8-fix12-v2",
         policy_schemas=(
             RulePolicyRegistration(
                 "applicability_policy_v1",

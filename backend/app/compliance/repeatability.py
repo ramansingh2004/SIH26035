@@ -478,7 +478,7 @@ def section5_registration():
         ObservationSchemaRegistry(
             (ObservationRegistration(CODE, "REPEATABILITY_V1", "v1", RepeatabilityObservation),)
         ),
-        implementation_version="section5-v1",
+        implementation_version="section5-fix12-v2",
         policy_schemas=(
             RulePolicyRegistration("applicability_policy_v1", ApplicabilityPolicy),
             RulePolicyRegistration("mpe_profile_v1", MpeProfile),
