@@ -70,6 +70,312 @@ def _mapping_rows(mapping: dict[str, Any], keys: tuple[str, ...]) -> tuple[tuple
     return tuple((key.replace("_", " ").title(), _text(mapping.get(key))) for key in keys)
 
 
+SIMULATION_SECTION_NAMES = (
+    "WEIGHING PERFORMANCE",
+    "TEMPERATURE ZERO",
+    "ECCENTRICITY",
+    "DISCRIMINATION / SENSITIVITY",
+    "REPEATABILITY",
+    "TIME DEPENDENCE",
+    "STABILITY EQUILIBRIUM",
+    "TILTING",
+    "TARE",
+    "WARM UP",
+    "VOLTAGE VARIATION",
+    "ELECTRICAL DISTURBANCES",
+    "DAMP HEAT",
+    "SPAN STABILITY",
+    "ENDURANCE",
+    "CONSTRUCTION EXAMINATION",
+    "CHECKLIST",
+)
+
+
+def _simulation_sections(record: dict) -> tuple[tuple[str, ...], ...]:
+    stored = sorted(
+        record.get("sections", []),
+        key=lambda item: item.get("section_number", 0),
+    )
+    if stored:
+        return tuple(
+            (
+                _text(row.get("section_number")),
+                _text(row.get("section_name") or row.get("name") or row.get("section_code")),
+                (f"{_text(row.get('evaluation_status'))} / {_text(row.get('compliance_outcome'))}"),
+                "COMPLIANT*",
+            )
+            for row in stored
+        )
+    return tuple(
+        (str(index), name, "NOT EXECUTED", "COMPLIANT*")
+        for index, name in enumerate(SIMULATION_SECTION_NAMES, start=1)
+    )
+
+
+def _build_simulation_plan(context: dict) -> ReportPlan:
+    record = context["regulatory_record"]
+    control = context["document_control"]
+    simulation = context.get("simulation", {})
+    session = record.get("session", {})
+    lab = record.get("laboratory", {})
+    manufacturer = record.get("manufacturer", {})
+    instrument = record.get("instrument_master_at_approval", {})
+    ruleset = record.get("ruleset_record", {})
+    renderer = context.get("renderer_manifest", {})
+
+    cover = ReportSection(
+        "Document Control",
+        paragraphs=(
+            "This report is a simulated SIH demonstration artifact only. "
+            "It is not a regulatory approval, certificate, verification record, "
+            "or issued report.",
+        ),
+        tables=(
+            ReportTable(
+                "Demo report identity",
+                ("Field", "Value"),
+                (
+                    ("Report Number", _text(control.get("report_number"))),
+                    ("Revision", _text(control.get("revision_no"))),
+                    ("Report Status", "SIMULATED APPROVED — DEMONSTRATION ONLY"),
+                    ("Application Number", _text(session.get("application_number"))),
+                    (
+                        "Source Regulatory Revision",
+                        _text(control.get("source_regulatory_revision")),
+                    ),
+                ),
+            ),
+        ),
+    )
+
+    declaration = ReportSection(
+        "Simulation Declaration",
+        paragraphs=(
+            "SIMULATED / DEMONSTRATION ONLY — NOT FOR REGULATORY USE.",
+            (
+                "The simulated target state demonstrates the intended approved-report "
+                "experience. It does not modify the stored evaluation and does not "
+                "bypass production regulatory gates."
+            ),
+        ),
+        tables=(
+            ReportTable(
+                "Actual stored state vs simulated target state",
+                ("Axis", "Actual stored state", "Simulated target state"),
+                (
+                    (
+                        "Workflow",
+                        _text(simulation.get("actual_workflow_status")),
+                        _text(simulation.get("target_workflow_status")),
+                    ),
+                    (
+                        "Evaluation",
+                        _text(simulation.get("actual_evaluation_status")),
+                        _text(simulation.get("target_evaluation_status")),
+                    ),
+                    (
+                        "Compliance outcome",
+                        _text(simulation.get("actual_compliance_outcome")),
+                        _text(simulation.get("target_compliance_outcome")),
+                    ),
+                ),
+            ),
+        ),
+    )
+
+    identity = ReportSection(
+        "Instrument & Laboratory Details",
+        tables=(
+            ReportTable(
+                "Instrument",
+                ("Field", "Value"),
+                _mapping_rows(
+                    instrument,
+                    (
+                        "type_designation",
+                        "model_name",
+                        "serial_number",
+                        "accuracy_class",
+                        "max_capacity_g",
+                        "min_capacity_g",
+                        "scale_interval_d_g",
+                        "verification_interval_e_g",
+                        "verification_intervals_n",
+                        "indication_type",
+                        "range_type",
+                        "is_electronic",
+                        "is_self_indicating",
+                        "is_software_controlled",
+                    ),
+                ),
+            ),
+            ReportTable(
+                "Laboratory",
+                ("Field", "Value"),
+                _mapping_rows(
+                    lab,
+                    (
+                        "name",
+                        "code",
+                        "city",
+                        "state",
+                        "country",
+                        "accreditation_no",
+                    ),
+                ),
+            ),
+            ReportTable(
+                "Manufacturer",
+                ("Field", "Value"),
+                _mapping_rows(
+                    manufacturer,
+                    (
+                        "name",
+                        "registration_number",
+                        "city",
+                        "state",
+                        "country",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+    summary = ReportSection(
+        "Evaluation Summary",
+        paragraphs=(
+            (
+                "All target outcomes in this table are synthetic presentation values. "
+                "They do not replace the stored evaluation or constitute regulatory findings."
+            ),
+        ),
+        tables=(
+            ReportTable(
+                "All 17 OIML R 76 workflow sections",
+                ("No.", "Section", "Actual stored state", "Simulated target"),
+                _simulation_sections(record),
+            ),
+        ),
+    )
+
+    demo_results = ReportSection(
+        "Sample Demonstration Results",
+        paragraphs=(
+            (
+                "The rows below are illustrative UI/reporting data only. No regulatory "
+                "limit is asserted and no compliance calculation is performed by this "
+                "demonstration report."
+            ),
+        ),
+        tables=(
+            ReportTable(
+                "Illustrative test summary",
+                ("Test", "Demonstration observation", "Simulated result"),
+                (
+                    ("Weighing Performance", "Synthetic demonstration trace", "PASS*"),
+                    ("Eccentricity", "Synthetic demonstration trace", "PASS*"),
+                    ("Repeatability", "Synthetic demonstration trace", "PASS*"),
+                    ("Temperature Zero", "Synthetic demonstration trace", "PASS*"),
+                ),
+            ),
+        ),
+    )
+
+    approval = ReportSection(
+        "Review / Approval Summary",
+        tables=(
+            ReportTable(
+                "Demonstration workflow state",
+                ("Field", "Value"),
+                (
+                    (
+                        "Simulated Workflow Status",
+                        _text(simulation.get("target_workflow_status")),
+                    ),
+                    (
+                        "Simulated Evaluation Status",
+                        _text(simulation.get("target_evaluation_status")),
+                    ),
+                    (
+                        "Simulated Compliance Outcome",
+                        _text(simulation.get("target_compliance_outcome")),
+                    ),
+                    (
+                        "Actual Stored Workflow",
+                        _text(simulation.get("actual_workflow_status")),
+                    ),
+                    (
+                        "Actual Stored Evaluation",
+                        _text(simulation.get("actual_evaluation_status")),
+                    ),
+                    (
+                        "Actual Stored Outcome",
+                        _text(simulation.get("actual_compliance_outcome")),
+                    ),
+                    ("Independent Regulatory Review", "PENDING"),
+                    ("Production Ruleset Activation", "NOT REPRESENTED BY THIS DEMO"),
+                    ("Official Report Issue", "NOT PERFORMED"),
+                ),
+            ),
+        ),
+    )
+
+    pdf_renderer = renderer.get("pdf", {})
+    docx_renderer = renderer.get("docx", {})
+    technical = ReportSection(
+        "Technical Trace",
+        paragraphs=(
+            (
+                "Raw ruleset snapshots, internal UUIDs, and database-oriented audit payloads "
+                "are intentionally omitted from this human-readable demonstration report. "
+                "They remain part of the stored application/audit record."
+            ),
+        ),
+        tables=(
+            ReportTable(
+                "Controlled technical identifiers",
+                ("Field", "Value"),
+                (
+                    ("Standard", _text(ruleset.get("standard_code"))),
+                    ("Edition", _text(ruleset.get("edition"))),
+                    ("Ruleset Version", _text(ruleset.get("version"))),
+                    ("Configuration Hash", _text(ruleset.get("configuration_hash"))),
+                    (
+                        "Regulatory Source Reference",
+                        _text(ruleset.get("source_reference")),
+                    ),
+                    ("Template Version", _text(context.get("template_version"))),
+                    (
+                        "PDF Renderer",
+                        f"{_text(pdf_renderer.get('renderer'))} "
+                        f"{_text(pdf_renderer.get('version'))}",
+                    ),
+                    (
+                        "DOCX Renderer",
+                        f"{_text(docx_renderer.get('renderer'))} "
+                        f"{_text(docx_renderer.get('version'))}",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+    return ReportPlan(
+        title="SIMULATED OIML R 76 - Demonstration Type-Evaluation Report",
+        status="SIMULATED APPROVED — DEMONSTRATION ONLY",
+        watermark="SIMULATED / DEMONSTRATION ONLY",
+        sections=(
+            cover,
+            declaration,
+            identity,
+            summary,
+            demo_results,
+            approval,
+            technical,
+        ),
+    )
+
+
 def build_plan(context: dict) -> ReportPlan:
     """Produce one semantic plan consumed identically by both renderers."""
     record = context["regulatory_record"]
@@ -84,6 +390,9 @@ def build_plan(context: dict) -> ReportPlan:
     preview = document_kind == "UNOFFICIAL_PREVIEW"
     simulation = document_kind == "SIMULATED_APPROVED_REPORT"
     report_number = control.get("report_number")
+
+    if simulation:
+        return _build_simulation_plan(context)
 
     cover = ReportSection(
         "Document Control",
