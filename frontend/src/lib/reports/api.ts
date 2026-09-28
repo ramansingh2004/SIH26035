@@ -1,9 +1,4 @@
-import { API_BASE_URL } from "@/lib/config";
-import {
-  apiRequest,
-  getAccessToken,
-  refreshAccessToken,
-} from "@/lib/api/client";
+import { apiRequest } from "@/lib/api/client";
 import { createIdempotencyKey } from "@/lib/api/idempotency";
 import type { Page } from "@/lib/master-data/types";
 
@@ -185,55 +180,46 @@ export async function createReportRevision(
   ).data;
 }
 
-async function authenticatedBlob(path: string): Promise<Blob> {
-  async function request(token: string | null) {
-    return fetch(`${API_BASE_URL}${path}`, {
+type DownloadAuthorization = {
+  download_url: string;
+  file_name: string;
+};
+
+async function startAuthorizedDownload(path: string, fallbackName: string) {
+  const authorization = (
+    await apiRequest<DownloadAuthorization>(path, {
       method: "GET",
-      credentials: "include",
-      headers: token
-        ? { Accept: "*/*", Authorization: `Bearer ${token}` }
-        : { Accept: "*/*" },
-      cache: "no-store",
-    });
+    })
+  ).data;
+
+  if (!authorization.download_url) {
+    throw new Error("Download authorization did not include a download URL.");
   }
 
-  let response = await request(getAccessToken());
-  if (response.status === 401) {
-    const refreshed = await refreshAccessToken();
-    if (refreshed) response = await request(refreshed);
-  }
-  if (!response.ok) {
-    throw new Error(`Download failed with HTTP ${response.status}.`);
-  }
-  return response.blob();
-}
-
-function saveBlob(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
+  anchor.href = authorization.download_url;
+  anchor.download = authorization.file_name || fallbackName;
+  anchor.rel = "noopener";
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export async function downloadPreview(previewId: string, format: ReportFormat) {
-  const blob = await authenticatedBlob(
+  await startAuthorizedDownload(
     `/api/v1/report-previews/${previewId}/download?format=${format}`,
+    `UNOFFICIAL-PREVIEW-${previewId}.${format}`,
   );
-  saveBlob(blob, `UNOFFICIAL-PREVIEW-${previewId}.${format}`);
 }
 
 export async function downloadSimulation(
   previewId: string,
   format: ReportFormat,
 ) {
-  const blob = await authenticatedBlob(
+  await startAuthorizedDownload(
     `/api/v1/report-previews/${previewId}/download?format=${format}`,
+    `SIMULATED-APPROVED-DEMO-${previewId}.${format}`,
   );
-  saveBlob(blob, `SIMULATED-APPROVED-DEMO-${previewId}.${format}`);
 }
 
 export async function downloadReport(
@@ -242,8 +228,8 @@ export async function downloadReport(
   revisionNo: number,
   format: ReportFormat,
 ) {
-  const blob = await authenticatedBlob(
+  await startAuthorizedDownload(
     `/api/v1/reports/${reportId}/download?format=${format}`,
+    `${reportNumber}-R${revisionNo}.${format}`,
   );
-  saveBlob(blob, `${reportNumber}-R${revisionNo}.${format}`);
 }
