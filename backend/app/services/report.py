@@ -24,6 +24,7 @@ from app.reporting.context import (
     preview_context,
     renderer_manifest,
     report_hash,
+    simulated_approved_context,
 )
 from app.reporting.renderers import DOCX_MIME, PDF_MIME, render_pair
 from app.repositories.report import ReportRepository
@@ -278,7 +279,7 @@ class ReportService:
         except Exception:
             return
 
-    async def create_preview(self, actor, identifier, match):
+    async def create_preview(self, actor, identifier, match, *, simulation=False):
         async with self.session.begin():
             test_session = await self.scoped_session(
                 actor,
@@ -289,7 +290,8 @@ class ReportService:
             require_match(match, etag(test_session.lock_version))
 
             regulatory_record = await ApprovalSnapshotBuilder(self.session).build(test_session)
-            context = preview_context(
+            context_builder = simulated_approved_context if simulation else preview_context
+            context = context_builder(
                 regulatory_record,
                 requested_by=str(actor.user_id),
                 source_regulatory_revision=test_session.regulatory_revision,
@@ -310,8 +312,11 @@ class ReportService:
             await self.repo.flush()
             preview_id = row.id
             laboratory_id = test_session.laboratory_id
+            preview_file_prefix = (
+                "SIMULATED_APPROVED_REPORT" if simulation else "UNOFFICIAL_PREVIEW"
+            )
             self.audit.record(
-                "report.preview_started",
+                "report.simulation_started" if simulation else "report.preview_started",
                 actor.user_id,
                 "report_previews",
                 row.id,
@@ -321,6 +326,7 @@ class ReportService:
                     "source_regulatory_revision": test_session.regulatory_revision,
                     "context_hash": digest,
                     "expires_at": row.expires_at.isoformat(),
+                    "simulation_demo": simulation,
                 },
                 source=test_session.regulatory_revision,
                 target=test_session.regulatory_revision,
@@ -371,7 +377,7 @@ class ReportService:
                         id=uuid4(),
                         laboratory_id=laboratory_id,
                         attachment_type="REPORT_PREVIEW",
-                        file_name=f"UNOFFICIAL_PREVIEW_{preview_id}.{file_format}",
+                        file_name=f"{preview_file_prefix}_{preview_id}.{file_format}",
                         content_type=item["mime"],
                         file_size=len(item["body"]),
                         storage_provider=self.storage.provider,
@@ -384,6 +390,7 @@ class ReportService:
                             "report_preview_id": str(preview_id),
                             "format": file_format.upper(),
                             "unofficial": True,
+                            "simulation_demo": simulation,
                         },
                     )
                     self.repo.add(attachment)
@@ -397,7 +404,7 @@ class ReportService:
 
                 result = preview_view(row)
                 self.audit.record(
-                    "report.preview_ready",
+                    "report.simulation_ready" if simulation else "report.preview_ready",
                     actor.user_id,
                     "report_previews",
                     row.id,
@@ -422,6 +429,15 @@ class ReportService:
                 if row is None:
                     raise
                 return preview_view(row)
+
+    async def create_simulated_approved_preview(self, actor, identifier, match):
+        """Create a demo-only report using preview storage, never official report state."""
+        return await self.create_preview(
+            actor,
+            identifier,
+            match,
+            simulation=True,
+        )
 
     async def preview_detail(self, actor, identifier):
         async with self.session.begin():

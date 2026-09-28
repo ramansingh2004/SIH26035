@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "candidate_configuration_hash": "e795f71177ad2c0745417d92cd0010b6d895607a3768c3a21bf9bbe283c5a26b",
+  "assembly_contract_version": "verified-blueprint-v1",
+  "regulatory_signoff": false,
+  "signed_by": "DEMO ONLY \u2014 NOT A REAL SIGNER",
+  "signer_role": "SYNTHETIC FIXTURE",
+  "signer_organization": "SIH26035 DEMO ENVIRONMENT",
+  "signed_at": "2026-09-28T16:44:00+05:30",
+  "evidence_reference": "DEMO_ONLY \u2014 ENGINEERING INTEGRATION DATA \u2014 NOT REGULATORY EVIDENCE",
+  "independent_of_implementation": false,
+  "review_notes": "DEMO_ONLY: populated to exercise UI/data-shape integration. This is not independent review and must not be used for production ruleset activation or official report issuance."
+}

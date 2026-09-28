@@ -55,6 +55,48 @@ def preview_context(
     return normalize(context)
 
 
+def simulated_approved_context(
+    regulatory_record: dict,
+    *,
+    requested_by: str,
+    source_regulatory_revision: int,
+) -> dict:
+    """Compose a permanently non-authoritative SIH demonstration report."""
+    session = regulatory_record.get("session", {})
+    actual_outcome = session.get("compliance_outcome")
+    target_outcome = (
+        actual_outcome if actual_outcome in {"COMPLIANT", "NONCOMPLIANT"} else "COMPLIANT"
+    )
+    session_id = str(session.get("id") or "DEMO")
+    context = {
+        "context_schema_version": CONTEXT_SCHEMA_VERSION,
+        "document_kind": "SIMULATED_APPROVED_REPORT",
+        "document_control": {
+            "report_number": f"SIM-DEMO-{session_id[:8].upper()}",
+            "revision_no": 1,
+            "report_status": "SIMULATED_APPROVED",
+            "planned_issue_date": None,
+            "intended_issuer_id": None,
+            "source_regulatory_revision": source_regulatory_revision,
+            "requested_by": requested_by,
+        },
+        "simulation": {
+            "demo_only": True,
+            "not_for_regulatory_use": True,
+            "target_workflow_status": "APPROVED",
+            "target_evaluation_status": "COMPLETE",
+            "target_compliance_outcome": target_outcome,
+            "actual_workflow_status": session.get("workflow_status"),
+            "actual_evaluation_status": session.get("evaluation_status"),
+            "actual_compliance_outcome": actual_outcome,
+        },
+        "template_version": TEMPLATE_VERSION,
+        "renderer_manifest": renderer_manifest(),
+        "regulatory_record": regulatory_record,
+    }
+    return normalize(context)
+
+
 def official_context(
     approved_snapshot: dict,
     *,

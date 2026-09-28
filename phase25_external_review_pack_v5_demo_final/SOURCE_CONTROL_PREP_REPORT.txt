@@ -1,0 +1,15 @@
+Phase 25 source-control mechanical prep complete.
+Input pack: D:\SIH\sih26035\phase25_external_review_pack_v5_reviewed
+Controlled source ZIP: D:\SIH\phase25_external_review_sources_v2.zip
+Source ZIP SHA-256: 259efc9fa5599810e544d2f4c33a5e951799d6ceebfcb0b73a4708fb0a97371e
+Documents inventoried: 29
+SRC-R76-1-2006-E: 1
+SRC-R76-2-2007-E: 1
+SRC-INDIA-APPROVAL-MODELS-2011: 2
+SRC-INDIA-GATC: 6
+SRC-INDIA-LM-GENERAL: 19
+OIML controlled hashes: MATCH (R76-1 and R76-2)
+Reviewer/signoff fields modified: NO
+Source-family completeness attested: NO
+Indian exact per-document official URLs supplied: NO
+Acquisition timestamps/references supplied: NO

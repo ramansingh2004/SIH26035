@@ -82,6 +82,7 @@ def build_plan(context: dict) -> ReportPlan:
 
     document_kind = context["document_kind"]
     preview = document_kind == "UNOFFICIAL_PREVIEW"
+    simulation = document_kind == "SIMULATED_APPROVED_REPORT"
     report_number = control.get("report_number")
 
     cover = ReportSection(
@@ -89,7 +90,12 @@ def build_plan(context: dict) -> ReportPlan:
         paragraphs=(
             "This document is an unofficial working preview and does not imply approval or issue."
             if preview
-            else "This document was rendered from an immutable approved report context.",
+            else (
+                "This is a simulated approved report for SIH demonstration only. "
+                "It is not a regulatory approval, certificate, or issued report."
+                if simulation
+                else "This document was rendered from an immutable approved report context."
+            ),
         ),
         tables=(
             ReportTable(
@@ -113,6 +119,44 @@ def build_plan(context: dict) -> ReportPlan:
             ),
         ),
     )
+
+    simulation_section = None
+    if simulation:
+        simulation_data = context.get("simulation", {})
+        simulation_section = ReportSection(
+            "Simulation Declaration",
+            paragraphs=(
+                "SIMULATED / DEMONSTRATION ONLY — NOT FOR REGULATORY USE.",
+                (
+                    "The target state below demonstrates the intended approved-report "
+                    "experience without changing the stored evaluation or bypassing "
+                    "production approval gates."
+                ),
+            ),
+            tables=(
+                ReportTable(
+                    "Actual stored state vs simulated target state",
+                    ("Axis", "Actual stored state", "Simulated target state"),
+                    (
+                        (
+                            "Workflow",
+                            _text(simulation_data.get("actual_workflow_status")),
+                            _text(simulation_data.get("target_workflow_status")),
+                        ),
+                        (
+                            "Evaluation",
+                            _text(simulation_data.get("actual_evaluation_status")),
+                            _text(simulation_data.get("target_evaluation_status")),
+                        ),
+                        (
+                            "Compliance outcome",
+                            _text(simulation_data.get("actual_compliance_outcome")),
+                            _text(simulation_data.get("target_compliance_outcome")),
+                        ),
+                    ),
+                ),
+            ),
+        )
 
     lab_section = ReportSection(
         "Laboratory",
@@ -478,11 +522,30 @@ def build_plan(context: dict) -> ReportPlan:
     )
 
     return ReportPlan(
-        title=("OIML R 76 - Non-Automatic Weighing Instrument Type-Evaluation Test Report"),
-        status="UNOFFICIAL PREVIEW" if preview else _text(control.get("report_status")),
-        watermark="UNOFFICIAL PREVIEW" if preview else None,
+        title=(
+            "SIMULATED OIML R 76 - Demonstration Type-Evaluation Report"
+            if simulation
+            else "OIML R 76 - Non-Automatic Weighing Instrument Type-Evaluation Test Report"
+        ),
+        status=(
+            "UNOFFICIAL PREVIEW"
+            if preview
+            else (
+                "SIMULATED APPROVED — DEMONSTRATION ONLY"
+                if simulation
+                else _text(control.get("report_status"))
+            )
+        ),
+        watermark=(
+            "UNOFFICIAL PREVIEW"
+            if preview
+            else "SIMULATED / DEMONSTRATION ONLY"
+            if simulation
+            else None
+        ),
         sections=(
             cover,
+            *(() if simulation_section is None else (simulation_section,)),
             lab_section,
             manufacturer_section,
             instrument_section,

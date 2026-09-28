@@ -1,0 +1,17 @@
+SIH26035 PHASE 25 — DEMO ONLY
+
+This file is synthetic engineering data.
+
+No independent regulatory reviewer performed this review.
+No source-family amendment completeness is attested.
+No executable policy is accepted as authoritative.
+No regulatory signoff is granted.
+No independence is claimed.
+
+Purpose:
+- UI/integration testing
+- screenshots/demo preparation
+- data-shape rehearsal
+
+Replace this entire demo review layer with the genuine reviewer-returned
+package before using the normal Phase 25 validator/verified-v1 assembler.

@@ -60,6 +60,25 @@ async def create_preview(
     )
 
 
+@router.post(
+    "/test-sessions/{identifier}/report-simulations",
+    response_model=ReportPreviewView,
+    status_code=201,
+    dependencies=[Depends(no_body)],
+)
+async def create_simulated_approved_report(
+    identifier: UUID,
+    service: Service,
+    actor: Actor,
+    if_match: Match = None,
+):
+    return await service.create_simulated_approved_preview(
+        actor,
+        identifier,
+        if_match,
+    )
+
+
 @router.get(
     "/report-previews/{identifier}",
     response_model=ReportPreviewView,

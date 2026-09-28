@@ -11,7 +11,9 @@ import { useAuth } from "@/lib/auth/auth-context";
 import { evaluationDetail } from "@/lib/evaluations/api";
 import {
   createReportPreview,
+  createSimulatedApprovedReport,
   downloadPreview,
+  downloadSimulation,
   generateReport,
 } from "@/lib/reports/api";
 import type {
@@ -29,10 +31,15 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
   const { user, hasPermission } = useAuth();
   const [plannedIssueDate, setPlannedIssueDate] = useState(utcDate());
   const [preview, setPreview] = useState<ReportPreviewView | null>(null);
-  const [generated, setGenerated] =
-    useState<ReportGenerationResponse | null>(null);
+  const [simulation, setSimulation] = useState<ReportPreviewView | null>(null);
+  const [generated, setGenerated] = useState<ReportGenerationResponse | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [downloadBusy, setDownloadBusy] = useState<string | null>(null);
+  const [simulationDownloadBusy, setSimulationDownloadBusy] = useState<
+    string | null
+  >(null);
 
   const session = useQuery({
     queryKey: ["evaluation", sessionId],
@@ -79,6 +86,19 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
     onError: (cause) => setError(friendlyApiMessage(cause)),
   });
 
+  const simulationMutation = useMutation({
+    mutationFn: async () => {
+      if (!session.data?.etag) {
+        throw new Error(
+          "Reload the evaluation before creating a simulated report.",
+        );
+      }
+      return createSimulatedApprovedReport(sessionId, session.data.etag);
+    },
+    onSuccess: setSimulation,
+    onError: (cause) => setError(friendlyApiMessage(cause)),
+  });
+
   const generateMutation = useMutation({
     mutationFn: async () => {
       if (!session.data?.etag || !user) {
@@ -112,6 +132,18 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
     }
   }
 
+  async function downloadSimulationFile(format: ReportFormat) {
+    if (!simulation) return;
+    setSimulationDownloadBusy(format);
+    try {
+      await downloadSimulation(simulation.id, format);
+    } catch (cause) {
+      setError(friendlyApiMessage(cause));
+    } finally {
+      setSimulationDownloadBusy(null);
+    }
+  }
+
   if (!session.data) return null;
   const item = session.data.item;
 
@@ -140,8 +172,8 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
           <span className="report-kicker">Unofficial</span>
           <h3>Watermarked preview</h3>
           <p>
-            Captures the current working revision, including incomplete,
-            stale and regulatory-review state.
+            Captures the current working revision, including incomplete, stale
+            and regulatory-review state.
           </p>
           {hasPermission("report:preview") ? (
             <button
@@ -166,7 +198,8 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
                   <div className="preview-file-guide">
                     <strong>Preview files are unofficial</strong>
                     <span>
-                      Source regulatory revision {preview.source_regulatory_revision}
+                      Source regulatory revision{" "}
+                      {preview.source_regulatory_revision}
                       {" · "}expires{" "}
                       {new Date(preview.expires_at).toLocaleString()}
                     </span>
@@ -183,6 +216,73 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
                         key={format}
                         disabled={downloadBusy === format}
                         onClick={() => void download(format)}
+                      >
+                        Download {format.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="report-action-card">
+          <span className="report-kicker">Simulation</span>
+          <h3>Simulated approved report</h3>
+          <p>
+            Demonstrates the intended APPROVED + COMPLETE report experience
+            without changing the stored evaluation or bypassing production
+            regulatory gates.
+          </p>
+          <div className="report-gate-explanation">
+            <strong>DEMONSTRATION ONLY</strong>
+            <span>
+              The generated PDF/DOCX is watermarked and is not a regulatory
+              approval, certificate, or issued report.
+            </span>
+          </div>
+          {hasPermission("report:preview") ? (
+            <button
+              className="button button-secondary"
+              type="button"
+              disabled={simulationMutation.isPending}
+              onClick={() => simulationMutation.mutate()}
+            >
+              {simulationMutation.isPending
+                ? "Generating simulation…"
+                : "Generate simulated approved report"}
+            </button>
+          ) : null}
+          {simulation ? (
+            <div className="report-result-box">
+              <div className="report-result-heading">
+                <strong>Simulation {simulation.id.slice(0, 8)}</strong>
+                <StatusBadge value={simulation.preview_status} />
+              </div>
+              {simulation.preview_status === "READY" ? (
+                <>
+                  <div className="preview-file-guide">
+                    <strong>Watermarked simulation files are ready</strong>
+                    <span>
+                      Source regulatory revision{" "}
+                      {simulation.source_regulatory_revision}
+                      {" · "}expires{" "}
+                      {new Date(simulation.expires_at).toLocaleString()}
+                    </span>
+                    <small>
+                      Actual stored statuses remain unchanged. The target
+                      APPROVED state exists only inside this demo document.
+                    </small>
+                  </div>
+                  <div className="run-actions">
+                    {(["pdf", "docx"] as ReportFormat[]).map((format) => (
+                      <button
+                        className="button button-secondary button-compact"
+                        type="button"
+                        key={format}
+                        disabled={simulationDownloadBusy === format}
+                        onClick={() => void downloadSimulationFile(format)}
                       >
                         Download {format.toUpperCase()}
                       </button>
@@ -220,7 +320,8 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
             />
           </label>
           <div className="report-issuer-note">
-            Intended issuer: <strong>{user?.full_name ?? "Current user"}</strong>
+            Intended issuer:{" "}
+            <strong>{user?.full_name ?? "Current user"}</strong>
           </div>
           {hasPermission("report:generate") ? (
             <button

@@ -43,6 +43,18 @@ export async function createReportPreview(
   ).data;
 }
 
+export async function createSimulatedApprovedReport(
+  sessionId: string,
+  etag: string,
+): Promise<ReportPreviewView> {
+  return (
+    await apiRequest<ReportPreviewView>(
+      `/api/v1/test-sessions/${sessionId}/report-simulations`,
+      { method: "POST", etag },
+    )
+  ).data;
+}
+
 export async function generateReport(
   sessionId: string,
   data: { intended_issuer_id: string; planned_issue_date: string },
@@ -207,14 +219,21 @@ function saveBlob(blob: Blob, filename: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export async function downloadPreview(
+export async function downloadPreview(previewId: string, format: ReportFormat) {
+  const blob = await authenticatedBlob(
+    `/api/v1/report-previews/${previewId}/download?format=${format}`,
+  );
+  saveBlob(blob, `UNOFFICIAL-PREVIEW-${previewId}.${format}`);
+}
+
+export async function downloadSimulation(
   previewId: string,
   format: ReportFormat,
 ) {
   const blob = await authenticatedBlob(
     `/api/v1/report-previews/${previewId}/download?format=${format}`,
   );
-  saveBlob(blob, `UNOFFICIAL-PREVIEW-${previewId}.${format}`);
+  saveBlob(blob, `SIMULATED-APPROVED-DEMO-${previewId}.${format}`);
 }
 
 export async function downloadReport(
