@@ -338,7 +338,11 @@ export default function RunWorkspacePage() {
   }
 
   return (
-    <div className="page-stack">
+    <div
+      className={`page-stack run-workspace ${
+        runItem.completed_at ? "is-completed" : ""
+      }`}
+    >
       <PageHeader
         eyebrow={`Test run · #${runItem.run_no}`}
         title={testSpec?.label ?? String(testCode ?? "Specialized test")}
@@ -448,6 +452,28 @@ export default function RunWorkspacePage() {
             </div>
           </section>
 
+          {runItem.completed_at ? (
+            <ResultPanel
+              workflow={session.data.item.workflow_status}
+              run={runItem}
+              results={resultQuery.data}
+            />
+          ) : null}
+
+          <div className="run-source-record-divider">
+            <div>
+              <p className="page-eyebrow">Captured source record</p>
+              <h2>
+                {runItem.completed_at
+                  ? "Frozen execution inputs"
+                  : "Execution inputs"}
+              </h2>
+            </div>
+            {runItem.completed_at ? (
+              <span>Completed run · source editing locked</span>
+            ) : null}
+          </div>
+
           <ProcedureForm
             key={`${runId}-${runItem.input_revision}`}
             testCode={testCode}
@@ -508,11 +534,13 @@ export default function RunWorkspacePage() {
             />
           ) : null}
 
-          <ResultPanel
-            workflow={session.data.item.workflow_status}
-            run={runItem}
-            results={resultQuery.data}
-          />
+          {!runItem.completed_at ? (
+            <ResultPanel
+              workflow={session.data.item.workflow_status}
+              run={runItem}
+              results={resultQuery.data}
+            />
+          ) : null}
           <RunHistoryPanel
             sessionId={sessionId}
             run={runItem}

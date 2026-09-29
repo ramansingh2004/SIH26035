@@ -1,5 +1,5 @@
-import { StatusAxes } from "./status-axes";
 import { RegulatoryBlocker } from "@/components/ui/regulatory-blocker";
+import { StatusBadge } from "@/components/ui/status-badge";
 import type { ResultView, RunView } from "@/lib/evaluations/run-types";
 import type { WorkflowStatus } from "@/lib/evaluations/types";
 
@@ -20,6 +20,7 @@ function TraceBlock({
   rows: Array<Record<string, unknown>>;
 }) {
   if (rows.length === 0) return null;
+
   return (
     <div className="result-trace-block">
       <h3>{title}</h3>
@@ -36,6 +37,27 @@ function TraceBlock({
   );
 }
 
+function firstValue(
+  row: Record<string, unknown> | undefined,
+  keys: string[],
+): unknown {
+  if (!row) return undefined;
+
+  for (const key of keys) {
+    const value = row[key];
+    if (value !== undefined && value !== null && value !== "") {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+function displayMetric(value: unknown, unit?: unknown) {
+  if (value === undefined || value === null || value === "") return "—";
+  return `${String(value)}${unit ? ` ${String(unit)}` : ""}`;
+}
+
 export function ResultPanel({
   workflow,
   run,
@@ -50,72 +72,161 @@ export function ResultPanel({
     results.at(-1) ??
     null;
 
-  return (
-    <section className="run-panel">
-      <div className="panel-heading">
-        <p className="page-eyebrow">Deterministic backend result</p>
-        <h2>Evaluation result</h2>
-      </div>
-
-      {!current ? (
+  if (!current) {
+    return (
+      <section className="run-panel deterministic-result-panel">
+        <div className="panel-heading">
+          <p className="page-eyebrow">Deterministic backend result</p>
+          <h2>Evaluation result</h2>
+        </div>
         <p className="muted-copy">
           No persisted result exists for the current captured input revision.
         </p>
-      ) : (
-        <>
-          <StatusAxes
-            workflow={workflow}
-            evaluation={current.evaluation_status}
-            outcome={current.compliance_outcome}
-          />
+      </section>
+    );
+  }
 
-          <div className="result-explainer">
-            <div className="result-explainer-heading">
-              <div>
-                <span className="report-kicker">Deterministic explanation</span>
-                <h3>How to read this result</h3>
-              </div>
-              {current.deterministic_result.synthetic_fixture === true ? (
-                <span className="mini-tag">Synthetic fixture · demo only</span>
-              ) : null}
-            </div>
-            <div className="result-explainer-grid">
-              <div>
-                <span>Calculation entries</span>
-                <strong>{current.calculations_json.length}</strong>
-                <small>Persisted backend trace entries.</small>
-              </div>
-              <div>
-                <span>Acceptance criteria</span>
-                <strong>{current.acceptance_limits_json.length}</strong>
-                <small>Persisted limits/rules used by the engine.</small>
-              </div>
-              <div>
-                <span>Failed checks</span>
-                <strong>{current.failed_conditions_json.length}</strong>
-                <small>
-                  {current.failed_conditions_json.length > 0
-                    ? "At least one persisted condition did not pass."
-                    : "No failed condition is persisted for this result."}
-                </small>
-              </div>
-              <div>
-                <span>Unresolved rules</span>
-                <strong>{current.unresolved_rule_ids.length}</strong>
-                <small>
-                  {current.unresolved_rule_ids.length > 0
-                    ? "Regulatory blockers remain explicit."
-                    : "No unresolved rule ID is attached to this result."}
-                </small>
-              </div>
-            </div>
-            <p>
-              <strong>No browser calculation:</strong> this panel explains the
-              immutable result returned by the backend engine. It does not derive,
-              adjust or override a compliance outcome.
-            </p>
+  const failedCheck = current.failed_conditions_json[0] as
+    | Record<string, unknown>
+    | undefined;
+
+  const failingCalculation =
+    (current.calculations_json.find(
+      (row) =>
+        String((row as Record<string, unknown>).compliance_outcome ?? "") ===
+        "NONCOMPLIANT",
+    ) as Record<string, unknown> | undefined) ??
+    (current.calculations_json[0] as Record<string, unknown> | undefined);
+
+  const primaryLimit = current.acceptance_limits_json[0] as
+    | Record<string, unknown>
+    | undefined;
+
+  const unit =
+    firstValue(primaryLimit, ["unit"]) ??
+    firstValue(failingCalculation, ["unit"]) ??
+    "";
+
+  const observedError = firstValue(failingCalculation, [
+    "corrected_error_g",
+    "error_g",
+    "actual",
+    "value",
+  ]);
+  const permittedError = firstValue(primaryLimit, [
+    "value",
+    "mpe_g",
+    "limit",
+    "maximum",
+  ]);
+  const load = firstValue(failingCalculation, ["load_g", "load"]);
+  const indication = firstValue(failingCalculation, [
+    "indication_g",
+    "indication",
+    "prerounding_indication_g",
+  ]);
+
+  const decisionTone =
+    current.compliance_outcome === "NONCOMPLIANT"
+      ? "is-danger"
+      : current.compliance_outcome === "COMPLIANT"
+        ? "is-success"
+        : "is-neutral";
+
+  return (
+    <section className="run-panel deterministic-result-panel">
+      <div className="deterministic-result-heading">
+        <div>
+          <p className="page-eyebrow">Deterministic backend result</p>
+          <h2>Evaluation result</h2>
+          <p>
+            Persisted engine decision for input revision{" "}
+            {current.source_input_revision}. The browser does not recalculate
+            compliance.
+          </p>
+        </div>
+
+        {current.deterministic_result.synthetic_fixture === true ? (
+          <span className="mini-tag">Synthetic fixture · demo only</span>
+        ) : null}
+      </div>
+
+      <div className={`decision-block ${decisionTone}`}>
+        <div className="decision-outcome">
+          <span>Backend decision</span>
+          <StatusBadge value={current.compliance_outcome} />
+          <small>
+            Evaluation{" "}
+            {current.evaluation_status.replaceAll("_", " ").toLowerCase()}
+            {" · "}
+            workflow {workflow.replaceAll("_", " ").toLowerCase()}
+          </small>
+        </div>
+
+        <div className="decision-measurements">
+          <div>
+            <span>Load</span>
+            <strong>{displayMetric(load, load !== undefined ? "g" : "")}</strong>
           </div>
+          <div>
+            <span>Indication</span>
+            <strong>
+              {displayMetric(indication, indication !== undefined ? "g" : "")}
+            </strong>
+          </div>
+          <div>
+            <span>Observed error</span>
+            <strong>{displayMetric(observedError, unit)}</strong>
+          </div>
+          <div>
+            <span>Permitted error</span>
+            <strong>{displayMetric(permittedError, unit)}</strong>
+          </div>
+        </div>
+      </div>
 
+      {failedCheck ? (
+        <div className="decision-failure">
+          <div>
+            <span>Failed condition</span>
+            <strong>
+              {String(
+                firstValue(failedCheck, ["code", "rule_id", "name"]) ??
+                  "Persisted check failed",
+              )}
+            </strong>
+          </div>
+          <p>
+            {String(
+              firstValue(failedCheck, ["reason", "message", "description"]) ??
+                "The backend persisted a failed acceptance condition.",
+            )}
+          </p>
+        </div>
+      ) : (
+        <div className="decision-pass-note">
+          <strong>No failed checks persisted.</strong>
+          <span>
+            The backend result contains {current.calculations_json.length}{" "}
+            calculation trace entries and{" "}
+            {current.acceptance_limits_json.length} acceptance criteria.
+          </span>
+        </div>
+      )}
+
+      {current.unresolved_rule_ids.length > 0 ? (
+        <RegulatoryBlocker ruleIds={current.unresolved_rule_ids} />
+      ) : null}
+
+      <details className="technical-trace">
+        <summary>
+          <span>Technical trace</span>
+          <small>
+            Engine metadata, hashes, persisted criteria and calculation trace
+          </small>
+        </summary>
+
+        <div className="technical-trace-body">
           <dl className="result-metadata">
             <div>
               <dt>Evaluation version</dt>
@@ -153,10 +264,6 @@ export function ResultPanel({
             </div>
           </dl>
 
-          {current.unresolved_rule_ids.length > 0 ? (
-            <RegulatoryBlocker ruleIds={current.unresolved_rule_ids} />
-          ) : null}
-
           <TraceBlock
             title="Persisted failed checks"
             rows={current.failed_conditions_json}
@@ -173,8 +280,8 @@ export function ResultPanel({
             title="Rule references (persisted)"
             rows={current.rule_references_json}
           />
-        </>
-      )}
+        </div>
+      </details>
     </section>
   );
 }

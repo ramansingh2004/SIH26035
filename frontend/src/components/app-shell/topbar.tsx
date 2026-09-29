@@ -62,18 +62,18 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
         >
           ☰
         </button>
-        <div>
-          <p className="department-label">Department of Consumer Affairs</p>
-          <strong className="application-title">
-            NAWI Type Evaluation & Reporting
-          </strong>
+        <div className="topbar-product">
+          <p className="department-label">
+            Department of Consumer Affairs · Legal Metrology
+          </p>
+          <strong className="application-title">NAWI Type Evaluation</strong>
         </div>
       </div>
 
       <div className="topbar-actions">
         {user && user.laboratories.length > 0 ? (
           <label className="laboratory-picker">
-            <span>Laboratory scope</span>
+            <span>Laboratory</span>
             <select
               value={selectedLaboratoryId ?? ""}
               onChange={(event) => setSelectedLaboratoryId(event.target.value)}
@@ -107,18 +107,16 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           href="/account"
           aria-label="Open account and security settings"
         >
-          <div className="user-avatar" aria-hidden="true">
-            {initials}
-          </div>
-          <div className="user-summary-copy">
+          <span className="user-avatar" aria-hidden="true">{initials}</span>
+          <span className="user-summary-copy">
             <strong>{user?.full_name ?? "User"}</strong>
             <span>{roles || "Authorized user"}</span>
-          </div>
+          </span>
         </Link>
 
         <button
           type="button"
-          className="button button-secondary button-compact"
+          className="button button-tertiary button-compact"
           onClick={() => void logout()}
         >
           Sign out

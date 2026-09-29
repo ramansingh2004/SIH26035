@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -7,13 +8,12 @@ import { ApplicabilityPanel } from "@/components/evaluations/applicability-panel
 import { EvaluationHistoryPanel } from "@/components/evaluations/evaluation-history-panel";
 import { InstrumentSnapshotPanel } from "@/components/evaluations/instrument-snapshot";
 import { SectionNavigator } from "@/components/evaluations/section-navigator";
-import { StatusAxes } from "@/components/evaluations/status-axes";
 import { EvaluationProgressOverview } from "@/components/polish/evaluation-progress-overview";
 import { ReportSessionPanel } from "@/components/reports/report-session-panel";
 import { ReviewLifecyclePanel } from "@/components/review/review-lifecycle-panel";
 import { ErrorState } from "@/components/ui/error-state";
 import { LoadingState } from "@/components/ui/loading-state";
-import { PageHeader } from "@/components/ui/page-header";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { ApiError, friendlyApiMessage } from "@/lib/api/errors";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
@@ -107,26 +107,60 @@ export default function EvaluationWorkspacePage() {
   const canUpdate = hasPermission("session:update");
   const canExecute = hasPermission("test:execute");
 
+  const requiredSections = sections.filter(
+    (section) => section.applicability_status === "REQUIRED",
+  );
+  const attentionSections = sections.filter(
+    (section) =>
+      section.applicability_status === "REQUIRES_REVIEW" ||
+      ["INCOMPLETE", "STALE", "REVIEW_REQUIRED"].includes(
+        section.evaluation_status,
+      ),
+  );
+  const notApplicableCount = sections.filter(
+    (section) => section.applicability_status === "NOT_APPLICABLE",
+  ).length;
+
   return (
     <div className="page-stack">
-      <PageHeader
-        eyebrow="Evaluation workspace"
-        title={
-          session.application_number ?? `Evaluation ${session.id.slice(0, 8)}`
-        }
-        description={`${session.evaluation_context} · session revision ${session.session_revision_no} · regulatory revision ${session.regulatory_revision}`}
-      />
+      <header className="evaluation-record-header">
+        <div className="evaluation-record-heading">
+          <p className="record-kicker">Evaluation record</p>
+          <div className="evaluation-record-title-row">
+            <h1>
+              {session.application_number ??
+                `Evaluation ${session.id.slice(0, 8)}`}
+            </h1>
+            <StatusBadge value={session.compliance_outcome} />
+          </div>
+          <p>
+            {session.evaluation_context.replaceAll("_", " ")}
+            {" · "}session revision {session.session_revision_no}
+            {" · "}regulatory revision {session.regulatory_revision}
+          </p>
+        </div>
 
-      <StatusAxes
-        workflow={session.workflow_status}
-        evaluation={session.evaluation_status}
-        outcome={session.compliance_outcome}
-      />
+        <dl className="evaluation-record-meta">
+          <div>
+            <dt>Workflow</dt>
+            <dd>{session.workflow_status.replaceAll("_", " ")}</dd>
+          </div>
+          <div>
+            <dt>Evaluation</dt>
+            <dd>{session.evaluation_status.replaceAll("_", " ")}</dd>
+          </div>
+          <div>
+            <dt>Regulatory revision</dt>
+            <dd>{session.regulatory_revision}</dd>
+          </div>
+          <div>
+            <dt>Sections</dt>
+            <dd>{sections.length}</dd>
+          </div>
+        </dl>
+      </header>
 
-      <EvaluationProgressOverview
-        session={session}
-        sections={sections}
-      />
+      <EvaluationProgressOverview session={session} sections={sections} />
 
       {conflict ? (
         <div className="conflict-banner">
@@ -264,26 +298,99 @@ export default function EvaluationWorkspacePage() {
             />
           ) : null}
 
-          <section className="evaluation-card">
+          <section className="evaluation-card section-readiness-panel">
             <div className="panel-heading">
               <p className="page-eyebrow">Section readiness</p>
-              <h2>Current section summary</h2>
+              <h2>Readiness and exceptions</h2>
+              <p>
+                The left index is the complete 17-section navigation. This panel
+                surfaces only sections that require execution or attention.
+              </p>
             </div>
-            <div className="section-summary-grid">
-              {sections.map((section) => (
-                <div className="section-summary-card" key={section.id}>
-                  <strong>
-                    {section.section_number}. {section.name}
-                  </strong>
-                  <span>{section.applicability_reason}</span>
-                  <StatusAxes
-                    workflow={session.workflow_status}
-                    evaluation={section.evaluation_status}
-                    outcome={section.compliance_outcome}
-                  />
+
+            <div className="readiness-summary">
+              <div className="readiness-stat">
+                <span>Required</span>
+                <strong>{requiredSections.length}</strong>
+                <small>Sections requiring deterministic execution.</small>
+              </div>
+              <div className="readiness-stat">
+                <span>Not applicable</span>
+                <strong>{notApplicableCount}</strong>
+                <small>Explicitly excluded by persisted applicability.</small>
+              </div>
+              <div className="readiness-stat">
+                <span>Attention</span>
+                <strong>{attentionSections.length}</strong>
+                <small>Review-required, stale or incomplete sections.</small>
+              </div>
+            </div>
+
+            {requiredSections.length > 0 ? (
+              <div className="readiness-list">
+                <div className="readiness-list-heading">
+                  <span>Required section</span>
+                  <span>Evaluation</span>
+                  <span>Outcome</span>
+                  <span />
                 </div>
-              ))}
-            </div>
+
+                {requiredSections.map((section) => (
+                  <Link
+                    className="readiness-row"
+                    href={`/evaluations/${sessionId}/sections/${section.section_number}`}
+                    key={section.id}
+                  >
+                    <span className="readiness-section">
+                      <strong>
+                        {String(section.section_number).padStart(2, "0")} ·{" "}
+                        {section.name}
+                      </strong>
+                      <small>{section.code.replaceAll("_", " ")}</small>
+                    </span>
+                    <span>
+                      {section.evaluation_status.replaceAll("_", " ")}
+                    </span>
+                    <span>
+                      <StatusBadge value={section.compliance_outcome} />
+                    </span>
+                    <span className="readiness-open" aria-hidden="true">
+                      Open →
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="readiness-empty">
+                <strong>No required section is currently open.</strong>
+                <span>
+                  Applicability and completion state remain available in the
+                  17-section index.
+                </span>
+              </div>
+            )}
+
+            {attentionSections.length > 0 ? (
+              <div className="attention-summary">
+                <strong>Needs attention</strong>
+                {attentionSections.map((section) => (
+                  <Link
+                    href={`/evaluations/${sessionId}/sections/${section.section_number}`}
+                    key={section.id}
+                  >
+                    {String(section.section_number).padStart(2, "0")} ·{" "}
+                    {section.name}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="readiness-clear">
+                <strong>No section-level attention flags.</strong>
+                <span>
+                  No persisted section is stale, incomplete or review-required.
+                </span>
+              </div>
+            )}
           </section>
         </div>
       </div>

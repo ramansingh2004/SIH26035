@@ -9,108 +9,43 @@ type NavigationItem = {
   label: string;
   href: string;
   permission: string;
-  implemented: boolean;
 };
 
 type NavigationGroup = {
-  label?: string;
+  label: string;
   items: NavigationItem[];
 };
 
 const groups: NavigationGroup[] = [
   {
+    label: "Workspace",
     items: [
-      {
-        label: "Dashboard",
-        href: "/dashboard",
-        permission: "dashboard:read",
-        implemented: true,
-      },
+      { label: "Dashboard", href: "/dashboard", permission: "dashboard:read" },
+      { label: "Evaluations", href: "/evaluations", permission: "session:read" },
+      { label: "Reports", href: "/reports", permission: "report:read" },
     ],
   },
   {
-    label: "Master Data",
+    label: "Lab data",
     items: [
-      {
-        label: "Manufacturers",
-        href: "/manufacturers",
-        permission: "manufacturer:read",
-        implemented: true,
-      },
-      {
-        label: "Instruments",
-        href: "/instruments",
-        permission: "instrument:read",
-        implemented: true,
-      },
-      {
-        label: "Test Equipment",
-        href: "/equipment",
-        permission: "equipment:read",
-        implemented: true,
-      },
+      { label: "Manufacturers", href: "/manufacturers", permission: "manufacturer:read" },
+      { label: "Instruments", href: "/instruments", permission: "instrument:read" },
+      { label: "Test equipment", href: "/equipment", permission: "equipment:read" },
     ],
   },
   {
-    label: "Evaluation",
+    label: "Governance",
     items: [
-      {
-        label: "Evaluations",
-        href: "/evaluations",
-        permission: "session:read",
-        implemented: true,
-      },
-    ],
-  },
-  {
-    label: "Review & Approval",
-    items: [
-      {
-        label: "Technical Reviews",
-        href: "/reviews",
-        permission: "approval:read",
-        implemented: true,
-      },
-      {
-        label: "Final Approvals",
-        href: "/approvals",
-        permission: "approval:read",
-        implemented: true,
-      },
-    ],
-  },
-  {
-    label: "Reporting",
-    items: [
-      {
-        label: "Reports",
-        href: "/reports",
-        permission: "report:read",
-        implemented: true,
-      },
+      { label: "Technical reviews", href: "/reviews", permission: "approval:read" },
+      { label: "Final approvals", href: "/approvals", permission: "approval:read" },
+      { label: "Audit events", href: "/admin/audit", permission: "audit:read" },
     ],
   },
   {
     label: "Administration",
     items: [
-      {
-        label: "Users",
-        href: "/admin/users",
-        permission: "user:read",
-        implemented: true,
-      },
-      {
-        label: "Laboratories",
-        href: "/admin/laboratories",
-        permission: "laboratory:read",
-        implemented: true,
-      },
-      {
-        label: "Audit Events",
-        href: "/admin/audit",
-        permission: "audit:read",
-        implemented: true,
-      },
+      { label: "Laboratories", href: "/admin/laboratories", permission: "laboratory:read" },
+      { label: "Users", href: "/admin/users", permission: "user:read" },
     ],
   },
 ];
@@ -134,61 +69,48 @@ export function Sidebar({
         onClick={onClose}
       />
       <aside className={`sidebar ${open ? "is-open" : ""}`}>
-        <div className="brand-block">
-          <div className="brand-mark" aria-hidden="true">
-            LM
-          </div>
-          <div>
+        <Link className="brand-block" href="/dashboard" onClick={onClose}>
+          <span className="brand-code" aria-hidden="true">R76</span>
+          <span className="brand-copy">
             <strong>SIH26035</strong>
-            <span>Legal Metrology Laboratory</span>
-          </div>
-        </div>
+            <span>NAWI Laboratory</span>
+          </span>
+        </Link>
 
         <nav className="sidebar-nav" aria-label="Primary navigation">
-          {groups.map((group, index) => {
+          {groups.map((group) => {
             const visible = group.items.filter((item) =>
               hasPermission(item.permission),
             );
             if (visible.length === 0) return null;
 
             return (
-              <div className="nav-group" key={group.label ?? `group-${index}`}>
-                {group.label ? (
-                  <p className="nav-group-label">{group.label}</p>
-                ) : null}
-                {visible.map((item) =>
-                  item.implemented ? (
+              <div className="nav-group" key={group.label}>
+                <p className="nav-group-label">{group.label}</p>
+                {visible.map((item) => {
+                  const active =
+                    pathname === item.href ||
+                    pathname.startsWith(`${item.href}/`);
+
+                  return (
                     <Link
-                      className={`nav-item ${
-                        pathname === item.href ||
-                        pathname.startsWith(`${item.href}/`)
-                          ? "is-active"
-                          : ""
-                      }`}
+                      className={`nav-item ${active ? "is-active" : ""}`}
                       href={item.href}
                       key={item.href}
                       onClick={onClose}
                     >
                       <span>{item.label}</span>
                     </Link>
-                  ) : (
-                    <span
-                      className="nav-item nav-item-disabled"
-                      key={item.href}
-                    >
-                      <span>{item.label}</span>
-                      <small>Upcoming</small>
-                    </span>
-                  ),
-                )}
+                  );
+                })}
               </div>
             );
           })}
         </nav>
 
         <div className="sidebar-footer">
-          <span>OIML R76 workflow</span>
-          <small>Authoritative calculations remain server-side.</small>
+          <strong>Controlled workspace</strong>
+          <span>OIML R 76 type evaluation</span>
         </div>
       </aside>
     </>

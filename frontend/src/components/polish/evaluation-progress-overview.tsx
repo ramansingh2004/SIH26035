@@ -20,13 +20,13 @@ function nextAction(session: SessionView): string {
     case "UNDER_REVIEW":
       return "Technical review is in progress; preserve source traceability.";
     case "APPROVED":
-      return "The approved record may proceed through the controlled report workflow.";
+      return "Proceed through the controlled report workflow.";
     case "REPORT_ISSUED":
       return "The issued record is immutable; use history for traceability.";
     case "REJECTED":
-      return "This workflow is rejected; inspect review history for the recorded reason.";
+      return "Inspect review history for the recorded rejection reason.";
     case "CANCELLED":
-      return "This workflow is cancelled and no longer accepts evaluation work.";
+      return "This workflow is cancelled.";
   }
 }
 
@@ -38,6 +38,9 @@ export function EvaluationProgressOverview({
   sections: SectionView[];
 }) {
   const total = sections.length;
+  const required = sections.filter(
+    (section) => section.applicability_status === "REQUIRED",
+  ).length;
   const notApplicable = sections.filter(
     (section) => section.applicability_status === "NOT_APPLICABLE",
   ).length;
@@ -54,63 +57,39 @@ export function EvaluationProgressOverview({
       section.applicability_status === "NOT_APPLICABLE" ||
       section.evaluation_status === "COMPLETE",
   ).length;
-  const coverage = total === 0 ? 0 : Math.round((covered / total) * 100);
 
   return (
     <section
-      className="polish-progress"
+      className="evaluation-coverage-strip"
       aria-labelledby="evaluation-progress-title"
     >
-      <div className="polish-progress-heading">
-        <div>
-          <p className="page-eyebrow">Progress visibility</p>
-          <h2 id="evaluation-progress-title">17-section readiness overview</h2>
-          <p>{nextAction(session)}</p>
-        </div>
-        <div className="polish-progress-score" aria-label="Section coverage">
-          <strong>{coverage}%</strong>
-          <span>section coverage</span>
-        </div>
+      <div className="coverage-primary">
+        <span id="evaluation-progress-title">Section coverage</span>
+        <strong>
+          {covered} / {total}
+        </strong>
       </div>
 
-      <div
-        className="polish-progress-track"
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={coverage}
-        aria-label="Completed or explicitly not-applicable section coverage"
-      >
-        <span style={{ width: `${coverage}%` }} />
-      </div>
+      <dl className="coverage-metrics">
+        <div>
+          <dt>Required</dt>
+          <dd>{required}</dd>
+        </div>
+        <div>
+          <dt>Complete</dt>
+          <dd>{complete}</dd>
+        </div>
+        <div>
+          <dt>Not applicable</dt>
+          <dd>{notApplicable}</dd>
+        </div>
+        <div>
+          <dt>Attention</dt>
+          <dd>{attention}</dd>
+        </div>
+      </dl>
 
-      <div className="polish-progress-metrics">
-        <div>
-          <span>Total sections</span>
-          <strong>{total}</strong>
-        </div>
-        <div>
-          <span>Complete</span>
-          <strong>{complete}</strong>
-        </div>
-        <div>
-          <span>Not applicable</span>
-          <strong>{notApplicable}</strong>
-        </div>
-        <div>
-          <span>Needs attention</span>
-          <strong>{attention}</strong>
-        </div>
-      </div>
-
-      <div className="polish-progress-explainer">
-        <strong>Presentation progress only</strong>
-        <span>
-          Coverage counts sections that are COMPLETE or explicitly
-          NOT_APPLICABLE. It is not a compliance score and never changes the
-          backend evaluation or outcome.
-        </span>
-      </div>
+      <p className="coverage-next-action">{nextAction(session)}</p>
     </section>
   );
 }
