@@ -72,6 +72,17 @@ export async function patchConstructionItem(
   return { item: response.data, etag: response.etag };
 }
 
+export async function completeConstructionDemo(
+  sessionId: string,
+  etag: string,
+): Promise<Versioned<ConstructionExamination>> {
+  const response = await apiRequest<ConstructionExamination>(
+    `/api/v1/test-sessions/${sessionId}/construction/demo-complete`,
+    { method: "POST", etag },
+  );
+  return { item: response.data, etag: response.etag };
+}
+
 export async function completeConstruction(
   sessionId: string,
   etag: string,

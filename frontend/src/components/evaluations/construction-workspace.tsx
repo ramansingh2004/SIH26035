@@ -14,6 +14,7 @@ import { useAuth } from "@/lib/auth/auth-context";
 import { evaluationDetail } from "@/lib/evaluations/api";
 import {
   completeConstruction,
+  completeConstructionDemo,
   constructionDetail,
   constructionItems,
   patchConstruction,
@@ -217,6 +218,7 @@ export function ConstructionWorkspace({ sessionId }: { sessionId: string }) {
   const { hasPermission } = useAuth();
   const [notesDraft, setNotesDraft] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [demoCompleting, setDemoCompleting] = useState(false);
 
   const session = useQuery({
     queryKey: ["evaluation", sessionId],
@@ -265,6 +267,12 @@ export function ConstructionWorkspace({ sessionId }: { sessionId: string }) {
   const examinationData = examination.data;
   const examinationEtag = examinationData.etag;
   const notes = notesDraft ?? examinationData.item.overall_notes ?? "";
+  const metadata = session.data.item.ruleset_snapshot.metadata;
+  const fullDemoV3 =
+    Boolean(metadata) &&
+    typeof metadata === "object" &&
+    (metadata as Record<string, unknown>).version ===
+      "SYNTHETIC_TEST_SIH26035_FULL_FLOW_V3";
   const rawBlockers = examinationData.item.summary_json.blockers;
   const blockers = Array.isArray(rawBlockers)
     ? rawBlockers.filter((value): value is string => typeof value === "string")
@@ -278,6 +286,20 @@ export function ConstructionWorkspace({ sessionId }: { sessionId: string }) {
       await refresh();
     } catch (cause) {
       setError(friendlyApiMessage(cause));
+    }
+  }
+
+  async function completeDemo() {
+    if (!examinationEtag) return;
+    setDemoCompleting(true);
+    setError(null);
+    try {
+      await completeConstructionDemo(sessionId, examinationEtag);
+      await refresh();
+    } catch (cause) {
+      setError(friendlyApiMessage(cause));
+    } finally {
+      setDemoCompleting(false);
     }
   }
 
@@ -348,6 +370,33 @@ export function ConstructionWorkspace({ sessionId }: { sessionId: string }) {
       </div>
 
       {error ? <div className="form-alert">{error}</div> : null}
+      {canUpdate &&
+      fullDemoV3 &&
+      examinationData.item.evaluation_status !== "COMPLETE" ? (
+        <section className="run-panel">
+          <div className="panel-heading">
+            <p className="page-eyebrow">Synthetic demo only</p>
+            <h3>Populate the complete Section 16 demonstration dossier</h3>
+            <p>
+              Creates clearly labeled metadata-only synthetic evidence for all
+              eight V3 construction categories and completes Section 16 through
+              the normal backend validation path.
+            </p>
+          </div>
+          <div className="form-actions">
+            <button
+              className="button button-secondary"
+              type="button"
+              disabled={demoCompleting}
+              onClick={() => void completeDemo()}
+            >
+              {demoCompleting
+                ? "Completing synthetic Section 16…"
+                : "Populate & complete synthetic Section 16"}
+            </button>
+          </div>
+        </section>
+      ) : null}
       {mutable && hasPermission("construction:complete") ? (
         <div className="completion-bar">
           <div>

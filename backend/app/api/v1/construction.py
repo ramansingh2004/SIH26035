@@ -118,6 +118,24 @@ async def update_construction_item(
 
 
 @router.post(
+    "/test-sessions/{identifier}/construction/demo-complete",
+    response_model=ConstructionExaminationView,
+    dependencies=[Depends(no_body)],
+)
+async def complete_construction_demo(
+    identifier: UUID,
+    response: Response,
+    service: Service,
+    actor: Actor,
+    if_match: Match = None,
+):
+    return versioned(
+        response,
+        await service.demo_complete(actor, identifier, if_match),
+    )
+
+
+@router.post(
     "/test-sessions/{identifier}/construction/complete",
     response_model=ConstructionExaminationView,
     dependencies=[Depends(no_body)],

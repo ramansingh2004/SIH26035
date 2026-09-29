@@ -16,9 +16,18 @@ from app.compliance.aggregation import (
     AggregationInput,
     SessionComplianceAggregator,
 )
+from app.compliance.demo import DEMO_LAB_CODE
+from app.compliance.full_demo_construction import (
+    NOTICE as FULL_DEMO_CONSTRUCTION_NOTICE,
+)
+from app.compliance.full_demo_construction import (
+    full_demo_construction_plan,
+)
+from app.compliance.full_demo_execution import is_full_demo_execution_ruleset
+from app.compliance.ruleset import RuleSet
 from app.core.concurrency import etag, require_match
 from app.core.errors import AppError, denied, missing
-from app.models import RuleDefinition
+from app.models import Attachment, AttachmentLink, RuleDefinition
 from app.models.construction import ConstructionExamination, ConstructionItem
 from app.models.testing import TestSession
 from app.repositories.construction import (
@@ -706,6 +715,186 @@ class ConstructionService:
                 target=item.lock_version,
             )
             return item_view(item)
+
+    async def demo_complete(self, actor, identifier, match):
+        """Populate and complete Section 16 for the isolated V3 SIH demo."""
+
+        async with self.session.begin():
+            session = await self.scoped_session(
+                actor,
+                identifier,
+                "construction:complete",
+                mutation=True,
+            )
+            self.mutable(session)
+
+            ruleset = RuleSet.model_validate(session.ruleset_snapshot)
+            lab = await self.repo.lab(session.laboratory_id)
+            if (
+                not is_full_demo_execution_ruleset(ruleset)
+                or lab is None
+                or lab.code != DEMO_LAB_CODE
+                or session.evaluation_context != "SYNTHETIC"
+            ):
+                raise AppError(
+                    409,
+                    "SYNTHETIC_DEMO_STAGE4_FORBIDDEN",
+                    "Section 16 demo completion is restricted to the V3 "
+                    "synthetic demo session in the dedicated demo laboratory",
+                )
+            if await open_corrections(self.repo, session.id):
+                raise AppError(
+                    409,
+                    "CORRECTION_RESOLUTION_REQUIRED",
+                    "Resolve the bounded correction before demo completion",
+                )
+
+            examination = await self.repo.examination(
+                session.id,
+                lock=True,
+            )
+            if examination is None:
+                raise missing()
+            require_match(match, etag(examination.lock_version))
+            if (
+                examination.evaluation_status == "COMPLETE"
+                and examination.examined_at is not None
+            ):
+                raise AppError(
+                    409,
+                    "CONSTRUCTION_ALREADY_COMPLETE",
+                    "Section 16 construction examination is already complete",
+                )
+
+            entries, malformed = await self._entries(
+                session,
+                examination,
+                lock=True,
+            )
+            if malformed:
+                raise AppError(
+                    409,
+                    "CONSTRUCTION_RULE_INVALID",
+                    "V3 synthetic construction catalog is malformed",
+                )
+
+            plan = {
+                item.item_key: item
+                for item in full_demo_construction_plan(ruleset)
+            }
+            if {entry.item.item_key for entry in entries} != set(plan):
+                raise AppError(
+                    409,
+                    "CONSTRUCTION_DEMO_CATALOG_MISMATCH",
+                    "Pinned Section 16 catalog differs from the V3 demo plan",
+                )
+
+            before = examination_view(examination)
+            for entry in entries:
+                item = entry.item
+                demo = plan[item.item_key]
+                item.value_schema_version = 1
+                item.value_json = demo.value_json
+                item.examination_state = "EXAMINED"
+                item.conformance_result = "PASS"
+                item.remarks = demo.remarks
+                item.lock_version += 1
+
+                if demo.evidence_required and entry.evidence_count < 1:
+                    attachment = Attachment(
+                        id=uuid4(),
+                        laboratory_id=session.laboratory_id,
+                        attachment_type="EVIDENCE",
+                        file_name=demo.evidence_file_name,
+                        content_type=demo.evidence_content_type,
+                        file_size=demo.evidence_size,
+                        storage_provider="synthetic-demo",
+                        storage_key=(
+                            "synthetic-demo/section16/"
+                            f"{session.id}/{item.item_key}"
+                        ),
+                        object_version="phase26-stage4-v1",
+                        sha256=demo.evidence_sha256,
+                        uploaded_by=actor.user_id,
+                        metadata_json={
+                            "synthetic_demo": True,
+                            "metadata_only": True,
+                            "phase": "PHASE26_STAGE4",
+                            "item_key": item.item_key,
+                            "notice": FULL_DEMO_CONSTRUCTION_NOTICE,
+                        },
+                    )
+                    self.repo.add(attachment)
+                    await self.repo.flush()
+                    self.repo.add(
+                        AttachmentLink(
+                            id=uuid4(),
+                            attachment_id=attachment.id,
+                            entity_type="construction_items",
+                            entity_id=item.id,
+                            purpose="synthetic_demo_section16",
+                            linked_by=actor.user_id,
+                        )
+                    )
+
+            examination.overall_notes = FULL_DEMO_CONSTRUCTION_NOTICE
+            examination.examined_by = None
+            examination.examined_at = None
+            examination.lock_version += 1
+            session.regulatory_revision += 1
+            session.lock_version += 1
+            await invalidate_technical_approvals(
+                self.repo,
+                actor,
+                session,
+                reason="Synthetic Section 16 demonstration data populated",
+                scope={
+                    "entity_type": "construction_examinations",
+                    "entity_id": str(examination.id),
+                    "field_paths": ["synthetic_demo_completion"],
+                },
+                audit=self.audit,
+            )
+            await self.repo.flush()
+
+            summary = await self._refresh(
+                session,
+                examination,
+                completion_requested=True,
+            )
+            if (
+                summary["evaluation_status"] != "COMPLETE"
+                or summary["compliance_outcome"] != "COMPLIANT"
+            ):
+                raise AppError(
+                    500,
+                    "SYNTHETIC_DEMO_STAGE4_INVALID",
+                    "Synthetic Section 16 dataset failed deterministic completion",
+                    {
+                        "missing_item_keys": summary["missing_item_keys"],
+                        "blockers": summary["blockers"],
+                    },
+                )
+
+            examination.examined_by = actor.user_id
+            examination.examined_at = datetime.now(UTC)
+            examination.lock_version += 1
+            session.regulatory_revision += 1
+            session.lock_version += 1
+            await self.repo.flush()
+
+            self.audit.record(
+                "construction.demo_completed",
+                actor.user_id,
+                "construction_examinations",
+                examination.id,
+                lab=session.laboratory_id,
+                before=before,
+                after=examination_view(examination),
+                source=before["lock_version"],
+                target=examination.lock_version,
+            )
+            return examination_view(examination)
 
     async def complete(self, actor, identifier, match):
         async with self.session.begin():
