@@ -24,6 +24,12 @@ DEMO_ARTIFACT = "sih26035_demo_v1"
 DEMO_LAB_CODE = "SIH26035-DEMO"
 DEMO_VERSION = "SYNTHETIC_TEST_SIH26035_DEMO_V1"
 DEMO_EDITION = "SIH-DEMO-v1"
+DEMO_STANDARD_NAME = "SIH26035 SYNTHETIC DEMO — NOT OIML"
+
+FULL_DEMO_VERSION = "SYNTHETIC_TEST_SIH26035_FULL_FLOW_V1"
+FULL_DEMO_EDITION = "SIH-FULL-DEMO-v1"
+FULL_DEMO_STANDARD_NAME = "SIH26035 SYNTHETIC FULL-FLOW DEMO — NOT OIML"
+
 DEMO_SOURCE_REFERENCE = "SYNTHETIC TEST FIXTURE ONLY"
 
 SOURCE = {
@@ -204,7 +210,7 @@ def load_demo_ruleset() -> RuleSet:
             "metadata": {
                 "schema_version": 1,
                 "standard_code": "OIML_R76",
-                "standard_name": "SIH26035 SYNTHETIC DEMO — NOT OIML",
+                "standard_name": DEMO_STANDARD_NAME,
                 "edition": DEMO_EDITION,
                 "version": DEMO_VERSION,
                 "standard_parts": [SOURCE],
@@ -219,11 +225,18 @@ def load_demo_ruleset() -> RuleSet:
 
 
 def is_demo_ruleset(ruleset: RuleSet) -> bool:
+    identity = (
+        ruleset.metadata.version,
+        ruleset.metadata.edition,
+        ruleset.metadata.standard_name,
+    )
     return bool(
-        ruleset.metadata.version == DEMO_VERSION
-        and ruleset.metadata.edition == DEMO_EDITION
+        identity
+        in {
+            (DEMO_VERSION, DEMO_EDITION, DEMO_STANDARD_NAME),
+            (FULL_DEMO_VERSION, FULL_DEMO_EDITION, FULL_DEMO_STANDARD_NAME),
+        }
         and ruleset.metadata.source_reference == DEMO_SOURCE_REFERENCE
-        and ruleset.metadata.standard_name == "SIH26035 SYNTHETIC DEMO — NOT OIML"
     )
 
 

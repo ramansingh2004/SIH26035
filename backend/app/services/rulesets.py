@@ -3,7 +3,17 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from app.compliance.demo import DEMO_ARTIFACT, is_demo_ruleset, load_demo_ruleset
+from app.compliance.demo import (
+    DEMO_ARTIFACT,
+    DEMO_VERSION,
+    is_demo_ruleset,
+    load_demo_ruleset,
+)
+from app.compliance.full_demo import (
+    FULL_DEMO_ARTIFACT,
+    FULL_DEMO_VERSION,
+    load_full_demo_ruleset,
+)
 from app.compliance.ruleset import RuleSet, load_ruleset
 from app.compliance.stage7_activation import (
     VERIFIED_ARTIFACT,
@@ -59,14 +69,18 @@ def _trusted_artifact(artifact):
         return load_ruleset(), None
     if artifact == DEMO_ARTIFACT:
         return load_demo_ruleset(), None
+    if artifact == FULL_DEMO_ARTIFACT:
+        return load_full_demo_ruleset(), None
     if artifact == VERIFIED_ARTIFACT:
         return _load_stage7_verified()
     raise AppError(422, "INVALID_INPUT", "Unknown trusted ruleset artifact")
 
 
 def _trusted_snapshot(candidate):
-    if is_demo_ruleset(candidate):
+    if candidate.metadata.version == DEMO_VERSION and is_demo_ruleset(candidate):
         return load_demo_ruleset(), None
+    if candidate.metadata.version == FULL_DEMO_VERSION and is_demo_ruleset(candidate):
+        return load_full_demo_ruleset(), None
     if candidate.metadata.version == VERIFIED_VERSION:
         return _load_stage7_verified()
 
