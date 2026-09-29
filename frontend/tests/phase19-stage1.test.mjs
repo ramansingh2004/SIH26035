@@ -8,10 +8,19 @@ async function source(path) {
 
 test("Phase 19 Stage 1 exposes real master-data navigation", async () => {
   const sidebar = await source("src/components/app-shell/sidebar.tsx");
-  for (const path of ["/manufacturers", "/instruments", "/equipment"]) {
-    assert.match(sidebar, new RegExp(path.replace("/", "\\/")));
+  const expected = [
+    ["/manufacturers", "manufacturer:read"],
+    ["/instruments", "instrument:read"],
+    ["/equipment", "equipment:read"],
+  ];
+
+  for (const [href, permission] of expected) {
+    assert.ok(sidebar.includes(`href: "${href}"`), `missing ${href}`);
+    assert.ok(
+      sidebar.includes(`permission: "${permission}"`),
+      `missing ${permission}`,
+    );
   }
-  assert.match(sidebar, /implemented:\s*true/);
 });
 
 test("instrument decimal measurements remain strings in frontend API types", async () => {

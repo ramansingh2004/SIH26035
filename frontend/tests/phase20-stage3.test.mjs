@@ -111,6 +111,6 @@ test("Stage 3 still performs no frontend compliance or MPE calculation", async (
   ].join("\n");
   assert.doesNotMatch(
     combined,
-    /calculateMpe|maximum permissible error|mpe\s*=|compliance_outcome\s*=/i,
+    /calculateMpe|maximum permissible error|mpe\s*=(?!=)|compliance_outcome\s*=(?!=)/i,
   );
 });

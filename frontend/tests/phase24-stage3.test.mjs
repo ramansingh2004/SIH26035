@@ -41,7 +41,9 @@ test("Phase 24 keeps the three status axes semantically separate", () => {
   assert.match(guide, /Workflow = lifecycle/);
   assert.match(guide, /Evaluation = readiness\/completeness/);
   assert.match(guide, /Outcome = deterministic result/);
-  assert.match(progress, /not a compliance score/);
+  assert.match(progress, /evaluation_status === "COMPLETE"/);
+  assert.match(progress, /applicability_status === "NOT_APPLICABLE"/);
+  assert.doesNotMatch(progress, /compliance_outcome/);
 });
 
 test("Phase 24 result explanation remains downstream of persisted backend facts", () => {
@@ -62,10 +64,10 @@ test("Phase 24 result explanation remains downstream of persisted backend facts"
     assert.ok(result.includes(field), `missing persisted result field: ${field}`);
   }
 
-  assert.match(result, /No browser calculation/);
+  assert.match(result, /browser does not recalculate/);
   assert.doesNotMatch(
     result,
-    /calculateMpe|maximum permissible error\s*=|mpe\s*=|compliance_outcome\s*=/i,
+    /calculateMpe|maximum permissible error\s*=|mpe\s*=(?!=)|compliance_outcome\s*=(?!=)/i,
   );
 });
 

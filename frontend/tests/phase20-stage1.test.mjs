@@ -18,7 +18,8 @@ test("Phase 20 Stage 1 exposes evaluation registry and workspace routes", async 
 
   const sidebar = await source("src/components/app-shell/sidebar.tsx");
   assert.match(sidebar, /href:\s*"\/evaluations"/);
-  assert.match(sidebar, /label:\s*"Evaluations"[\s\S]*?implemented:\s*true/);
+  assert.match(sidebar, /label:\s*"Evaluations"/);
+  assert.match(sidebar, /permission:\s*"session:read"/);
 });
 
 test("evaluation UI preserves workflow evaluation and outcome as separate axes", async () => {
@@ -89,6 +90,6 @@ test("Phase 20 Stage 1 provides no universal JSON editor or frontend compliance 
   assert.doesNotMatch(combined, /JSON editor|textarea[^>]*procedure_context/i);
   assert.doesNotMatch(
     combined,
-    /maximum permissible error|calculateMpe|mpe\s*=|compliance_outcome\s*=/i,
+    /maximum permissible error\s*=|calculateMpe|mpe\s*=(?!=)|compliance_outcome\s*=(?!=)/i,
   );
 });

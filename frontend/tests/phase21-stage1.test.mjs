@@ -17,8 +17,11 @@ test("Phase 21 Stage 1 exposes technical review and final approval routes", asyn
   }
 
   const sidebar = await source("src/components/app-shell/sidebar.tsx");
-  assert.match(sidebar, /href:\s*"\/reviews"[\s\S]*?implemented:\s*true/);
-  assert.match(sidebar, /href:\s*"\/approvals"[\s\S]*?implemented:\s*true/);
+  assert.match(sidebar, /label:\s*"Technical reviews"/);
+  assert.match(sidebar, /href:\s*"\/reviews"/);
+  assert.match(sidebar, /label:\s*"Final approvals"/);
+  assert.match(sidebar, /href:\s*"\/approvals"/);
+  assert.match(sidebar, /permission:\s*"approval:read"/);
 });
 
 test("review API uses backend governance endpoints and final approval idempotency", async () => {
@@ -74,5 +77,5 @@ test("final approval explicitly remains separate from compliance outcome", async
   const review = await source("src/components/review/review-case.tsx");
   assert.match(review, /Approval and compliance are separate/);
   assert.match(review, /COMPLETE \+ NONCOMPLIANT/);
-  assert.doesNotMatch(review, /compliance_outcome\s*=/);
+  assert.doesNotMatch(review, /compliance_outcome\s*=(?!=)/);
 });

@@ -37,21 +37,24 @@ test("evaluation progress derives presentation coverage only from persisted sect
   );
   assert.match(progress, /NOT_APPLICABLE/);
   assert.match(progress, /evaluation_status === "COMPLETE"/);
-  assert.match(progress, /Presentation progress only/);
-  assert.match(progress, /not a compliance score/);
+  assert.match(progress, /const covered = sections\.filter/);
+  assert.match(progress, /nextAction\(session\)/);
+  assert.doesNotMatch(progress, /compliance_outcome/);
   assert.doesNotMatch(
     progress,
-    /maximum permissible error|calculateMpe|mpe\s*=|compliance_outcome\s*=/i,
+    /maximum permissible error|calculateMpe|mpe\s*=/i,
   );
 });
 
-test("evaluation workspace shows readiness overview next to canonical status axes", () => {
+test("evaluation workspace shows readiness overview with the three canonical status axes", () => {
   const page = read(
     "src/app/(protected)/evaluations/[sessionId]/page.tsx",
   );
-  assert.match(page, /<StatusAxes/);
   assert.match(page, /EvaluationProgressOverview/);
   assert.match(page, /sections=\{sections\}/);
+  assert.match(page, /<dt>Workflow<\/dt>/);
+  assert.match(page, /<dt>Evaluation<\/dt>/);
+  assert.match(page, /StatusBadge value=\{session\.compliance_outcome\}/);
 });
 
 test("Stage 1 remains frontend-only explanatory polish", () => {

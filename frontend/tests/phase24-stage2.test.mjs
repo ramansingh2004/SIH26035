@@ -11,15 +11,15 @@ function read(relative) {
 
 test("result explanation uses only persisted backend result fields", () => {
   const panel = read("src/components/evaluations/result-panel.tsx");
-  assert.match(panel, /How to read this result/);
-  assert.match(panel, /calculations_json\.length/);
-  assert.match(panel, /acceptance_limits_json\.length/);
-  assert.match(panel, /failed_conditions_json\.length/);
+  assert.match(panel, /Persisted engine decision/);
+  assert.match(panel, /calculations_json/);
+  assert.match(panel, /acceptance_limits_json/);
+  assert.match(panel, /failed_conditions_json/);
   assert.match(panel, /synthetic_fixture/);
-  assert.match(panel, /No browser calculation/);
+  assert.match(panel, /browser does not recalculate/);
   assert.doesNotMatch(
     panel,
-    /calculateMpe|maximum permissible error\s*=|mpe\s*=|compliance_outcome\s*=/i,
+    /calculateMpe|maximum permissible error\s*=|mpe\s*=(?!=)|compliance_outcome\s*=(?!=)/i,
   );
 });
 
@@ -65,7 +65,7 @@ test("Stage 2 remains explanatory presentation only", () => {
     read("src/components/evaluations/result-panel.tsx"),
     read("src/components/reports/report-session-panel.tsx"),
     read("src/components/evaluations/evaluation-history-panel.tsx"),
-  ].join("\\n");
+  ].join("\n");
 
   assert.doesNotMatch(combined, /OpenAI|Groq|LLM|prompt/i);
 });

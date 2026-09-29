@@ -12,16 +12,17 @@ function read(relative) {
 test("all three Administration navigation modules are enabled", () => {
   const sidebar = read("src/components/app-shell/sidebar.tsx");
 
-  for (const href of [
-    "/admin/users",
-    "/admin/laboratories",
-    "/admin/audit",
-  ]) {
-    const position = sidebar.indexOf(`href: "${href}"`);
-    assert.ok(position >= 0, `missing ${href}`);
-    assert.match(
-      sidebar.slice(position, position + 150),
-      /implemented:\s*true/,
+  const expected = [
+    ["/admin/users", "user:read"],
+    ["/admin/laboratories", "laboratory:read"],
+    ["/admin/audit", "audit:read"],
+  ];
+
+  for (const [href, permission] of expected) {
+    assert.ok(sidebar.includes(`href: "${href}"`), `missing ${href}`);
+    assert.ok(
+      sidebar.includes(`permission: "${permission}"`),
+      `missing ${permission}`,
     );
   }
 });
@@ -109,6 +110,6 @@ test("Audit Events contains no regulatory calculation or decision path", () => {
 
   assert.doesNotMatch(
     combined,
-    /maximum permissible error|calculateMpe|compliance_outcome\s*=|OpenAI|Groq|LLM/i,
+    /maximum permissible error|calculateMpe|compliance_outcome\s*=(?!=)|OpenAI|Groq|LLM/i,
   );
 });

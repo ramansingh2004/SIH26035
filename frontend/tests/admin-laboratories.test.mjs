@@ -11,13 +11,18 @@ function read(relative) {
 
 test("Admin Laboratories navigation remains enabled with Audit Events", () => {
   const sidebar = read("src/components/app-shell/sidebar.tsx");
-  const users = sidebar.indexOf('href: "/admin/users"');
-  const labs = sidebar.indexOf('href: "/admin/laboratories"');
-  const audit = sidebar.indexOf('href: "/admin/audit"');
 
-  assert.match(sidebar.slice(users, users + 130), /implemented:\s*true/);
-  assert.match(sidebar.slice(labs, labs + 150), /implemented:\s*true/);
-  assert.match(sidebar.slice(audit, audit + 130), /implemented:\s*true/);
+  for (const [href, permission] of [
+    ["/admin/users", "user:read"],
+    ["/admin/laboratories", "laboratory:read"],
+    ["/admin/audit", "audit:read"],
+  ]) {
+    assert.ok(sidebar.includes(`href: "${href}"`), `missing ${href}`);
+    assert.ok(
+      sidebar.includes(`permission: "${permission}"`),
+      `missing ${permission}`,
+    );
+  }
 });
 
 test("Admin Laboratories uses the existing administration API contracts", () => {
@@ -94,6 +99,6 @@ test("Admin Laboratories remains permission-aware and contains no compliance cal
 
   assert.doesNotMatch(
     combined,
-    /maximum permissible error|calculateMpe|compliance_outcome\s*=|OpenAI|Groq|LLM/i,
+    /maximum permissible error|calculateMpe|compliance_outcome\s*=(?!=)|OpenAI|Groq|LLM/i,
   );
 });

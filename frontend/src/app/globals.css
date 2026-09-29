@@ -5560,3 +5560,573 @@ html {
     flex-wrap: wrap;
   }
 }
+
+/* Stage C — frontend polish */
+
+/* Dashboard: make operational summaries easier to scan without changing data. */
+.dashboard-page .metric-grid,
+.dashboard-page .dashboard-grid {
+  gap: 0.75rem;
+}
+
+.dashboard-page .metric-card {
+  position: relative;
+  min-width: 0;
+  min-height: 7.6rem;
+  overflow: hidden;
+  border-color: #cfd6dc;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfc 100%);
+  padding: 1rem;
+}
+
+.dashboard-page .metric-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: #6d93a8;
+  content: "";
+}
+
+.dashboard-page .metric-card span {
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.dashboard-page .metric-card strong {
+  margin-top: 0.08rem;
+  font-size: clamp(1.85rem, 2.2vw, 2.2rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.035em;
+}
+
+.dashboard-page .metric-card small {
+  font-size: 0.68rem;
+}
+
+.dashboard-page .dashboard-panel {
+  min-width: 0;
+  overflow: hidden;
+  border-color: #cfd6dc;
+}
+
+.dashboard-page .count-list {
+  gap: 0;
+}
+
+.dashboard-page .count-row {
+  min-height: 2.45rem;
+  border-top: 1px solid #edf0f2;
+  padding: 0.34rem 0;
+}
+
+.dashboard-page .count-row:first-child {
+  border-top: 0;
+}
+
+.dashboard-page .activity-row {
+  padding: 0.2rem 0.15rem;
+  transition: background-color 120ms ease;
+}
+
+/* Empty states: one consistent, useful pattern throughout the application. */
+.empty-state {
+  display: grid;
+  min-height: 6.25rem;
+  grid-template-columns: 2.35rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.9rem;
+  border-style: dashed;
+  background: #fbfcfc;
+  padding: 1rem 1.1rem;
+}
+
+.empty-state-mark {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  border: 1px solid #d2dbe1;
+  border-radius: 0.3rem;
+  background: #f2f6f8;
+  color: #6a8493;
+}
+
+.empty-state-mark svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.empty-state-copy {
+  min-width: 0;
+}
+
+.empty-state-copy strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 680;
+}
+
+.empty-state-copy p {
+  max-width: 48rem;
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.empty-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* Loading states: retain the server-state message and add quiet structure. */
+.loading-state {
+  display: grid;
+  align-items: stretch;
+  gap: 0.9rem;
+  overflow: hidden;
+}
+
+.loading-state-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.loading-state-heading strong {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 680;
+}
+
+.loading-state-heading p {
+  font-size: 0.72rem;
+}
+
+.loading-skeleton {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.loading-skeleton span {
+  display: block;
+  height: 0.5rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      #edf1f3 0%,
+      #f7f9fa 42%,
+      #e7ecef 58%,
+      #edf1f3 100%
+    );
+  background-size: 220% 100%;
+  animation: stage-c-loading 1.35s ease-in-out infinite;
+}
+
+.loading-skeleton span:nth-child(2) {
+  width: 82%;
+}
+
+.loading-skeleton span:nth-child(3) {
+  width: 58%;
+}
+
+@keyframes stage-c-loading {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* Tables: shared density, hierarchy, keyboard visibility and mobile scrolling. */
+.data-card {
+  overflow: hidden;
+  border-color: #cfd6dc;
+  border-radius: 0.35rem;
+  box-shadow: none;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table {
+  min-width: 44rem;
+  font-size: 0.78rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.72rem 0.82rem;
+}
+
+.data-table th {
+  background: #f5f7f8;
+  color: #65717a;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  white-space: nowrap;
+}
+
+.data-table td {
+  line-height: 1.4;
+}
+
+.data-table tbody tr {
+  transition: background-color 120ms ease;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table tbody tr:focus-within {
+  background: #f1f6f8;
+}
+
+.table-link {
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18rem;
+  transition:
+    color 120ms ease,
+    text-decoration-color 120ms ease;
+}
+
+.table-secondary {
+  display: block;
+  margin-top: 0.14rem;
+  color: var(--text-muted);
+  font-size: 0.66rem;
+}
+
+.pagination {
+  min-height: 3.25rem;
+  border-top: 1px solid #e7ebee;
+  background: #fafbfb;
+  padding: 0.65rem 0.82rem;
+}
+
+.pagination > span {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Filter bars and report rows follow the same surface language as tables. */
+.master-toolbar,
+.report-filter-bar {
+  border-color: #cfd6dc;
+  border-radius: 0.35rem;
+  box-shadow: none;
+}
+
+.master-toolbar input,
+.master-toolbar select,
+.report-filter-bar input,
+.report-filter-bar select {
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    background-color 120ms ease;
+}
+
+.report-repository-card {
+  overflow: hidden;
+  border-color: #cfd6dc;
+  border-radius: 0.35rem;
+  box-shadow: none;
+  padding: 0;
+}
+
+.report-repository-list {
+  display: grid;
+}
+
+.report-revision-row {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  transition: background-color 120ms ease;
+}
+
+.report-revision-row:last-child {
+  border-bottom: 0;
+}
+
+.report-revision-row > div:first-child {
+  min-width: 0;
+}
+
+.report-pagination {
+  border-top: 1px solid #e7ebee;
+  background: #fafbfb;
+  padding: 0.7rem 1rem;
+}
+
+/* Hover and focus: interactive controls communicate state consistently. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #315f7a;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(49, 95, 122, 0.16);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: #6f98ad !important;
+  background: #ffffff;
+}
+
+.button,
+.menu-button,
+.nav-item,
+.user-summary-link {
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+@media (hover: hover) {
+  .button-primary:hover:not(:disabled) {
+    background: #244b61;
+    box-shadow: 0 1px 2px rgba(22, 44, 58, 0.14);
+  }
+
+  .button-secondary:hover:not(:disabled),
+  .menu-button:hover {
+    border-color: #9eabb4;
+    background: #f6f8f9;
+  }
+
+  .user-summary-link:hover {
+    background: #f3f6f7;
+  }
+
+  .table-link:hover {
+    color: var(--navy-900);
+    text-decoration-color: currentColor;
+  }
+
+  .data-table tbody tr:hover,
+  .dashboard-page .activity-row:hover,
+  .report-revision-row:hover {
+    background: #f8fafb;
+  }
+}
+
+/* Responsive cleanup: preserve core controls, avoid overflow and keep actions usable. */
+@media (max-width: 1050px) {
+  .dashboard-page .metric-grid,
+  .dashboard-page .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-header {
+    gap: 1rem;
+  }
+
+  .page-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 850px) {
+  .content-area {
+    padding: 1.05rem;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .page-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .topbar-left {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .topbar-actions {
+    min-width: 0;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .laboratory-picker {
+    display: grid;
+  }
+
+  .laboratory-picker select {
+    max-width: 10rem;
+  }
+
+  .report-revision-row > .button {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 650px) {
+  .content-area {
+    padding: 0.85rem;
+  }
+
+  .page-stack {
+    gap: 0.85rem;
+  }
+
+  .page-header {
+    padding-bottom: 0.75rem;
+  }
+
+  .page-header h1,
+  .standalone-state h1 {
+    font-size: 1.45rem;
+  }
+
+  .page-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .page-actions .button {
+    width: 100%;
+  }
+
+  .dashboard-page .metric-grid,
+  .dashboard-page .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-page .metric-card {
+    min-height: 6.8rem;
+  }
+
+  .empty-state {
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.7rem;
+    padding: 0.9rem;
+  }
+
+  .empty-state-mark {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .loading-state {
+    padding: 0.9rem;
+  }
+
+  .master-toolbar {
+    padding: 0.7rem;
+  }
+
+  .data-table {
+    min-width: 40rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.64rem 0.7rem;
+  }
+
+  .pagination > div {
+    width: 100%;
+  }
+
+  .pagination > div .button {
+    flex: 1 1 0;
+  }
+
+  .report-revision-row {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 0.8rem;
+  }
+
+  .report-revision-row > .button {
+    width: 100%;
+  }
+
+  .topbar {
+    padding: 0.55rem 0.7rem;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    flex-basis: 100%;
+    justify-content: space-between;
+  }
+
+  .laboratory-picker {
+    min-width: 0;
+    flex: 1 1 11rem;
+  }
+
+  .laboratory-picker select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .scope-note {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .user-summary-link {
+    flex: 0 0 auto;
+  }
+
+  .button-tertiary.button-compact {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 430px) {
+  .topbar-actions {
+    align-items: stretch;
+  }
+
+  .laboratory-picker {
+    flex-basis: 100%;
+    order: -1;
+  }
+
+  .user-summary-link {
+    margin-right: auto;
+  }
+
+  .empty-state {
+    grid-template-columns: 1fr;
+  }
+
+  .empty-state-mark {
+    display: none;
+  }
+}

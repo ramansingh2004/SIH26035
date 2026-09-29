@@ -78,7 +78,7 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="page-stack">
+    <div className="page-stack dashboard-page">
       <PageHeader
         eyebrow="Laboratory operations"
         title="Dashboard"
