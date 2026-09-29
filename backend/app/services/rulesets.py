@@ -11,8 +11,13 @@ from app.compliance.demo import (
 )
 from app.compliance.full_demo import (
     FULL_DEMO_ARTIFACT,
+    FULL_DEMO_RUN_ARTIFACT,
+    FULL_DEMO_RUN_VERSION,
     FULL_DEMO_VERSION,
+    full_demo_runtime_schema_map,
+    is_full_demo_run_ruleset,
     load_full_demo_ruleset,
+    load_full_demo_run_ruleset,
 )
 from app.compliance.ruleset import RuleSet, load_ruleset
 from app.compliance.stage7_activation import (
@@ -71,6 +76,8 @@ def _trusted_artifact(artifact):
         return load_demo_ruleset(), None
     if artifact == FULL_DEMO_ARTIFACT:
         return load_full_demo_ruleset(), None
+    if artifact == FULL_DEMO_RUN_ARTIFACT:
+        return load_full_demo_run_ruleset(), None
     if artifact == VERIFIED_ARTIFACT:
         return _load_stage7_verified()
     raise AppError(422, "INVALID_INPUT", "Unknown trusted ruleset artifact")
@@ -81,6 +88,11 @@ def _trusted_snapshot(candidate):
         return load_demo_ruleset(), None
     if candidate.metadata.version == FULL_DEMO_VERSION and is_demo_ruleset(candidate):
         return load_full_demo_ruleset(), None
+    if (
+        candidate.metadata.version == FULL_DEMO_RUN_VERSION
+        and is_demo_ruleset(candidate)
+    ):
+        return load_full_demo_run_ruleset(), None
     if candidate.metadata.version == VERIFIED_VERSION:
         return _load_stage7_verified()
 
@@ -117,6 +129,14 @@ def _validation_summary(ruleset, stage7_manifest=None):
             }
         )
     return summary
+
+
+def _runtime_schemas_for(ruleset, stage7_manifest):
+    if stage7_manifest is not None:
+        return stage7_manifest.runtime_schema_map()
+    if is_full_demo_run_ruleset(ruleset):
+        return full_demo_runtime_schema_map()
+    return {}
 
 
 class RulesetService:
@@ -183,10 +203,9 @@ class RulesetService:
             return existing
         m = ruleset.metadata
         snapshot = ruleset.snapshot()
-        runtime_schemas = (
-            stage7_manifest.runtime_schema_map()
-            if stage7_manifest is not None
-            else {}
+        runtime_schemas = _runtime_schemas_for(
+            ruleset,
+            stage7_manifest,
         )
         row = RuleSetRecord(
             id=uuid4(),

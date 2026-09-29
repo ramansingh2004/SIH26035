@@ -16,6 +16,10 @@ from app.compliance.canonical import canonical_bytes, evaluation_input_snapshot,
 from app.compliance.demo import DEMO_LAB_CODE, demo_registry, is_demo_ruleset
 from app.compliance.domain import InstrumentSnapshot
 from app.compliance.engine import R76Engine, synthetic_artifact
+from app.compliance.full_demo import (
+    full_demo_registry,
+    is_full_demo_run_ruleset,
+)
 from app.compliance.planning import RequirementPlanner
 from app.compliance.ruleset import RuleSet
 from app.compliance.suite import implemented_registry
@@ -106,7 +110,10 @@ class TestingService:
         return is_demo_ruleset(RuleSet.model_validate(session.ruleset_snapshot))
 
     def engine_for(self, session):
-        return R76Engine(demo_registry()) if self.demo_ruleset(session) else self.engine
+        rules = RuleSet.model_validate(session.ruleset_snapshot)
+        if is_full_demo_run_ruleset(rules):
+            return R76Engine(full_demo_registry())
+        return R76Engine(demo_registry()) if is_demo_ruleset(rules) else self.engine
 
     async def require_demo_scope(self, session):
         if not self.demo_ruleset(session):
@@ -524,6 +531,13 @@ class TestingService:
                 ):
                     registration = self.engine_for(row).registry.find(slot.test_code)
                     if registration is None:
+                        if is_full_demo_run_ruleset(rules):
+                            reject(
+                                "FULL_DEMO_EVALUATOR_MISSING",
+                                "Run-ready demo slot has no evaluator registration",
+                                500,
+                                {"test_code": slot.test_code},
+                            )
                         observation_version = procedure_version = "UNIMPLEMENTED"
                     else:
                         try:
