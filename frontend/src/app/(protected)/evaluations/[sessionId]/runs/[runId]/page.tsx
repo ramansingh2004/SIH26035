@@ -31,6 +31,7 @@ import {
   linkedEquipment,
   observations,
   runDetail,
+  runEvidence,
   runResults,
   saveProcedureContext,
   startRun,
@@ -97,6 +98,11 @@ export default function RunWorkspacePage() {
     queryKey: ["run-results", runId],
     queryFn: () => runResults(runId),
   });
+  const evidenceQuery = useQuery({
+    queryKey: ["run-evidence", runId],
+    queryFn: () => runEvidence(runId),
+    enabled: hasPermission("attachment:read"),
+  });
 
   const availableEquipment = useQuery({
     queryKey: ["run-equipment-catalog", session.data?.item.laboratory_id],
@@ -128,6 +134,8 @@ export default function RunWorkspacePage() {
       queryClient.invalidateQueries({ queryKey: ["run-environment", runId] }),
       queryClient.invalidateQueries({ queryKey: ["run-equipment", runId] }),
       queryClient.invalidateQueries({ queryKey: ["run-results", runId] }),
+      queryClient.invalidateQueries({ queryKey: ["run-evidence", runId] }),
+      queryClient.invalidateQueries({ queryKey: ["run-history", runId] }),
       queryClient.invalidateQueries({
         queryKey: ["evaluation-dashboard", sessionId],
       }),
@@ -168,7 +176,8 @@ export default function RunWorkspacePage() {
     observationQuery.isPending ||
     environmentQuery.isPending ||
     equipmentQuery.isPending ||
-    resultQuery.isPending
+    resultQuery.isPending ||
+    (hasPermission("attachment:read") && evidenceQuery.isPending)
   ) {
     return <LoadingState label="Loading test run workspace" />;
   }
@@ -183,6 +192,8 @@ export default function RunWorkspacePage() {
   if (equipmentQuery.isError)
     return <ErrorState error={equipmentQuery.error} />;
   if (resultQuery.isError) return <ErrorState error={resultQuery.error} />;
+  if (evidenceQuery.isError)
+    return <ErrorState error={evidenceQuery.error} />;
 
   const requirement = dashboard.data.requirements.find(
     (item) => item.id === run.data.item.requirement_id,
@@ -522,15 +533,18 @@ export default function RunWorkspacePage() {
             onUnlink={removeEquipment}
           />
 
-          {editable && hasPermission("attachment:create") ? (
+          {hasPermission("attachment:read") ||
+          (editable && hasPermission("attachment:create")) ? (
             <EvidenceUploader
-              key={`run-evidence-${runItem.lock_version}`}
               laboratoryId={session.data.item.laboratory_id}
               entityType="test_runs"
               entityId={runId}
               targetEtag={runEtag}
               defaultPurpose="test_evidence"
               onTargetChanged={refreshRunSources}
+              existing={evidenceQuery.data ?? []}
+              canUpload={editable && hasPermission("attachment:create")}
+              canUnlink={editable && hasPermission("attachment:delete")}
             />
           ) : null}
 

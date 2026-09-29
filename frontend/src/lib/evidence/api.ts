@@ -6,6 +6,7 @@ import type {
   CompletedAttachment,
   EvidenceMimeType,
   EvidenceTargetType,
+  EvidenceUnlinkResponse,
   PresignResponse,
 } from "./types";
 
@@ -104,6 +105,24 @@ export async function downloadEvidence(
   return (
     await apiRequest<AttachmentDownload>(
       `/api/v1/attachments/${attachmentId}/download`,
+    )
+  ).data;
+}
+
+export async function unlinkEvidence(input: {
+  attachmentId: string;
+  linkId: string;
+  targetEtag: string;
+  reason: string;
+}): Promise<EvidenceUnlinkResponse> {
+  const reason = encodeURIComponent(input.reason);
+  return (
+    await apiRequest<EvidenceUnlinkResponse>(
+      `/api/v1/attachments/${input.attachmentId}/links/${input.linkId}?reason=${reason}`,
+      {
+        method: "DELETE",
+        etag: input.targetEtag,
+      },
     )
   ).data;
 }

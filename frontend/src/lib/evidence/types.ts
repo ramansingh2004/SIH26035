@@ -41,6 +41,17 @@ export type CompletedAttachment = AttachmentView & {
   target_etag: string;
 };
 
+export type LinkedEvidence = AttachmentView & {
+  link_id: string;
+  purpose: string;
+  uploaded_at: string;
+};
+
+export type EvidenceUnlinkResponse = {
+  target_etag: string;
+  attachment_etag: string;
+};
+
 export type AttachmentDownload = AttachmentView & {
   download_url: string;
   expires_in: number;

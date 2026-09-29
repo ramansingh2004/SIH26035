@@ -451,8 +451,12 @@ def prepare_live_session(
     ).json()
     if applicability.get("confirmable") is not True:
         raise RuntimeError("V3 Stage 8 applicability is not confirmable")
-    if len(applicability.get("plan", [])) != 28:
-        raise RuntimeError("V3 Stage 8 applicability must contain 28 slots")
+    plan = applicability.get("plan") or {}
+    slots = plan.get("slots", []) if isinstance(plan, dict) else []
+    if len(slots) != 28:
+        raise RuntimeError(
+            f"V3 Stage 8 applicability must contain 28 slots; got {len(slots)}"
+        )
 
     session = expect(
         client.post(

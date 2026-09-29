@@ -37,6 +37,10 @@ def test_stage8_operator_pins_the_final_v3_flow():
     assert "DEMO ONLY" in INSTRUMENT_MODEL
     assert canonical_snapshot()["maximum_tare_g"] == "5000"
 
+    # ApplicabilityView.plan is a RequirementPlan object serialized as
+    # {"slots": [...]}; the operator must count the slots, not dict keys.
+    assert 'plan.get("slots", [])' in source
+
     for endpoint in (
         "/configure",
         "/applicability",

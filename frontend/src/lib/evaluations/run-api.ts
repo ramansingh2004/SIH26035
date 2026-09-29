@@ -1,5 +1,6 @@
 import { apiRequest } from "@/lib/api/client";
 import { createIdempotencyKey } from "@/lib/api/idempotency";
+import type { LinkedEvidence } from "@/lib/evidence/types";
 
 import type {
   EnvironmentData,
@@ -219,6 +220,12 @@ export async function unlinkEquipment(
 export async function runResults(id: string): Promise<ResultView[]> {
   return (await apiRequest<ResultView[]>(`/api/v1/test-runs/${id}/results`))
     .data;
+}
+
+export async function runEvidence(id: string): Promise<LinkedEvidence[]> {
+  return (
+    await apiRequest<LinkedEvidence[]>(`/api/v1/test-runs/${id}/evidence`)
+  ).data;
 }
 
 export async function runHistory(

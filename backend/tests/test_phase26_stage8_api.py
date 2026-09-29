@@ -34,6 +34,20 @@ async def test_stage8_final_judge_flow_is_end_to_end_and_non_official(
         for section in dashboard["sections"]
     )
 
+    selected_run_id = next(
+        requirement["selected_run_id"]
+        for requirement in dashboard["requirements"]
+        if requirement["selected_run_id"] is not None
+    )
+    evidence = await client.get(
+        f"/api/v1/test-runs/{selected_run_id}/evidence"
+    )
+    assert evidence.status_code == 200, evidence.text
+    assert len(evidence.json()) == 1
+    assert evidence.json()[0]["purpose"].startswith(
+        "synthetic_demo_traceability_"
+    )
+
     current = await client.get(path)
     assert current.status_code == 200, current.text
 

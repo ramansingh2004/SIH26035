@@ -25,6 +25,7 @@ from app.schemas.testing import (
     ReasonRequest,
     RequirementView,
     ResultView,
+    RunEvidenceView,
     RunHistory,
     RunView,
     SectionView,
@@ -370,6 +371,14 @@ async def run_equipment(identifier: UUID, service: Service, actor: Actor):
 @router.get("/test-runs/{identifier}/results", response_model=list[ResultView])
 async def run_results(identifier: UUID, service: Service, actor: Actor):
     return await service.run_detail(actor, identifier, "results")
+
+
+@router.get(
+    "/test-runs/{identifier}/evidence",
+    response_model=list[RunEvidenceView],
+)
+async def run_evidence(identifier: UUID, service: Service, actor: Actor):
+    return await service.run_detail(actor, identifier, "evidence")
 
 
 @router.post(

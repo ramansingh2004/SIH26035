@@ -138,4 +138,7 @@ class RuleRegistration(Schema):
         "oiml_r76_2006/candidate-v1",
         "oiml_r76_2006/verified-v1",
         "sih26035_demo_v1",
+        "sih26035_full_flow_demo_v1",
+        "sih26035_full_flow_demo_v2",
+        "sih26035_full_flow_demo_v3",
     ]

@@ -309,6 +309,19 @@ class EquipmentLinkView(Version):
     linked_at: datetime
 
 
+class RunEvidenceView(Schema):
+    id: UUID
+    laboratory_id: UUID
+    file_name: str
+    content_type: str
+    file_size: int
+    sha256: str
+    lock_version: int
+    uploaded_at: datetime
+    link_id: UUID
+    purpose: str
+
+
 class ResultView(Schema):
     id: UUID
     test_run_id: UUID

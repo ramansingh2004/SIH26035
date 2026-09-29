@@ -730,9 +730,35 @@ class TestingService:
                 if part in {"observations", "environment-readings"}
                 else "equipment:read"
                 if part == "equipment"
+                else "attachment:read"
+                if part == "evidence"
                 else "test:read"
             )
             _, run = await self.scoped_run(actor, identifier, permission)
+            if part == "evidence":
+                rows = await self.repo.evidence([("test_runs", run.id)])
+                rows.sort(
+                    key=lambda item: (
+                        item[0].uploaded_at,
+                        str(item[0].id),
+                    ),
+                    reverse=True,
+                )
+                return [
+                    {
+                        "id": attachment.id,
+                        "laboratory_id": attachment.laboratory_id,
+                        "file_name": attachment.file_name,
+                        "content_type": attachment.content_type,
+                        "file_size": attachment.file_size,
+                        "sha256": attachment.sha256,
+                        "lock_version": attachment.lock_version,
+                        "uploaded_at": attachment.uploaded_at,
+                        "link_id": link.id,
+                        "purpose": link.purpose,
+                    }
+                    for attachment, link in rows
+                ]
             models = {
                 "observations": TestObservation,
                 "environment-readings": EnvironmentReading,
