@@ -13,10 +13,19 @@ from app.compliance.checklist import (
     ChecklistEngine,
     ChecklistRuleInput,
 )
+from app.compliance.demo import DEMO_LAB_CODE
 from app.compliance.domain import Applicability, ApplicabilityDecision, InstrumentSnapshot
+from app.compliance.full_demo_checklist import (
+    NOTICE as FULL_DEMO_CHECKLIST_NOTICE,
+)
+from app.compliance.full_demo_checklist import (
+    full_demo_checklist_plan,
+)
+from app.compliance.full_demo_execution import is_full_demo_execution_ruleset
+from app.compliance.ruleset import RuleSet
 from app.core.concurrency import etag, require_match
 from app.core.errors import AppError, denied, missing
-from app.models import ChecklistRule
+from app.models import Attachment, AttachmentLink, ChecklistRule
 from app.models.checklist import ChecklistResponse
 from app.models.testing import TestSession
 from app.repositories.checklist import PREAPPROVAL_WORKFLOWS, ChecklistRepository
@@ -31,6 +40,7 @@ from app.services.authorization import AuthorizationService
 from app.services.review_scope import (
     enforce_correction_scope,
     invalidate_technical_approvals,
+    open_corrections,
 )
 
 EDITABLE_WORKFLOWS = {"EXAMINATION"}
@@ -464,6 +474,210 @@ class ChecklistService:
                 target=response.lock_version,
             )
             return response_view(response, rule)
+
+    async def demo_complete(self, actor, identifier, match):
+        """Populate and complete Section 17 for the isolated V3 SIH demo."""
+
+        async with self.session.begin():
+            session = await self.scoped_session(
+                actor,
+                identifier,
+                "checklist:complete",
+                mutation=True,
+            )
+            self.mutable(session)
+
+            ruleset = RuleSet.model_validate(session.ruleset_snapshot)
+            lab = await self.repo.lab(session.laboratory_id)
+            if (
+                not is_full_demo_execution_ruleset(ruleset)
+                or lab is None
+                or lab.code != DEMO_LAB_CODE
+                or session.evaluation_context != "SYNTHETIC"
+            ):
+                raise AppError(
+                    409,
+                    "SYNTHETIC_DEMO_STAGE5_FORBIDDEN",
+                    "Section 17 demo completion is restricted to the V3 "
+                    "synthetic demo session in the dedicated demo laboratory",
+                )
+            if await open_corrections(self.repo, session.id):
+                raise AppError(
+                    409,
+                    "CORRECTION_RESOLUTION_REQUIRED",
+                    "Resolve the bounded correction before demo completion",
+                )
+
+            require_match(match, etag(session.lock_version))
+            sections = await self.repo.sections(session.id)
+            section16 = next(
+                (
+                    section
+                    for section in sections
+                    if section.section_number == 16
+                ),
+                None,
+            )
+            if (
+                section16 is None
+                or section16.evaluation_status != "COMPLETE"
+                or section16.compliance_outcome != "COMPLIANT"
+            ):
+                raise AppError(
+                    409,
+                    "SYNTHETIC_DEMO_STAGE5_SECTION16_REQUIRED",
+                    "Complete the synthetic Section 16 construction "
+                    "examination before Section 17",
+                )
+
+            section17 = next(
+                (
+                    section
+                    for section in sections
+                    if section.section_number == 17
+                ),
+                None,
+            )
+            if (
+                section17 is not None
+                and section17.evaluation_status == "COMPLETE"
+            ):
+                raise AppError(
+                    409,
+                    "CHECKLIST_ALREADY_COMPLETE",
+                    "Section 17 checklist is already complete",
+                )
+
+            rules = await self.repo.checklist_rules(session.rule_set_id)
+            responses = await self.repo.responses(session.id, lock=True)
+            rule_by_id = {rule.id: rule for rule in rules}
+            response_by_key = {}
+            for response in responses:
+                rule = rule_by_id.get(response.checklist_rule_id)
+                if rule is not None:
+                    response_by_key[rule.requirement_key] = (response, rule)
+
+            plan = {
+                item.requirement_key: item
+                for item in full_demo_checklist_plan(ruleset)
+            }
+            if set(response_by_key) != set(plan):
+                raise AppError(
+                    409,
+                    "CHECKLIST_DEMO_CATALOG_MISMATCH",
+                    "Pinned Section 17 catalog differs from the V3 demo plan",
+                )
+
+            counts = await self.repo.evidence_counts(
+                [response.id for response in responses]
+            )
+            timestamp = datetime.now(UTC)
+
+            for requirement_key, demo in plan.items():
+                response, rule = response_by_key[requirement_key]
+                if (
+                    rule.validation_status != "VERIFIED"
+                    or response.applicability_status != "REQUIRED"
+                    or rule.evidence_required is not True
+                ):
+                    raise AppError(
+                        409,
+                        "CHECKLIST_DEMO_CATALOG_MISMATCH",
+                        "V3 synthetic checklist state is not fully verified",
+                    )
+
+                response.response_result = "PASS"
+                response.remarks = demo.remarks
+                response.examined_by = actor.user_id
+                response.examined_at = timestamp
+                response.lock_version += 1
+
+                if counts.get(response.id, 0) < 1:
+                    attachment = Attachment(
+                        id=uuid4(),
+                        laboratory_id=session.laboratory_id,
+                        attachment_type="EVIDENCE",
+                        file_name=demo.evidence_file_name,
+                        content_type=demo.evidence_content_type,
+                        file_size=demo.evidence_size,
+                        storage_provider="synthetic-demo",
+                        storage_key=(
+                            "synthetic-demo/section17/"
+                            f"{session.id}/{requirement_key}"
+                        ),
+                        object_version="phase26-stage5-v1",
+                        sha256=demo.evidence_sha256,
+                        uploaded_by=actor.user_id,
+                        metadata_json={
+                            "synthetic_demo": True,
+                            "metadata_only": True,
+                            "phase": "PHASE26_STAGE5",
+                            "requirement_key": requirement_key,
+                            "notice": FULL_DEMO_CHECKLIST_NOTICE,
+                        },
+                    )
+                    self.repo.add(attachment)
+                    await self.repo.flush()
+                    self.repo.add(
+                        AttachmentLink(
+                            id=uuid4(),
+                            attachment_id=attachment.id,
+                            entity_type="checklist_responses",
+                            entity_id=response.id,
+                            purpose="synthetic_demo_section17",
+                            linked_by=actor.user_id,
+                        )
+                    )
+
+            session.regulatory_revision += 1
+            session.lock_version += 1
+            await invalidate_technical_approvals(
+                self.repo,
+                actor,
+                session,
+                reason="Synthetic Section 17 demonstration data populated",
+                scope={
+                    "entity_type": "test_sessions",
+                    "entity_id": str(session.id),
+                    "field_paths": ["synthetic_demo_checklist_completion"],
+                },
+                audit=self.audit,
+            )
+            await self.repo.flush()
+
+            summary = await self._refresh(
+                session,
+                completion_requested=True,
+            )
+            if (
+                summary["evaluation_status"] != "COMPLETE"
+                or summary["compliance_outcome"] != "COMPLIANT"
+            ):
+                raise AppError(
+                    500,
+                    "SYNTHETIC_DEMO_STAGE5_INVALID",
+                    "Synthetic Section 17 dataset failed deterministic completion",
+                    {
+                        "missing_rule_keys": summary["missing_rule_keys"],
+                        "blockers": summary["blockers"],
+                    },
+                )
+
+            session.regulatory_revision += 1
+            session.lock_version += 1
+            await self.repo.flush()
+            self.audit.record(
+                "checklist.demo_completed",
+                actor.user_id,
+                "test_sessions",
+                session.id,
+                lab=session.laboratory_id,
+                after=summary,
+                target=session.lock_version,
+            )
+            return ChecklistSummary.model_validate(
+                {**summary, "lock_version": session.lock_version}
+            ).model_dump(mode="json")
 
     async def complete(self, actor, identifier, match):
         async with self.session.begin():

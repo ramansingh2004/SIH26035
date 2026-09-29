@@ -129,6 +129,17 @@ export async function patchChecklistRow(
   return { item: response.data, etag: response.etag };
 }
 
+export async function completeChecklistDemo(
+  sessionId: string,
+  etag: string,
+): Promise<Versioned<ChecklistSummary>> {
+  const response = await apiRequest<ChecklistSummary>(
+    `/api/v1/test-sessions/${sessionId}/checklist/demo-complete`,
+    { method: "POST", etag },
+  );
+  return { item: response.data, etag: response.etag };
+}
+
 export async function completeChecklist(
   sessionId: string,
   etag: string,

@@ -14,8 +14,8 @@ from app.compliance.phase7 import (
 )
 from app.compliance.phase8 import (
     TiltingEvaluator,
-    _tilting_policy,
     WarmUpEvaluator,
+    _tilting_policy,
     tilting_registration,
     warm_up_registration,
 )

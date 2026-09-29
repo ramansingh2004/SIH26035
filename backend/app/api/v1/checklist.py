@@ -94,6 +94,24 @@ async def update_checklist(
 
 
 @router.post(
+    "/test-sessions/{identifier}/checklist/demo-complete",
+    response_model=ChecklistSummary,
+    dependencies=[Depends(no_body)],
+)
+async def complete_checklist_demo(
+    identifier: UUID,
+    response: Response,
+    service: Service,
+    actor: Actor,
+    if_match: Match = None,
+):
+    return versioned(
+        response,
+        await service.demo_complete(actor, identifier, if_match),
+    )
+
+
+@router.post(
     "/test-sessions/{identifier}/checklist/complete",
     response_model=ChecklistSummary,
     dependencies=[Depends(no_body)],

@@ -16,6 +16,7 @@ import {
   checklistRows,
   checklistSummary,
   completeChecklist,
+  completeChecklistDemo,
   patchChecklistRow,
 } from "@/lib/evaluations/special-api";
 import type {
@@ -157,6 +158,7 @@ export function ChecklistWorkspace({ sessionId }: { sessionId: string }) {
   const queryClient = useQueryClient();
   const { hasPermission } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const [demoCompleting, setDemoCompleting] = useState(false);
 
   const session = useQuery({
     queryKey: ["evaluation", sessionId],
@@ -194,6 +196,26 @@ export function ChecklistWorkspace({ sessionId }: { sessionId: string }) {
   const mutable = session.data.item.workflow_status === "EXAMINATION";
   const editable = mutable && hasPermission("checklist:update");
   const summaryEtag = summary.data.etag;
+  const metadata = session.data.item.ruleset_snapshot.metadata;
+  const fullDemoV3 =
+    Boolean(metadata) &&
+    typeof metadata === "object" &&
+    (metadata as Record<string, unknown>).version ===
+      "SYNTHETIC_TEST_SIH26035_FULL_FLOW_V3";
+
+  async function completeDemo() {
+    if (!summaryEtag) return;
+    setDemoCompleting(true);
+    setError(null);
+    try {
+      await completeChecklistDemo(sessionId, summaryEtag);
+      await refresh();
+    } catch (cause) {
+      setError(friendlyApiMessage(cause));
+    } finally {
+      setDemoCompleting(false);
+    }
+  }
 
   async function complete() {
     if (!summaryEtag) return;
@@ -260,6 +282,33 @@ export function ChecklistWorkspace({ sessionId }: { sessionId: string }) {
       </div>
 
       {error ? <div className="form-alert">{error}</div> : null}
+      {editable &&
+      fullDemoV3 &&
+      summary.data.item.evaluation_status !== "COMPLETE" ? (
+        <section className="run-panel">
+          <div className="panel-heading">
+            <p className="page-eyebrow">Synthetic demo only</p>
+            <h3>Populate the complete Section 17 demonstration checklist</h3>
+            <p>
+              Complete Section 16 first. This action then creates clearly
+              labeled metadata-only synthetic evidence for all 27 V3 checklist
+              rows and completes Section 17 through the normal backend engine.
+            </p>
+          </div>
+          <div className="form-actions">
+            <button
+              className="button button-secondary"
+              type="button"
+              disabled={demoCompleting}
+              onClick={() => void completeDemo()}
+            >
+              {demoCompleting
+                ? "Completing synthetic Section 17…"
+                : "Populate & complete synthetic Section 17"}
+            </button>
+          </div>
+        </section>
+      ) : null}
       {mutable && hasPermission("checklist:complete") ? (
         <div className="completion-bar">
           <div>
