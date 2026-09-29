@@ -100,14 +100,21 @@ def _simulation_sections(record: dict) -> tuple[tuple[str, ...], ...]:
         return tuple(
             (
                 _text(row.get("section_number")),
-                _text(row.get("section_name") or row.get("name") or row.get("section_code")),
-                (f"{_text(row.get('evaluation_status'))} / {_text(row.get('compliance_outcome'))}"),
-                "COMPLIANT*",
+                _text(
+                    row.get("section_name")
+                    or row.get("name")
+                    or row.get("section_code")
+                ),
+                (
+                    f"{_text(row.get('evaluation_status'))} / "
+                    f"{_text(row.get('compliance_outcome'))}"
+                ),
+                _text(row.get("compliance_outcome")),
             )
             for row in stored
         )
     return tuple(
-        (str(index), name, "NOT EXECUTED", "COMPLIANT*")
+        (str(index), name, "NOT EXECUTED", "NOT EXECUTED")
         for index, name in enumerate(SIMULATION_SECTION_NAMES, start=1)
     )
 
@@ -258,24 +265,61 @@ def _build_simulation_plan(context: dict) -> ReportPlan:
         ),
     )
 
+    section_outcomes = {
+        str(
+            row.get("code")
+            or row.get("section_code")
+            or ""
+        ).upper(): str(
+            row.get("compliance_outcome") or "UNDETERMINED"
+        )
+        for row in record.get("sections", [])
+    }
+
+    def demonstration_result(section_code: str) -> str:
+        outcome = section_outcomes.get(section_code, "UNDETERMINED")
+        if outcome == "COMPLIANT":
+            return "PASS / COMPLIANT"
+        if outcome == "NONCOMPLIANT":
+            return "FAIL / NONCOMPLIANT"
+        if outcome == "NOT_APPLICABLE":
+            return "NOT APPLICABLE"
+        return outcome
+
     demo_results = ReportSection(
         "Sample Demonstration Results",
         paragraphs=(
             (
-                "The rows below are illustrative UI/reporting data only. No regulatory "
-                "limit is asserted and no compliance calculation is performed by this "
-                "demonstration report."
+                "The rows below summarize the stored synthetic demonstration outcome. "
+                "The report renderer performs no regulatory calculation and does not "
+                "change the persisted backend decision."
             ),
         ),
         tables=(
             ReportTable(
                 "Illustrative test summary",
-                ("Test", "Demonstration observation", "Simulated result"),
+                ("Test", "Demonstration observation", "Stored demo result"),
                 (
-                    ("Weighing Performance", "Synthetic demonstration trace", "PASS*"),
-                    ("Eccentricity", "Synthetic demonstration trace", "PASS*"),
-                    ("Repeatability", "Synthetic demonstration trace", "PASS*"),
-                    ("Temperature Zero", "Synthetic demonstration trace", "PASS*"),
+                    (
+                        "Weighing Performance",
+                        "Synthetic demonstration trace",
+                        demonstration_result("WEIGHING_PERFORMANCE"),
+                    ),
+                    (
+                        "Eccentricity",
+                        "Synthetic demonstration trace",
+                        demonstration_result("ECCENTRICITY"),
+                    ),
+                    (
+                        "Repeatability",
+                        "Synthetic demonstration trace",
+                        demonstration_result("REPEATABILITY"),
+                    ),
+                    (
+                        "Temperature Zero",
+                        "Synthetic demonstration trace",
+                        demonstration_result("TEMPERATURE_ZERO"),
+                    ),
                 ),
             ),
         ),
@@ -312,7 +356,7 @@ def _build_simulation_plan(context: dict) -> ReportPlan:
                         "Actual Stored Outcome",
                         _text(simulation.get("actual_compliance_outcome")),
                     ),
-                    ("Independent Regulatory Review", "PENDING"),
+                    ("Independent Regulatory Review", "NOT APPLICABLE TO SYNTHETIC DEMO"),
                     ("Production Ruleset Activation", "NOT REPRESENTED BY THIS DEMO"),
                     ("Official Report Issue", "NOT PERFORMED"),
                 ),

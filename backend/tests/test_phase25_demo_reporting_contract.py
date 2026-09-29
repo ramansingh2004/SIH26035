@@ -173,8 +173,61 @@ def test_simulated_report_plan_is_compact_and_hides_internal_payloads():
     assert "hidden-user-id" not in plan_text
     assert "Ruleset Snapshot" not in plan_text
     assert "Independent Regulatory Review" in plan_text
-    assert "PENDING" in plan_text
+    assert "NOT APPLICABLE TO SYNTHETIC DEMO" in plan_text
 
     summary = next(section for section in plan.sections if section.title == "Evaluation Summary")
     assert len(summary.tables[0].rows) == 17
-    assert all(row[-1] == "COMPLIANT*" for row in summary.tables[0].rows)
+    assert all(
+        row[-1] == "UNDETERMINED"
+        for row in summary.tables[0].rows
+    )
+
+
+def test_negative_simulation_preserves_noncompliant_demo_outcome():
+    record = _record()
+    record["session"]["evaluation_status"] = "COMPLETE"
+    record["session"]["compliance_outcome"] = "NONCOMPLIANT"
+    record["sections"] = [
+        {
+            "section_number": 1,
+            "code": "WEIGHING_PERFORMANCE",
+            "section_name": "WEIGHING PERFORMANCE - SYNTHETIC DEMO",
+            "evaluation_status": "COMPLETE",
+            "compliance_outcome": "NONCOMPLIANT",
+        },
+        {
+            "section_number": 2,
+            "code": "TEMPERATURE_ZERO",
+            "section_name": "TEMPERATURE ZERO - SYNTHETIC DEMO",
+            "evaluation_status": "COMPLETE",
+            "compliance_outcome": "NOT_APPLICABLE",
+        },
+    ]
+
+    context = simulated_approved_context(
+        record,
+        requested_by="demo-user",
+        source_regulatory_revision=12,
+    )
+    plan = build_plan(context)
+
+    assert context["simulation"]["target_compliance_outcome"] == "NONCOMPLIANT"
+
+    summary = next(
+        section
+        for section in plan.sections
+        if section.title == "Evaluation Summary"
+    )
+    assert summary.tables[0].rows[0][-1] == "NONCOMPLIANT"
+    assert summary.tables[0].rows[1][-1] == "NOT_APPLICABLE"
+
+    demo_results = next(
+        section
+        for section in plan.sections
+        if section.title == "Sample Demonstration Results"
+    )
+    weighing = demo_results.tables[0].rows[0]
+    temperature = demo_results.tables[0].rows[3]
+
+    assert weighing[-1] == "FAIL / NONCOMPLIANT"
+    assert temperature[-1] == "NOT APPLICABLE"
