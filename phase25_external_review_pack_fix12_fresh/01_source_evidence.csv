@@ -1,6 +1,0 @@
-source_id,part,edition,discovery_url,identity,current_through,amendment_set_complete,verified_by,verified_at,evidence_reference,independent_of_implementation,review_status,review_notes
-SRC-R76-1-2006-E,R76-1,2006,https://www.oiml.org/en/files/pdf_r/r076-1-e06.pdf,,,false,,,,false,PENDING,
-SRC-R76-2-2007-E,R76-2,2007,https://www.oiml.org/en/files/pdf_r/r076-2-e07.pdf,,,false,,,,false,PENDING,
-SRC-INDIA-APPROVAL-MODELS-2011,INDIA-APPROVAL-MODELS,2011,https://consumeraffairs.nic.in/legalmetrology/legal-metrologyapproval-models-rules2011,,,false,,,,false,PENDING,
-SRC-INDIA-LM-GENERAL,INDIA-LM-GENERAL,2011+amendments,https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/the-legal-metrology-act-2009,,,false,,,,false,PENDING,
-SRC-INDIA-GATC,INDIA-GATC,CURRENT_PINNED_AT_VERIFICATION,https://consumeraffairs.nic.in/,,,false,,,,false,PENDING,

@@ -1,0 +1,970 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "key": "RETEST_SELECTION",
+      "section": null,
+      "kind": "run_selection_v1",
+      "description": "Verified authoritative retest/run-selection policy.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "8.3; 8.4; applicable test-specific Annex A/B procedures",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:RETEST_SELECTION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"allow_replacing_known_failure\":false,\"allowed_compliance_outcomes\":[\"COMPLIANT\",\"NONCOMPLIANT\",\"NOT_APPLICABLE\"],\"allowed_evaluation_statuses\":[\"COMPLETE\"],\"require_current_result\":true,\"schema_version\":\"v1\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION10_CALIBRATION",
+      "section": 10,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by WARM_UP.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 5.3.5; A.5.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION10_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION10_CLASSIFICATION",
+      "section": 10,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by WARM_UP.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 5.3.5; A.5.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION10_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION10_WARM_UP_PROCEDURE",
+      "section": 10,
+      "kind": "warm_up_procedure_v2",
+      "description": "Verified procedure rule consumed by WARM_UP.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.3.5; A.5.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION10_WARM_UP_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"checkpoint_tolerance_seconds\":\"0\",\"loaded_limit\":{\"basis\":\"MPE\",\"multiplier\":\"1\"},\"minimum_count\":4,\"minimum_power_off_seconds\":\"28800\",\"permit_result_indication_before_ready\":false,\"permit_result_transmission_before_ready\":false,\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_first_stable_indication\":true,\"require_monotonic_timestamps\":true,\"require_operating_manual_provision\":true,\"require_stabilized_observations\":true,\"require_zero_after_power_on\":true,\"required_checkpoints_seconds\":[\"0\",\"300\",\"900\",\"1800\"],\"selector\":{\"accuracy_classes\":[\"I\"],\"evaluation_contexts\":[\"TYPE_EXAMINATION\"],\"is_electronic\":true},\"test_load\":{\"basis\":\"CLOSE_TO_MAX\"}},{\"checkpoint_tolerance_seconds\":\"0\",\"loaded_limit\":{\"basis\":\"MPE\",\"multiplier\":\"1\"},\"minimum_count\":4,\"minimum_power_off_seconds\":\"28800\",\"permit_result_indication_before_ready\":false,\"permit_result_transmission_before_ready\":false,\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_first_stable_indication\":true,\"require_monotonic_timestamps\":true,\"require_operating_manual_provision\":false,\"require_stabilized_observations\":true,\"require_zero_after_power_on\":true,\"required_checkpoints_seconds\":[\"0\",\"300\",\"900\",\"1800\"],\"selector\":{\"accuracy_classes\":[\"II\",\"III\",\"IIII\"],\"evaluation_contexts\":[\"TYPE_EXAMINATION\"],\"is_electronic\":true},\"test_load\":{\"basis\":\"CLOSE_TO_MAX\"}}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION13_CALIBRATION",
+      "section": 13,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by DAMP_HEAT.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 5.3.2; B.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION13_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION13_CLASSIFICATION",
+      "section": 13,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by DAMP_HEAT.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 5.3.2; B.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION13_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION13_DAMP_HEAT_PROCEDURE",
+      "section": 13,
+      "kind": "damp_heat_procedure_v2",
+      "description": "Verified procedure rule consumed by DAMP_HEAT.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.2; B.2; A.4.1.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:FIX11:SCHEMA-VALID:SECTION13_DAMP_HEAT_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"class_ii_minimum_e_g\":\"1\",\"evaluation_context\":\"TYPE_EXAMINATION\",\"excluded_accuracy_classes\":[\"I\"],\"indication_limit_basis\":\"MPE\",\"indication_limit_multiplier\":\"1\",\"indication_operator\":\"<=\",\"indication_semantics\":\"ABSOLUTE\",\"minimum_distinct_loads\":5,\"reference_temperature_c\":\"20\",\"reference_temperature_fallback\":\"DECLARED_MEAN_IF_OUTSIDE_RANGE\",\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_functions_operational\":true,\"require_monotonic_timestamps\":true,\"require_same_reference_weights\":false,\"schema_version\":\"v2\",\"stage_requirements\":[{\"minimum_exposure_seconds\":\"0\",\"minimum_stabilization_seconds\":\"0\",\"relative_humidity_percent\":\"50\",\"stage\":\"INITIAL\",\"temperature_source\":\"REFERENCE_TEMPERATURE\"},{\"minimum_exposure_seconds\":\"172800\",\"minimum_stabilization_seconds\":\"0\",\"relative_humidity_percent\":\"85\",\"stage\":\"HIGH_HUMIDITY\",\"temperature_source\":\"DECLARED_HIGH_TEMPERATURE\"},{\"minimum_exposure_seconds\":\"0\",\"minimum_stabilization_seconds\":\"0\",\"relative_humidity_percent\":\"50\",\"stage\":\"FINAL\",\"temperature_source\":\"REFERENCE_TEMPERATURE\"}]}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION14_CALIBRATION",
+      "section": 14,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by SPAN_STABILITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 5.3.3; 5.4.4; B.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION14_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION14_CLASSIFICATION",
+      "section": 14,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by SPAN_STABILITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 5.3.3; 5.4.4; B.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION14_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION14_SPAN_STABILITY_PROCEDURE",
+      "section": 14,
+      "kind": "span_stability_procedure_v2",
+      "description": "Verified procedure rule consumed by SPAN_STABILITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.3.3; 5.4.4; B.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:FIX11:SCHEMA-VALID:SECTION14_SPAN_STABILITY_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"evaluation_context\":\"TYPE_EXAMINATION\",\"excluded_accuracy_classes\":[\"I\"],\"first_measurement_repeat_count\":5,\"maximum_duration_seconds\":\"2419200\",\"maximum_interval_seconds\":\"864000\",\"minimum_interval_seconds\":\"43200\",\"minimum_measurements\":8,\"minimum_power_disconnection_seconds\":\"28800\",\"normal_recovery_seconds\":\"18000\",\"post_environmental_test_recovery_seconds\":\"57600\",\"prohibit_endurance_test_during_span\":true,\"require_builtin_span_adjustment_active_if_present\":true,\"require_certificate\":true,\"require_damp_heat_completed_if_applicable\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_same_reference_weights\":true,\"require_temperature_test_completed\":true,\"require_test_load_near_max_confirmation\":true,\"require_zero_tracking_disabled\":true,\"required_power_disconnections\":2,\"schema_version\":\"v2\",\"test_load_target\":\"CLOSE_TO_MAX\",\"trend_extension_required_if_detected\":true,\"variation_e_multiplier\":\"0.5\",\"variation_limit_basis\":\"MAX_OF_E_AND_MPE\",\"variation_mpe_multiplier\":\"0.5\",\"variation_operator\":\"<=\",\"variation_semantics\":\"ABSOLUTE\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION1_CALIBRATION",
+      "section": 1,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by WEIGHING_PERFORMANCE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 3.5; A.4.1; A.4.4.1-A.4.4.4; A.5.3.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION1_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION1_CLASSIFICATION",
+      "section": 1,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by WEIGHING_PERFORMANCE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 3.5; A.4.1; A.4.4.1-A.4.4.4; A.5.3.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION1_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION1_INDIA_STANDARD_WEIGHT_SUBSTITUTION",
+      "section": 1,
+      "kind": "dependency_v1",
+      "description": "India-specific standard-weight substitution provenance dependency for the verified Section 1 procedure.",
+      "source": {
+        "part": "INDIA-LM-GENERAL",
+        "edition": "2011+amendments",
+        "identity": "Legal Metrology (General) Fourth Amendment Rules, 2026 — G.S.R. 568(E), 3 July 2026",
+        "clause": "rule 2(i), Seventh Schedule, Heading-A, Part II, paragraph 9(2)(ii)(a)-(d)",
+        "digest": "41ad797ce2934ac3b66075b5e6ce41e1012f4c894a43b5d21096eeb2820cdee2"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION1_INDIA_STANDARD_WEIGHT_SUBSTITUTION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION1_PROCEDURE",
+      "section": 1,
+      "kind": "weighing_procedure_v2",
+      "description": "Verified procedure rule consumed by WEIGHING_PERFORMANCE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.5; A.4.1; A.4.4.1-A.4.4.4; A.5.3.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION1_PROCEDURE"
+      },
+      "dependencies": [
+        "SECTION1_INDIA_STANDARD_WEIGHT_SUBSTITUTION"
+      ],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"minimum_count\":10,\"minimum_warmup_seconds\":\"0\",\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_max\":true,\"require_min\":true,\"require_monotonic_timestamps\":true,\"require_preload\":true,\"require_stabilization\":true,\"required_loads\":[{\"direction\":\"UP\",\"load\":{\"basis\":\"MAX\",\"value\":\"1\"}},{\"direction\":\"DOWN\",\"load\":{\"basis\":\"MAX\",\"value\":\"1\"}}],\"selector\":{\"evaluation_contexts\":[\"TYPE_EXAMINATION\"]},\"stages\":[\"UP\",\"DOWN\"],\"standard_weight_substitution\":{\"applicable_testing_location\":\"PLACE_OF_USE\",\"base_minimum_standard_weight_fraction\":{\"denominator\":2,\"numerator\":1},\"capacity_basis\":\"INSTRUMENT_MAX\",\"repeatability_placements\":3,\"repeatability_reductions\":[{\"max_repeatability_error_multiplier_e\":\"0.2\",\"minimum_standard_weight_fraction\":{\"denominator\":5,\"numerator\":1}},{\"max_repeatability_error_multiplier_e\":\"0.3\",\"minimum_standard_weight_fraction\":{\"denominator\":3,\"numerator\":1}}],\"require_evidence\":true,\"require_repeatability_load_approximation_confirmation\":true,\"require_total_load_coverage\":true,\"standard_weight_categories\":[]},\"transition_loads\":[],\"zero_condition\":\"ZERO_CORRECTED\"}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION2_CALIBRATION",
+      "section": 2,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by TEMPERATURE_ZERO.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 3.9.2.3; A.5.3.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION2_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION2_CLASSIFICATION",
+      "section": 2,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by TEMPERATURE_ZERO.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 3.9.2.3; A.5.3.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION2_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION2_TEMPERATURE_ZERO_PROCEDURE",
+      "section": 2,
+      "kind": "temperature_zero_procedure_v2",
+      "description": "Verified procedure rule consumed by TEMPERATURE_ZERO.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.2.3; A.5.3.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION2_TEMPERATURE_ZERO_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"limit_multiplier_e\":\"1\",\"minimum_count\":2,\"normalization_span_c\":\"1\",\"operator\":\"<=\",\"require_certificate\":true,\"require_declared_temperature_range\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_stabilized_observations\":true,\"require_zero_tracking_disabled\":true,\"selector\":{\"accuracy_classes\":[\"I\"],\"evaluation_contexts\":[\"TYPE_EXAMINATION\"]},\"semantics\":\"ABSOLUTE\",\"temperature_sequence\":[{\"basis\":\"DECLARED_MAX\"},{\"basis\":\"DECLARED_MIN\"}]},{\"limit_multiplier_e\":\"1\",\"minimum_count\":2,\"normalization_span_c\":\"5\",\"operator\":\"<=\",\"require_certificate\":true,\"require_declared_temperature_range\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_stabilized_observations\":true,\"require_zero_tracking_disabled\":true,\"selector\":{\"accuracy_classes\":[\"II\",\"III\",\"IIII\"],\"evaluation_contexts\":[\"TYPE_EXAMINATION\"]},\"semantics\":\"ABSOLUTE\",\"temperature_sequence\":[{\"basis\":\"DECLARED_MAX\"},{\"basis\":\"DECLARED_MIN\"}]}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION3_CALIBRATION",
+      "section": 3,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by ECCENTRICITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 3.6.2.1-3.6.2.4; A.4.7.1-A.4.7.5",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION3_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION3_CLASSIFICATION",
+      "section": 3,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by ECCENTRICITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 3.6.2.1-3.6.2.4; A.4.7.1-A.4.7.5",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION3_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION3_GEOMETRY",
+      "section": 3,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by ECCENTRICITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.6.2.1-3.6.2.4; A.4.7.1-A.4.7.5",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION3_GEOMETRY"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION3_PROCEDURE",
+      "section": 3,
+      "kind": "eccentricity_procedure_v2",
+      "description": "Verified procedure rule consumed by ECCENTRICITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.6.2.1-3.6.2.4; A.4.7.1-A.4.7.5",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION3_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"allowed_receptor_types\":[\"ORDINARY_UP_TO_FOUR_SUPPORTS\"],\"explicit_positions\":[],\"minimum_count\":4,\"position_strategy\":\"UP_TO_FOUR_SUPPORTS\",\"procedure_variant\":\"WEIGHTS\",\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_position_coordinates\":true,\"selector\":{\"evaluation_contexts\":[\"TYPE_EXAMINATION\"]},\"test_load\":{\"basis\":\"MAX_PLUS_TARE\",\"value\":\"0.3333333333333333333333333333\"}}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION4_CALIBRATION",
+      "section": 4,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by DISCRIMINATION.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 3.8; A.4.8; 6.1; A.4.9",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION4_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION4_CLASSIFICATION",
+      "section": 4,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by DISCRIMINATION.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 3.8; A.4.8; 6.1; A.4.9",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION4_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION4_DISCRIMINATION_PROCEDURE",
+      "section": 4,
+      "kind": "discrimination_procedure_v2",
+      "description": "Verified procedure rule consumed by DISCRIMINATION.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.8; A.4.8",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION4_DISCRIMINATION_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"extra_load\":{\"basis\":\"D\",\"value\":\"1.4\"},\"indication_mode\":\"DIGITAL\",\"minimum_count\":3,\"minimum_indication_change\":{\"basis\":\"D\",\"value\":\"1\"},\"operator\":\">=\",\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_stabilization\":true,\"selector\":{\"evaluation_contexts\":[\"TYPE_EXAMINATION\"],\"indication_types\":[\"DIGITAL\"],\"self_indicating\":true},\"semantics\":\"ABSOLUTE\",\"test_loads\":[{\"basis\":\"MIN\",\"value\":\"1\"},{\"basis\":\"MAX\",\"value\":\"0.5\"},{\"basis\":\"MAX\",\"value\":\"1\"}]}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION4_SENSITIVITY_PROCEDURE",
+      "section": 4,
+      "kind": "sensitivity_procedure_v2",
+      "description": "Verified procedure rule consumed by SENSITIVITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "6.1; A.4.9",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION4_SENSITIVITY_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"extra_load\":{\"basis\":\"MPE\",\"value\":\"1\"},\"minimum_count\":2,\"minimum_displacement_mm\":\"1\",\"operator\":\">=\",\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_stabilization\":true,\"selector\":{\"accuracy_classes\":[\"I\",\"II\"],\"evaluation_contexts\":[\"TYPE_EXAMINATION\"],\"self_indicating\":false},\"semantics\":\"ABSOLUTE\",\"test_loads\":[{\"basis\":\"ABSOLUTE_G\",\"value\":\"0\"},{\"basis\":\"MAX\",\"value\":\"1\"}]}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION5_CALIBRATION",
+      "section": 5,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by REPEATABILITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 3.6.1; A.4.10",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION5_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION5_CLASSIFICATION",
+      "section": 5,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by REPEATABILITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 3.6.1; A.4.10",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION5_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION5_PROCEDURE",
+      "section": 5,
+      "kind": "repeatability_procedure_v2",
+      "description": "Verified procedure rule consumed by REPEATABILITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.6.1; A.4.10",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION5_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"error_basis\":\"CORRECTED\",\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_stabilization\":true,\"required_zero_reset\":true,\"selector\":{\"evaluation_contexts\":[\"TYPE_EXAMINATION\"]},\"series\":[{\"load\":{\"basis\":\"MAX\",\"value\":\"0.5\"},\"minimum_repetitions\":10,\"range_limit_basis\":\"MPE\",\"range_limit_multiplier\":\"1\",\"range_operator\":\"<=\",\"range_semantics\":\"ABSOLUTE\",\"series_code\":\"ABOUT_HALF_MAX\"},{\"load\":{\"basis\":\"MAX\",\"value\":\"1\"},\"minimum_repetitions\":10,\"range_limit_basis\":\"MPE\",\"range_limit_multiplier\":\"1\",\"range_operator\":\"<=\",\"range_semantics\":\"ABSOLUTE\",\"series_code\":\"CLOSE_TO_MAX\"}]}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION6_CALIBRATION",
+      "section": 6,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by ZERO_RETURN.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 3.9.4.1; A.4.11.1; 3.9.4.2; A.4.11.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION6_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION6_CREEP_PROCEDURE",
+      "section": 6,
+      "kind": "creep_procedure_v2",
+      "description": "Verified procedure rule consumed by CREEP.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.4.1; A.4.11.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION6_CREEP_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_stabilization\":true,\"routes\":[{\"checkpoints_seconds\":[\"0\",\"900\",\"1800\"],\"criteria\":[{\"comparison\":\"FROM_INITIAL\",\"end_seconds\":\"1800\",\"limit\":{\"basis\":\"SELECTED_E\",\"multiplier\":\"0.5\"},\"operator\":\"<\",\"semantics\":\"ABSOLUTE\",\"start_seconds\":\"0\"},{\"comparison\":\"BETWEEN_CHECKPOINTS\",\"end_seconds\":\"1800\",\"limit\":{\"basis\":\"SELECTED_E\",\"multiplier\":\"0.2\"},\"operator\":\"<\",\"semantics\":\"ABSOLUTE\",\"start_seconds\":\"900\"}],\"maximum_temperature_variation_c\":\"2\",\"minimum_duration_seconds\":\"1800\",\"route_code\":\"EARLY_TERMINATION_30_MIN\"},{\"checkpoints_seconds\":[\"0\",\"1800\",\"3600\",\"7200\",\"10800\",\"14400\"],\"criteria\":[{\"comparison\":\"FROM_INITIAL\",\"end_seconds\":\"14400\",\"limit\":{\"basis\":\"MPE\",\"multiplier\":\"1\"},\"operator\":\"<=\",\"semantics\":\"ABSOLUTE\",\"start_seconds\":\"0\"}],\"maximum_temperature_variation_c\":\"2\",\"minimum_duration_seconds\":\"14400\",\"route_code\":\"FULL_4_HOUR\"}],\"selector\":{\"accuracy_classes\":[\"II\",\"III\",\"IIII\"],\"evaluation_contexts\":[\"TYPE_EXAMINATION\"]},\"test_load\":{\"basis\":\"CLOSE_TO_MAX\"}}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION6_ZERO_RETURN_PROCEDURE",
+      "section": 6,
+      "kind": "zero_return_procedure_v2",
+      "description": "Verified procedure rule consumed by ZERO_RETURN.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.4.2; A.4.11.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION6_ZERO_RETURN_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"limit\":{\"basis\":\"SELECTED_E\",\"multiplier\":\"0.5\"},\"minimum_count\":1,\"minimum_hold_seconds\":\"1800\",\"post_switch_limit\":{\"basis\":\"SELECTED_E\",\"multiplier\":\"0.5\"},\"post_switch_window_seconds\":\"300\",\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_stabilization\":true,\"require_zero_tracking_disabled\":true,\"selector\":{\"accuracy_classes\":[\"II\",\"III\",\"IIII\"],\"evaluation_contexts\":[\"TYPE_EXAMINATION\"]},\"test_load\":{\"basis\":\"CLOSE_TO_MAX\"}}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION7_PROCEDURE",
+      "section": 7,
+      "kind": "stability_equilibrium_procedure_v2",
+      "description": "Verified procedure rule consumed by STABILITY_EQUILIBRIUM.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.4.2; A.4.12",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION7_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"accuracy_rules\":[{\"function\":\"ZERO\",\"limit\":{\"basis\":\"SELECTED_E\",\"multiplier\":\"0.25\"},\"minimum_trials\":5,\"operator\":\"<=\",\"semantics\":\"ABSOLUTE\"},{\"function\":\"TARE\",\"limit\":{\"basis\":\"SELECTED_E\",\"multiplier\":\"0.25\"},\"minimum_trials\":5,\"operator\":\"<=\",\"semantics\":\"ABSOLUTE\"}],\"function_rules\":[{\"function\":\"PRINTING\",\"inhibit_when_unstable\":true,\"observation_window_seconds\":\"5\",\"output_difference_limit\":{\"basis\":\"SELECTED_E\",\"multiplier\":\"1\"},\"permit_when_stable\":true,\"require_adjacent_values\":true},{\"function\":\"STORAGE\",\"inhibit_when_unstable\":true,\"observation_window_seconds\":\"5\",\"output_difference_limit\":{\"basis\":\"SELECTED_E\",\"multiplier\":\"1\"},\"permit_when_stable\":true,\"require_adjacent_values\":true},{\"function\":\"ZERO\",\"inhibit_when_unstable\":true,\"permit_when_stable\":true,\"require_adjacent_values\":false},{\"function\":\"TARE\",\"inhibit_when_unstable\":true,\"permit_when_stable\":true,\"require_adjacent_values\":false}],\"minimum_count\":5,\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_manufacturer_documentation\":true,\"require_monotonic_timestamps\":true,\"require_worst_case_adjustment\":true,\"selector\":{\"evaluation_contexts\":[\"TYPE_EXAMINATION\"]},\"test_load\":{\"basis\":\"MAX_FRACTION\",\"value\":\"0.5\"}}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION8_CALIBRATION",
+      "section": 8,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by TILTING.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 3.9.1.1-3.9.1.2; A.5.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION8_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION8_CLASSIFICATION",
+      "section": 8,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by TILTING.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 3.9.1.1-3.9.1.2; A.5.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION8_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION8_TILTING_PROCEDURE",
+      "section": 8,
+      "kind": "tilting_procedure_v2",
+      "description": "Verified procedure rule consumed by TILTING.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.1.1-3.9.1.2; A.5.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION8_TILTING_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"loaded_limit\":{\"basis\":\"MPE\",\"multiplier\":\"1\"},\"protection\":{},\"reference_tilt\":{\"basis\":\"ABSOLUTE\",\"value\":\"0\"},\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_reference_position\":true,\"require_zero_tracking_disabled\":true,\"required_directions\":[\"FORWARD\",\"BACKWARD\",\"LEFT\",\"RIGHT\"],\"required_loads\":[{\"basis\":\"MPE_TRANSITION\",\"transition_index\":1},{\"basis\":\"CLOSE_TO_MAX\"}],\"selector\":{\"automatic_tilt_sensor\":false,\"evaluation_contexts\":[\"TYPE_EXAMINATION\"],\"level_indicator_available\":false},\"test_tilt\":{\"basis\":\"FIXED_RATIO\",\"value\":\"0.05\"},\"tilt_mode\":\"NO_LEVEL_DEVICE_DEFAULT\",\"unloaded_limit\":{\"basis\":\"SELECTED_E\",\"multiplier\":\"2\"},\"unloaded_operator\":\"<=\",\"unloaded_semantics\":\"ABSOLUTE\"}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION9_CALIBRATION",
+      "section": 9,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by TARE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 3.5.3.3-3.5.3.4; 4.6; A.4.6",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION9_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION9_CLASSIFICATION",
+      "section": 9,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by TARE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 3.5.3.3-3.5.3.4; 4.6; A.4.6",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION9_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION9_PROCEDURE",
+      "section": 9,
+      "kind": "tare_procedure_v2",
+      "description": "Verified procedure rule consumed by TARE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.5.3.3-3.5.3.4; 4.6; A.4.6",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION9_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"enforce_gross_equals_tare_plus_net\":true,\"require_certificate\":true,\"require_declared_tare_capacity\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"require_stabilization\":true,\"scenarios\":[{\"minimum_count\":5,\"required_net_loads\":[{\"basis\":\"MIN\"},{\"basis\":\"MPE_TRANSITION\",\"transition_index\":1},{\"basis\":\"MPE_TRANSITION\",\"transition_index\":2},{\"basis\":\"CLOSE_TO_MAX\"}],\"scenario_code\":\"SUBTRACTIVE_TARE_MID_RANGE\",\"stages\":[\"UP\",\"DOWN\"],\"tare_type\":\"SUBTRACTIVE\",\"tare_value\":{\"basis\":\"MAX_TARE_FRACTION\",\"value\":\"0.5\"}},{\"minimum_count\":5,\"required_net_loads\":[{\"basis\":\"MIN\"},{\"basis\":\"MPE_TRANSITION\",\"transition_index\":1},{\"basis\":\"MPE_TRANSITION\",\"transition_index\":2},{\"basis\":\"CLOSE_TO_MAX\"}],\"scenario_code\":\"ADDITIVE_TARE_ONE_THIRD\",\"stages\":[\"UP\",\"DOWN\"],\"tare_type\":\"ADDITIVE\",\"tare_value\":{\"basis\":\"MAX_TARE_FRACTION\",\"value\":\"0.3333333333333333333333333333\"}},{\"minimum_count\":5,\"required_net_loads\":[{\"basis\":\"MIN\"},{\"basis\":\"MPE_TRANSITION\",\"transition_index\":1},{\"basis\":\"MPE_TRANSITION\",\"transition_index\":2},{\"basis\":\"CLOSE_TO_MAX\"}],\"scenario_code\":\"ADDITIVE_TARE_MAXIMUM\",\"stages\":[\"UP\",\"DOWN\"],\"tare_type\":\"ADDITIVE\",\"tare_value\":{\"basis\":\"MAX_TARE_FRACTION\",\"value\":\"1\"}}],\"selector\":{\"evaluation_contexts\":[\"TYPE_EXAMINATION\"]},\"tare_setting_accuracy\":{\"enabled\":true,\"limit\":{\"basis\":\"SELECTED_E\",\"multiplier\":\"0.25\"},\"minimum_trials\":1},\"weighing_limit\":{\"basis\":\"MPE\",\"multiplier\":\"1\"}}],\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION9_TARE_MODE",
+      "section": 9,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by TARE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.5.3.3-3.5.3.4; 4.6; A.4.6",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION9_TARE_MODE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    }
+  ]
+}

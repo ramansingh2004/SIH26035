@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "candidate_configuration_hash": "e795f71177ad2c0745417d92cd0010b6d895607a3768c3a21bf9bbe283c5a26b",
+  "assembly_contract_version": "verified-blueprint-v1",
+  "regulatory_signoff": true,
+  "signed_by": "Dr. Y.G prajapati",
+  "signer_role": "Independent Regulatory Reviewer",
+  "signer_organization": "Independent Reviewer",
+  "signed_at": "2026-09-29T09:58:00+05:30",
+  "evidence_reference": "PHASE25_EXTERNAL_REVIEW_COMPLETED_FILES_01_07;FILE06_SHA256=d31ac73e5e8737cb30bd733b4da90f48202ea5e806617b2016428fd54a572b7a;FILE07_SHA256=c9a8a4c7652bc035388c7b759896cb449bb0f7f6b35e505743947217b37dd4ec",
+  "independent_of_implementation": true,
+  "review_notes": "Final independent regulatory review declaration. Reviewer confirms that the completed Phase-25 review files 01 through 07 were reviewed and accepted. File 7 contains 100 VERIFIED executable-rule rows with no pending-review wording and all required policy JSON present. The candidate configuration hash and verified-blueprint-v1 assembly contract remain unchanged."
+}

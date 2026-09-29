@@ -6,6 +6,8 @@ import csv
 import json
 from pathlib import Path
 
+from fastapi.routing import iter_route_contexts
+
 from app.compliance.stage8_acceptance import (
     REQUIRED_HTTP_STEPS,
     RUN_RECORD_NAME,
@@ -27,23 +29,42 @@ VERIFIED_ROOT = (
 
 
 def _route_blockers():
-    schema = create_app(
+    application = create_app(
         Settings(
             _env_file=None,
             environment="test",
             database_url=None,
         )
-    ).openapi()
-    paths = schema["paths"]
+    )
+
+    registered_routes: dict[str, set[str]] = {}
+
+    for route_context in iter_route_contexts(application.routes):
+        path = route_context.path
+        methods = getattr(route_context, "methods", None)
+
+        if not path or not methods:
+            continue
+
+        registered_routes.setdefault(path, set()).update(
+            method.upper() for method in methods
+        )
 
     blockers = []
     for step in REQUIRED_HTTP_STEPS:
-        operations = paths.get(step.path)
-        if operations is None:
-            blockers.append(f"STAGE8:ROUTE_MISSING:{step.method}:{step.path}")
+        methods = registered_routes.get(step.path)
+
+        if methods is None:
+            blockers.append(
+                f"STAGE8:ROUTE_MISSING:{step.method}:{step.path}"
+            )
             continue
-        if step.method.lower() not in operations:
-            blockers.append(f"STAGE8:METHOD_MISSING:{step.method}:{step.path}")
+
+        if step.method.upper() not in methods:
+            blockers.append(
+                f"STAGE8:METHOD_MISSING:{step.method}:{step.path}"
+            )
+
     return tuple(sorted(blockers))
 
 

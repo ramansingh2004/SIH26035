@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "key": "SECTION11_CALIBRATION",
+      "section": 11,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by VOLTAGE_VARIATION.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.7; A.4.1.2; 3.9.3; A.5.4.1-A.5.4.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION11_CALIBRATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION11_CLASSIFICATION",
+      "section": 11,
+      "kind": "dependency_v1",
+      "description": "Verified dependency rule consumed by VOLTAGE_VARIATION.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.1; 3.2 Table 3; 3.3; 3.4; 3.9.3; A.5.4.1-A.5.4.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:DEPENDENCY:SECTION11_CLASSIFICATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": []
+    },
+    {
+      "key": "SECTION11_VOLTAGE_PROCEDURE",
+      "section": 11,
+      "kind": "voltage_variation_procedure_v2",
+      "description": "Verified procedure rule consumed by VOLTAGE_VARIATION.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.3; A.5.4; A.5.4.1-A.5.4.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:FIX11:SCHEMA-VALID:SECTION11_VOLTAGE_PROCEDURE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"evaluation_context\":\"TYPE_EXAMINATION\",\"profiles\":[{\"allow_switch_off\":false,\"indication_limit_basis\":\"MPE\",\"indication_limit_multiplier\":\"1\",\"indication_operator\":\"<=\",\"indication_semantics\":\"ABSOLUTE\",\"power_supply_profile\":\"AC_MAINS\",\"require_functions_operational_when_indicating\":true,\"required_loads\":[{\"load_id\":\"TEN_E\",\"required_distinct_loads\":1,\"source\":\"E_MULTIPLE\",\"value\":\"10\"},{\"load_id\":\"HALF_TO_MAX\",\"maximum_fraction_of_max\":\"1\",\"minimum_fraction_of_max\":\"0.5\",\"required_distinct_loads\":1,\"source\":\"MAX_FRACTION_INTERVAL\"}],\"required_voltage_targets\":[{\"source\":\"DECLARED_MIN_OR_NOMINAL_MULTIPLIER\",\"target_id\":\"LOW\",\"value\":\"0.85\"},{\"source\":\"DECLARED_MAX_OR_NOMINAL_MULTIPLIER\",\"target_id\":\"HIGH\",\"value\":\"1.10\"}],\"successive_phase_application_required\":true},{\"allow_switch_off\":true,\"indication_limit_basis\":\"MPE\",\"indication_limit_multiplier\":\"1\",\"indication_operator\":\"<=\",\"indication_semantics\":\"ABSOLUTE\",\"power_supply_profile\":\"EXTERNAL_SUPPLY\",\"require_functions_operational_when_indicating\":true,\"required_loads\":[{\"load_id\":\"TEN_E\",\"required_distinct_loads\":1,\"source\":\"E_MULTIPLE\",\"value\":\"10\"},{\"load_id\":\"HALF_TO_MAX\",\"maximum_fraction_of_max\":\"1\",\"minimum_fraction_of_max\":\"0.5\",\"required_distinct_loads\":1,\"source\":\"MAX_FRACTION_INTERVAL\"}],\"required_voltage_targets\":[{\"source\":\"MINIMUM_OPERATING_MULTIPLIER\",\"target_id\":\"LOW\",\"value\":\"1\"},{\"source\":\"DECLARED_MAX_OR_NOMINAL_MULTIPLIER\",\"target_id\":\"HIGH\",\"value\":\"1.20\"}],\"successive_phase_application_required\":false},{\"allow_switch_off\":true,\"indication_limit_basis\":\"MPE\",\"indication_limit_multiplier\":\"1\",\"indication_operator\":\"<=\",\"indication_semantics\":\"ABSOLUTE\",\"power_supply_profile\":\"BATTERY_NO_CHARGING\",\"require_functions_operational_when_indicating\":true,\"required_loads\":[{\"load_id\":\"TEN_E\",\"required_distinct_loads\":1,\"source\":\"E_MULTIPLE\",\"value\":\"10\"},{\"load_id\":\"HALF_TO_MAX\",\"maximum_fraction_of_max\":\"1\",\"minimum_fraction_of_max\":\"0.5\",\"required_distinct_loads\":1,\"source\":\"MAX_FRACTION_INTERVAL\"}],\"required_voltage_targets\":[{\"source\":\"MINIMUM_OPERATING_MULTIPLIER\",\"target_id\":\"LOW\",\"value\":\"1\"},{\"source\":\"DECLARED_MAX_OR_NOMINAL_MULTIPLIER\",\"target_id\":\"HIGH\",\"value\":\"1\"}],\"successive_phase_application_required\":false},{\"allow_switch_off\":true,\"indication_limit_basis\":\"MPE\",\"indication_limit_multiplier\":\"1\",\"indication_operator\":\"<=\",\"indication_semantics\":\"ABSOLUTE\",\"nominal_voltage_v\":\"12\",\"power_supply_profile\":\"VEHICLE_SUPPLY\",\"require_functions_operational_when_indicating\":true,\"required_loads\":[{\"load_id\":\"TEN_E\",\"required_distinct_loads\":1,\"source\":\"E_MULTIPLE\",\"value\":\"10\"},{\"load_id\":\"HALF_TO_MAX\",\"maximum_fraction_of_max\":\"1\",\"minimum_fraction_of_max\":\"0.5\",\"required_distinct_loads\":1,\"source\":\"MAX_FRACTION_INTERVAL\"}],\"required_voltage_targets\":[{\"source\":\"MINIMUM_OPERATING_MULTIPLIER\",\"target_id\":\"LOW\",\"value\":\"1\"},{\"source\":\"ABSOLUTE_V\",\"target_id\":\"HIGH\",\"value\":\"16\"}],\"successive_phase_application_required\":false},{\"allow_switch_off\":true,\"indication_limit_basis\":\"MPE\",\"indication_limit_multiplier\":\"1\",\"indication_operator\":\"<=\",\"indication_semantics\":\"ABSOLUTE\",\"nominal_voltage_v\":\"24\",\"power_supply_profile\":\"VEHICLE_SUPPLY\",\"require_functions_operational_when_indicating\":true,\"required_loads\":[{\"load_id\":\"TEN_E\",\"required_distinct_loads\":1,\"source\":\"E_MULTIPLE\",\"value\":\"10\"},{\"load_id\":\"HALF_TO_MAX\",\"maximum_fraction_of_max\":\"1\",\"minimum_fraction_of_max\":\"0.5\",\"required_distinct_loads\":1,\"source\":\"MAX_FRACTION_INTERVAL\"}],\"required_voltage_targets\":[{\"source\":\"MINIMUM_OPERATING_MULTIPLIER\",\"target_id\":\"LOW\",\"value\":\"1\"},{\"source\":\"ABSOLUTE_V\",\"target_id\":\"HIGH\",\"value\":\"32\"}],\"successive_phase_application_required\":false}],\"require_certificate\":true,\"require_environment\":true,\"require_equipment\":true,\"require_evidence\":true,\"require_monotonic_timestamps\":true,\"schema_version\":\"v2\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    }
+  ]
+}

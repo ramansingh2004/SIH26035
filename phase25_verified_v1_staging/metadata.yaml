@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "standard_code": "OIML_R76",
+  "standard_name": "Non-automatic weighing instruments",
+  "edition": "R76-1:2006 / R76-2:2007",
+  "version": "verified-v1",
+  "standard_parts": [
+    {
+      "part": "R76-1",
+      "edition": "2006",
+      "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+      "clause": null,
+      "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+    },
+    {
+      "part": "INDIA-LM-GENERAL",
+      "edition": "2011+amendments",
+      "identity": "Legal Metrology (General) Fourth Amendment Rules, 2026 — G.S.R. 568(E), 3 July 2026",
+      "clause": null,
+      "digest": "41ad797ce2934ac3b66075b5e6ce41e1012f4c894a43b5d21096eeb2820cdee2"
+    },
+    {
+      "part": "R76-2",
+      "edition": "2007",
+      "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+      "clause": null,
+      "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+    }
+  ],
+  "supported_test_codes": [
+    "WEIGHING_PERFORMANCE",
+    "TEMPERATURE_ZERO",
+    "ECCENTRICITY",
+    "REPEATABILITY",
+    "DISCRIMINATION",
+    "SENSITIVITY",
+    "ZERO_RETURN",
+    "CREEP",
+    "STABILITY_EQUILIBRIUM",
+    "TILTING",
+    "TARE",
+    "WARM_UP",
+    "VOLTAGE_VARIATION",
+    "DISTURBANCE_VOLTAGE_DIP",
+    "DISTURBANCE_BURST",
+    "DISTURBANCE_SURGE",
+    "DISTURBANCE_ESD",
+    "DISTURBANCE_RADIATED_RF",
+    "DISTURBANCE_CONDUCTED_RF",
+    "DISTURBANCE_VEHICLE_SUPPLY",
+    "DAMP_HEAT",
+    "SPAN_STABILITY",
+    "ENDURANCE"
+  ],
+  "source_reference": "Phase 25 independent external review pack SHA-256:5f9d4b209fcb12ef4e51b6bbe8b9c09426219c8f622042c9c0491969a0b7c761"
+}

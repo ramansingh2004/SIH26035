@@ -1,0 +1,1406 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "key": "SECTION16_DOCUMENTS_PHOTOS",
+      "section": 16,
+      "kind": "construction_item_v1",
+      "description": "Documentation, photographs, component descriptions and manufacturer references.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "8.2.1; 8.2.2; A.1; A.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION16_DOCUMENTS_PHOTOS"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"allow_not_applicable\":true,\"category\":\"DOCUMENTS_PHOTOS\",\"evidence_required\":true,\"item_key\":\"SECTION16_DOCUMENTS_PHOTOS\",\"required\":true,\"required_value_keys\":[],\"schema_version\":\"v1\",\"sort_order\":8}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION16_GENERAL",
+      "section": 16,
+      "kind": "construction_item_v1",
+      "description": "Overall construction description and additional instrument information.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "A.2; A.3; 4.1; 8.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION16_GENERAL"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"allow_not_applicable\":false,\"category\":\"GENERAL\",\"evidence_required\":true,\"item_key\":\"SECTION16_GENERAL\",\"required\":true,\"required_value_keys\":[],\"schema_version\":\"v1\",\"sort_order\":1}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION16_INDICATOR_DISPLAY",
+      "section": 16,
+      "kind": "construction_item_v1",
+      "description": "Indicator/display construction and primary-indication characteristics.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.2; 4.3; 4.4; A.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION16_INDICATOR_DISPLAY"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"allow_not_applicable\":true,\"category\":\"INDICATOR_DISPLAY\",\"evidence_required\":true,\"item_key\":\"SECTION16_INDICATOR_DISPLAY\",\"required\":true,\"required_value_keys\":[],\"schema_version\":\"v1\",\"sort_order\":3}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION16_POWER_INTERFACES",
+      "section": 16,
+      "kind": "construction_item_v1",
+      "description": "Power arrangements, interfaces and external-equipment construction.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.3; 5.3.5; 5.3.6; A.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION16_POWER_INTERFACES"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"allow_not_applicable\":true,\"category\":\"POWER_INTERFACES\",\"evidence_required\":true,\"item_key\":\"SECTION16_POWER_INTERFACES\",\"required\":true,\"required_value_keys\":[],\"schema_version\":\"v1\",\"sort_order\":5}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION16_PRINTER_PERIPHERALS",
+      "section": 16,
+      "kind": "construction_item_v1",
+      "description": "Printing, storage, peripheral and connected-device construction.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.4.2; 5.3.6; A.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION16_PRINTER_PERIPHERALS"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"allow_not_applicable\":true,\"category\":\"PRINTER_PERIPHERALS\",\"evidence_required\":true,\"item_key\":\"SECTION16_PRINTER_PERIPHERALS\",\"required\":true,\"required_value_keys\":[],\"schema_version\":\"v1\",\"sort_order\":4}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION16_RECEPTOR_LOAD_CELLS",
+      "section": 16,
+      "kind": "construction_item_v1",
+      "description": "Load receptor, load-transmitting/load-measuring devices and module identity.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.10; 4.1.1.3; 8.2.1; A.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION16_RECEPTOR_LOAD_CELLS"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"allow_not_applicable\":true,\"category\":\"RECEPTOR_LOAD_CELLS\",\"evidence_required\":true,\"item_key\":\"SECTION16_RECEPTOR_LOAD_CELLS\",\"required\":true,\"required_value_keys\":[],\"schema_version\":\"v1\",\"sort_order\":2}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION16_SEALS_SECURITY_SOFTWARE",
+      "section": 16,
+      "kind": "construction_item_v1",
+      "description": "Securing, sealing, software security and identification.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.1.2.4; 5.5; 7.2; A.3.3; Annex G",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION16_SEALS_SECURITY_SOFTWARE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"allow_not_applicable\":true,\"category\":\"SEALS_SECURITY_SOFTWARE\",\"evidence_required\":true,\"item_key\":\"SECTION16_SEALS_SECURITY_SOFTWARE\",\"required\":true,\"required_value_keys\":[],\"schema_version\":\"v1\",\"sort_order\":7}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "SECTION16_TILT_ZERO_TARE",
+      "section": 16,
+      "kind": "construction_item_v1",
+      "description": "Tilt/level, zero-setting and tare-related devices.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.1.1; 4.5; 4.6; 4.7; A.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:SECTION16_TILT_ZERO_TARE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"allow_not_applicable\":true,\"category\":\"TILT_ZERO_TARE\",\"evidence_required\":true,\"item_key\":\"SECTION16_TILT_ZERO_TARE\",\"required\":true,\"required_value_keys\":[],\"schema_version\":\"v1\",\"sort_order\":6}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    }
+  ],
+  "checklist": [
+    {
+      "key": "DIRECT_SALES_AUTOMATIC_FUNCTIONS",
+      "group": "DIRECT_SALES",
+      "text": "For direct-sales instruments, confirm that prohibited combined or automatic zero/tare functions are not provided and that the applicable restrictions on automatic functions are enforced.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.5.4; 4.13.3.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_direct_sales",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Direct-sales automatic-function restrictions applies because the instrument is for direct sales to the public."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_direct_sales",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Direct-sales automatic-function restrictions is not applicable because the instrument is not for direct sales to the public."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:DIRECT_SALES_AUTOMATIC_FUNCTIONS"
+      }
+    },
+    {
+      "key": "DIRECT_SALES_CUSTOMER_VISIBILITY",
+      "group": "DIRECT_SALES",
+      "text": "For an instrument used for direct sales to the public, confirm that all required primary indications are clearly and simultaneously visible to both vendor and customer and that customer-facing indication satisfies the applicable presentation requirements.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.13.1; 4.13.6",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_direct_sales",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Customer-visibility requirements applies because the instrument is for direct sales to the public."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_direct_sales",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Customer-visibility requirements is not applicable because the instrument is not for direct sales to the public."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:DIRECT_SALES_CUSTOMER_VISIBILITY"
+      }
+    },
+    {
+      "key": "DIRECT_SALES_LABELING",
+      "group": "DIRECT_SALES",
+      "text": "For price-labeling instruments, confirm the applicable display, printing and operational restrictions, including prevention of invalid label printing and the conditions governing fixed weight, unit-price or price-to-pay values.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.16",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_labeling",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Price-labeling requirements applies because the instrument is a price-labeling instrument."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_labeling",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Price-labeling requirements is not applicable because the instrument is not a price-labeling instrument."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:DIRECT_SALES_LABELING"
+      }
+    },
+    {
+      "key": "DIRECT_SALES_PRICE_DISPLAY",
+      "group": "DIRECT_SALES",
+      "text": "For a price-computing instrument, confirm that weight, unit price and price-to-pay indications and calculations are presented and computed in accordance with the applicable price-computing requirements.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.14.1; 4.14.2; 4.14.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_price_computing",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Price-display and price-computation requirements applies because the instrument has price-computing functionality."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_price_computing",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Price-display and price-computation requirements is not applicable because the instrument has no price-computing functionality."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:DIRECT_SALES_PRICE_DISPLAY"
+      }
+    },
+    {
+      "key": "DIRECT_SALES_TARE_RESTRICTIONS",
+      "group": "DIRECT_SALES",
+      "text": "For direct-sales instruments with tare functionality, confirm the applicable tare and preset-tare operating, indication, cancellation and use restrictions, including the prohibition on automatic tare where required.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.13.3; 4.13.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_direct_sales",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Direct-sales tare restrictions applies because the instrument is for direct sales to the public."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_direct_sales",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Direct-sales tare restrictions is not applicable because the instrument is not for direct sales to the public."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:DIRECT_SALES_TARE_RESTRICTIONS"
+      }
+    },
+    {
+      "key": "DIRECT_SALES_TRANSACTIONS",
+      "group": "DIRECT_SALES",
+      "text": "For price-computing transaction functions, confirm that transaction totalization, multi-vendor or multi-customer association, cancellation and additional transaction information preserve correct identification and traceability.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.14.4; 4.14.4.1-4.14.4.5",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_price_computing",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Price-computing transaction requirements applies because the instrument has price-computing functionality."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_price_computing",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Price-computing transaction requirements is not applicable because the instrument has no price-computing functionality."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:DIRECT_SALES_TRANSACTIONS"
+      }
+    },
+    {
+      "key": "ELECTRONIC_BATTERY",
+      "group": "ELECTRONIC",
+      "text": "Where the electronic instrument uses a battery or vehicle power supply, confirm that operation and indication remain valid within the applicable declared power-supply limits or that weighing indication is inhibited as required.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.3; A.5.4.2-A.5.4.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Battery and vehicle power-supply checklist requirements are not applicable because the instrument is not electronic."
+          },
+          {
+            "when": {
+              "kind": "any",
+              "conditions": [
+                {
+                  "kind": "boolean",
+                  "feature": "battery_charging_during_operation",
+                  "expected": true
+                },
+                {
+                  "kind": "boolean",
+                  "feature": "vehicle_powered",
+                  "expected": true
+                }
+              ]
+            },
+            "decision": "REQUIRED",
+            "reason": "Battery or vehicle power-supply requirements apply because the instrument declares rechargeable-battery charging during operation or vehicle power."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:ELECTRONIC_BATTERY"
+      }
+    },
+    {
+      "key": "ELECTRONIC_DISPLAY_TEST",
+      "group": "ELECTRONIC",
+      "text": "For an electronic instrument, confirm that upon switch-on all relevant indication elements are activated and deactivated long enough for the operator to verify correct display operation.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.3.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Electronic display-check requirements applies because the instrument is electronic."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Electronic display-check requirements is not applicable because the instrument is not electronic."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:ELECTRONIC_DISPLAY_TEST"
+      }
+    },
+    {
+      "key": "ELECTRONIC_FAULT_HANDLING",
+      "group": "ELECTRONIC",
+      "text": "Confirm that significant faults are indicated without ambiguity and that the instrument reacts as required, including automatic inoperability or a visible or audible indication until corrective action is taken or the fault disappears.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.1.1; 5.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Electronic significant-fault handling applies because the instrument is electronic."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Electronic significant-fault handling is not applicable because the instrument is not electronic."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:ELECTRONIC_FAULT_HANDLING"
+      }
+    },
+    {
+      "key": "ELECTRONIC_FUNCTIONAL_INTEGRITY",
+      "group": "ELECTRONIC",
+      "text": "Confirm that the electronic instrument preserves metrologically relevant functional integrity, including correct fault behavior, switch-on checks and protection of legally relevant functions under the applicable electronic-instrument requirements.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.1; 5.2; 5.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Electronic functional-integrity requirements applies because the instrument is electronic."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Electronic functional-integrity requirements is not applicable because the instrument is not electronic."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:ELECTRONIC_FUNCTIONAL_INTEGRITY"
+      }
+    },
+    {
+      "key": "ELECTRONIC_INTERFACES",
+      "group": "ELECTRONIC",
+      "text": "Confirm that electronic interfaces do not allow connected equipment, transmitted data or interface-initiated functions to falsify or inadmissibly influence legally relevant measurement results, parameters or primary indications.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.3.6; 5.3.6.1-5.3.6.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Electronic-interface requirements applies because the instrument is electronic."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Electronic-interface requirements is not applicable because the instrument is not electronic."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:ELECTRONIC_INTERFACES"
+      }
+    },
+    {
+      "key": "ELECTRONIC_PERIPHERALS",
+      "group": "ELECTRONIC",
+      "text": "Confirm that connected peripheral equipment cannot inadmissibly influence metrologically relevant functions or data and that data transmitted to peripherals permits the connected device to satisfy the applicable requirements.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.3.6; 5.3.6.1-5.3.6.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Electronic-peripheral requirements applies because the instrument is electronic."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Electronic-peripheral requirements is not applicable because the instrument is not electronic."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:ELECTRONIC_PERIPHERALS"
+      }
+    },
+    {
+      "key": "ELECTRONIC_POWER_UP",
+      "group": "ELECTRONIC",
+      "text": "Confirm the required electronic switch-on display check and that the instrument does not present legally relevant weighing information in a manner inconsistent with the applicable power-up requirements.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.3.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Electronic power-up requirements applies because the instrument is electronic."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_electronic",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Electronic power-up requirements is not applicable because the instrument is not electronic."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:ELECTRONIC_POWER_UP"
+      }
+    },
+    {
+      "key": "GENERAL_DOCUMENTATION",
+      "group": "GENERAL",
+      "text": "Confirm that the required technical information, instrument characteristics, module and component specifications, descriptive documents, manufacturer declarations, and supporting examination records are available and consistent with the submitted type.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "8.2.1; 8.2.2; A.1; A.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_self_indicating",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Technical-documentation examination applies to self-indicating instruments covered by the Section 17 checklist."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_self_indicating",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "R 76-2 Section 17 states that non-self-indicating instruments follow R 76-1 clause 6 in lieu of this checklist."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:GENERAL_DOCUMENTATION"
+      }
+    },
+    {
+      "key": "GENERAL_EXTENDED_INDICATION",
+      "group": "GENERAL",
+      "text": "Where extended digital indication is provided, confirm that it is permitted for the instrument, is available only under the allowed temporary or manual conditions, and cannot be printed while the extended indication is active.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.4.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "extended_indication_available",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Extended-indication requirements apply because extended indication is available."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "extended_indication_available",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Extended-indication requirements are not applicable because no extended indication is available."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:GENERAL_EXTENDED_INDICATION"
+      }
+    },
+    {
+      "key": "GENERAL_INDICATION",
+      "group": "GENERAL",
+      "text": "Confirm that weighing indications are reliable, clear and unambiguous, use the correct units and scale-interval form, respect indication limits, and satisfy the applicable analog or digital indication requirements.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.2; 4.3; 4.4.1-4.4.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_self_indicating",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Indicating-device examination applies to self-indicating instruments covered by the Section 17 checklist."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_self_indicating",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "R 76-2 Section 17 states that non-self-indicating instruments follow R 76-1 clause 6 in lieu of this checklist."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:GENERAL_INDICATION"
+      }
+    },
+    {
+      "key": "GENERAL_INTERFACES",
+      "group": "GENERAL",
+      "text": "Where interfaces are provided, confirm that connected equipment and interface operations cannot inadmissibly influence legally relevant functions or measurement data and that interfaces are secured where required.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.3.6; 5.3.6.1-5.3.6.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "present",
+              "feature": "interfaces",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Interface requirements apply because one or more interfaces are present."
+          },
+          {
+            "when": {
+              "kind": "present",
+              "feature": "interfaces",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Interface requirements are not applicable because no interfaces are present."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:GENERAL_INTERFACES"
+      }
+    },
+    {
+      "key": "GENERAL_MARKINGS",
+      "group": "GENERAL",
+      "text": "Confirm that all compulsory and applicable descriptive markings are present, correct, legible, durable, and presented in the required manner, including instrument identification, capacity, scale-interval and applicable software information.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "7.1; 7.1.1-7.1.5; A.3.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_self_indicating",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Descriptive-marking examination applies to self-indicating instruments covered by the Section 17 checklist."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_self_indicating",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "R 76-2 Section 17 states that non-self-indicating instruments follow R 76-1 clause 6 in lieu of this checklist."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:GENERAL_MARKINGS"
+      }
+    },
+    {
+      "key": "GENERAL_PRINTING",
+      "group": "GENERAL",
+      "text": "Where a printing device is fitted, confirm that printed weighing results are clear and permanent, carry the required units or designations, are consistent with indicated results, and are inhibited when stable-equilibrium requirements are not met.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.4.5; 4.6.11; 4.13-4.16 as applicable",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "printing_device_present",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Printing requirements apply because a printing device is present."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "printing_device_present",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Printing requirements are not applicable because no printing device is present."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:GENERAL_PRINTING"
+      }
+    },
+    {
+      "key": "GENERAL_RANGES",
+      "group": "GENERAL",
+      "text": "Confirm that any weighing-range selection and any selection between load receptors, transmitting devices or measuring devices is clearly identified, unambiguous, and satisfies the applicable switching, zero and tare conditions.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.10; 4.11",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_self_indicating",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Range and device-selection examination applies to self-indicating instruments covered by the Section 17 checklist."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_self_indicating",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "R 76-2 Section 17 states that non-self-indicating instruments follow R 76-1 clause 6 in lieu of this checklist."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:GENERAL_RANGES"
+      }
+    },
+    {
+      "key": "GENERAL_SEALING",
+      "group": "GENERAL",
+      "text": "Confirm that verification-mark provisions and securing or sealing of legally relevant components and preset controls prevent unauthorized influence and, where software securing is used, make the legal status and interventions traceable.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "7.2; 4.1.2.4-4.1.2.6; A.3.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_self_indicating",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Verification-mark and securing examination applies to self-indicating instruments covered by the Section 17 checklist."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_self_indicating",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "R 76-2 Section 17 states that non-self-indicating instruments follow R 76-1 clause 6 in lieu of this checklist."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:GENERAL_SEALING"
+      }
+    },
+    {
+      "key": "GENERAL_TARE",
+      "group": "GENERAL",
+      "text": "Where tare or preset-tare functions are provided, confirm scale-interval compatibility, accuracy, operating range, visibility, operating conditions, multiple-range behavior, designation and printing requirements.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.6; 4.7; A.4.6.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "present",
+              "feature": "tare_type",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Tare requirements apply because a tare function is present."
+          },
+          {
+            "when": {
+              "kind": "present",
+              "feature": "tare_type",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Tare requirements are not applicable because no tare function is present."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:GENERAL_TARE"
+      }
+    },
+    {
+      "key": "GENERAL_ZERO_SETTING",
+      "group": "GENERAL",
+      "text": "Where zero-setting, zero-tracking or zero-indicating functions are provided, confirm their range, accuracy, control conditions, stable-equilibrium restrictions and correction-rate requirements.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.5; A.4.2.1-A.4.2.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "any",
+              "conditions": [
+                {
+                  "kind": "present",
+                  "feature": "zero_setting_type",
+                  "expected": true
+                },
+                {
+                  "kind": "boolean",
+                  "feature": "zero_tracking_available",
+                  "expected": true
+                }
+              ]
+            },
+            "decision": "REQUIRED",
+            "reason": "Zero-setting checklist requirements apply because a zero-setting or zero-tracking function is present."
+          },
+          {
+            "when": {
+              "kind": "any",
+              "conditions": [
+                {
+                  "kind": "boolean",
+                  "feature": "zero_tracking_available",
+                  "expected": false
+                },
+                {
+                  "kind": "not",
+                  "condition": {
+                    "kind": "present",
+                    "feature": "zero_setting_type",
+                    "expected": true
+                  }
+                }
+              ]
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "No zero-setting or zero-tracking function requiring this checklist item is declared."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:GENERAL_ZERO_SETTING"
+      }
+    },
+    {
+      "key": "SOFTWARE_CONTROLLED_DATA_STORAGE",
+      "group": "SOFTWARE_CONTROLLED",
+      "text": "Where a data-storage device is used, confirm adequate capacity, correct storage and retrieval, sufficient information to reconstruct weighing results, protection against data alteration, traceable identification, and the applicable automatic-storage and verification provisions.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.5.3; 5.5.3.1-5.5.3.6; G.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "data_storage_device_present",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Data-storage requirements apply because a data-storage device is present."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "data_storage_device_present",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Data-storage requirements are not applicable because no data-storage device is present."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:SOFTWARE_CONTROLLED_DATA_STORAGE"
+      }
+    },
+    {
+      "key": "SOFTWARE_CONTROLLED_EMBEDDED_SOFTWARE",
+      "group": "SOFTWARE_CONTROLLED",
+      "text": "Where legally relevant embedded software is used, confirm the fixed hardware/software environment, protection against modification after securing, sufficient software documentation, and documented software identification and checking means.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.5.1; G.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "embedded_software_present",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Embedded-software requirements apply because embedded legally relevant software is present."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "embedded_software_present",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Embedded-software requirements are not applicable because embedded legally relevant software is not present."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:SOFTWARE_CONTROLLED_EMBEDDED_SOFTWARE"
+      }
+    },
+    {
+      "key": "SOFTWARE_CONTROLLED_LOADABLE_SOFTWARE",
+      "group": "SOFTWARE_CONTROLLED",
+      "text": "Where legally relevant programmable or loadable software is used, confirm documentation, protection against accidental or intentional change, intervention evidence, program and parameter protection, and protective separation from associated software.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.5.2.2; G.2; G.2.1-G.2.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "loadable_software_present",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Loadable-software requirements apply because programmable or loadable legally relevant software is present."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "loadable_software_present",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Loadable-software requirements are not applicable because no programmable or loadable legally relevant software is present."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:SOFTWARE_CONTROLLED_LOADABLE_SOFTWARE"
+      }
+    },
+    {
+      "key": "SOFTWARE_CONTROLLED_SOFTWARE_IDENTIFICATION",
+      "group": "SOFTWARE_CONTROLLED",
+      "text": "Confirm that legally relevant software has an identification covering the relevant program modules and type-specific parameters, can be readily obtained from the instrument, and can be compared with the reference identification established at type approval.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.5.1; 5.5.2.2(c); G.1; G.2.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "applicability": {
+        "schema_version": "v2",
+        "cases": [
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_software_controlled",
+              "expected": true
+            },
+            "decision": "REQUIRED",
+            "reason": "Software-identification requirements applies because the instrument is software controlled."
+          },
+          {
+            "when": {
+              "kind": "boolean",
+              "feature": "is_software_controlled",
+              "expected": false
+            },
+            "decision": "NOT_APPLICABLE",
+            "reason": "Software-identification requirements is not applicable because the instrument is not software controlled."
+          }
+        ]
+      },
+      "evidence_required": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:46:16+05:30",
+        "evidence": "CHECKLIST-REVIEW:SOFTWARE_CONTROLLED_SOFTWARE_IDENTIFICATION"
+      }
+    }
+  ]
+}

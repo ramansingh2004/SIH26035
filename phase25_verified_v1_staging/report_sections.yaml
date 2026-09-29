@@ -1,0 +1,782 @@
+{
+  "schema_version": 1,
+  "tests": [
+    {
+      "code": "WEIGHING_PERFORMANCE",
+      "section": 1,
+      "name": "WEIGHING PERFORMANCE",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 1 — Weighing performance (A.4.4; A.5.3.1)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_WEIGHING_PERFORMANCE",
+        "SECTION1_PROCEDURE",
+        "SECTION1_MPE",
+        "SECTION1_CLASSIFICATION",
+        "SECTION1_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:WEIGHING_PERFORMANCE"
+      }
+    },
+    {
+      "code": "TEMPERATURE_ZERO",
+      "section": 2,
+      "name": "TEMPERATURE ZERO",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 2 — Temperature effect on no-load indication (A.5.3.2)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_TEMPERATURE_ZERO",
+        "SECTION2_TEMPERATURE_ZERO_PROCEDURE",
+        "SECTION2_CLASSIFICATION",
+        "SECTION2_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:TEMPERATURE_ZERO"
+      }
+    },
+    {
+      "code": "ECCENTRICITY",
+      "section": 3,
+      "name": "ECCENTRICITY",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 3; 3.1-3.2 — Eccentricity (A.4.7; A.4.7.1-A.4.7.5)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_ECCENTRICITY",
+        "SECTION3_PROCEDURE",
+        "SECTION3_MPE",
+        "SECTION3_CLASSIFICATION",
+        "SECTION3_CALIBRATION",
+        "SECTION3_GEOMETRY"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:ECCENTRICITY"
+      }
+    },
+    {
+      "code": "DISCRIMINATION",
+      "section": 4,
+      "name": "DISCRIMINATION",
+      "parent": "DISCRIMINATION_SENSITIVITY",
+      "family": "DISCRIMINATION",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 4.1 — Discrimination (A.4.8.1-A.4.8.2)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_DISCRIMINATION",
+        "SECTION4_DISCRIMINATION_PROCEDURE",
+        "SECTION4_CLASSIFICATION",
+        "SECTION4_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:DISCRIMINATION"
+      }
+    },
+    {
+      "code": "DISCRIMINATION_SENSITIVITY",
+      "section": 4,
+      "name": "DISCRIMINATION SENSITIVITY",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 4 — Discrimination and sensitivity (A.4.8; A.4.9)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_DISCRIMINATION_SENSITIVITY"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": false,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:DISCRIMINATION_SENSITIVITY"
+      }
+    },
+    {
+      "code": "SENSITIVITY",
+      "section": 4,
+      "name": "SENSITIVITY",
+      "parent": "DISCRIMINATION_SENSITIVITY",
+      "family": "SENSITIVITY",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 4.2 — Sensitivity (A.4.9)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_SENSITIVITY",
+        "SECTION4_SENSITIVITY_PROCEDURE",
+        "SECTION4_CLASSIFICATION",
+        "SECTION4_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:SENSITIVITY"
+      }
+    },
+    {
+      "code": "REPEATABILITY",
+      "section": 5,
+      "name": "REPEATABILITY",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 5 — Repeatability (A.4.10)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_REPEATABILITY",
+        "SECTION5_PROCEDURE",
+        "SECTION5_MPE",
+        "SECTION5_CLASSIFICATION",
+        "SECTION5_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:REPEATABILITY"
+      }
+    },
+    {
+      "code": "CREEP",
+      "section": 6,
+      "name": "CREEP",
+      "parent": "TIME_DEPENDENCE",
+      "family": "CREEP",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 6.2 — Creep (A.4.11.1)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_CREEP",
+        "SECTION6_CREEP_PROCEDURE",
+        "SECTION6_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:CREEP"
+      }
+    },
+    {
+      "code": "TIME_DEPENDENCE",
+      "section": 6,
+      "name": "TIME DEPENDENCE",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 6 — Time-dependence (A.4.11.1-A.4.11.2)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_TIME_DEPENDENCE"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": false,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:TIME_DEPENDENCE"
+      }
+    },
+    {
+      "code": "ZERO_RETURN",
+      "section": 6,
+      "name": "ZERO RETURN",
+      "parent": "TIME_DEPENDENCE",
+      "family": "ZERO_RETURN",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 6.1 — Zero return (A.4.11.2)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_ZERO_RETURN",
+        "SECTION6_ZERO_RETURN_PROCEDURE",
+        "SECTION6_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:ZERO_RETURN"
+      }
+    },
+    {
+      "code": "STABILITY_EQUILIBRIUM",
+      "section": 7,
+      "name": "STABILITY EQUILIBRIUM",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 7 — Stability of equilibrium (A.4.12)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_STABILITY_EQUILIBRIUM",
+        "SECTION7_PROCEDURE"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:STABILITY_EQUILIBRIUM"
+      }
+    },
+    {
+      "code": "TILTING",
+      "section": 8,
+      "name": "TILTING",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 8 — Tilting (A.5.1; A.5.1.1-A.5.1.3)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_TILTING",
+        "SECTION8_TILTING_PROCEDURE",
+        "SECTION8_MPE",
+        "SECTION8_CLASSIFICATION",
+        "SECTION8_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:TILTING"
+      }
+    },
+    {
+      "code": "TARE",
+      "section": 9,
+      "name": "TARE",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 9 — Tare, weighing test (A.4.6.1)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_TARE",
+        "SECTION9_PROCEDURE",
+        "SECTION9_MPE",
+        "SECTION9_CLASSIFICATION",
+        "SECTION9_CALIBRATION",
+        "SECTION9_TARE_MODE"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:TARE"
+      }
+    },
+    {
+      "code": "WARM_UP",
+      "section": 10,
+      "name": "WARM UP",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 10 — Warm-up time (A.5.2)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_WARM_UP",
+        "SECTION10_WARM_UP_PROCEDURE",
+        "SECTION10_MPE",
+        "SECTION10_CLASSIFICATION",
+        "SECTION10_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:WARM_UP"
+      }
+    },
+    {
+      "code": "VOLTAGE_VARIATION",
+      "section": 11,
+      "name": "VOLTAGE VARIATION",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 11 — Voltage variations (A.5.4; A.5.4.1-A.5.4.4)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_VOLTAGE_VARIATION",
+        "SECTION11_VOLTAGE_PROCEDURE",
+        "SECTION11_MPE",
+        "SECTION11_CLASSIFICATION",
+        "SECTION11_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:VOLTAGE_VARIATION"
+      }
+    },
+    {
+      "code": "DISTURBANCE_BURST",
+      "section": 12,
+      "name": "DISTURBANCE BURST",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "family": "DISTURBANCE_BURST",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 12.2 — Electrical bursts (B.3.2)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_DISTURBANCE_BURST",
+        "SECTION12_BURST_PROCEDURE",
+        "SECTION12_DISTURBANCE_CLASSIFICATION",
+        "SECTION12_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:DISTURBANCE_BURST"
+      }
+    },
+    {
+      "code": "DISTURBANCE_CONDUCTED_RF",
+      "section": 12,
+      "name": "DISTURBANCE CONDUCTED RF",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "family": "DISTURBANCE_CONDUCTED_RF",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 12.6 — Immunity to conducted radio-frequency fields (B.3.6)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_DISTURBANCE_CONDUCTED_RF",
+        "SECTION12_CONDUCTED_RF_PROCEDURE",
+        "SECTION12_DISTURBANCE_CLASSIFICATION",
+        "SECTION12_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:DISTURBANCE_CONDUCTED_RF"
+      }
+    },
+    {
+      "code": "DISTURBANCE_ESD",
+      "section": 12,
+      "name": "DISTURBANCE ESD",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "family": "DISTURBANCE_ESD",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 12.4 — Electrostatic discharges (B.3.4)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_DISTURBANCE_ESD",
+        "SECTION12_ESD_PROCEDURE",
+        "SECTION12_DISTURBANCE_CLASSIFICATION",
+        "SECTION12_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:DISTURBANCE_ESD"
+      }
+    },
+    {
+      "code": "DISTURBANCE_RADIATED_RF",
+      "section": 12,
+      "name": "DISTURBANCE RADIATED RF",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "family": "DISTURBANCE_RADIATED_RF",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 12.5 — Immunity to radiated electromagnetic fields (B.3.5)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_DISTURBANCE_RADIATED_RF",
+        "SECTION12_RADIATED_RF_PROCEDURE",
+        "SECTION12_DISTURBANCE_CLASSIFICATION",
+        "SECTION12_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:DISTURBANCE_RADIATED_RF"
+      }
+    },
+    {
+      "code": "DISTURBANCE_SURGE",
+      "section": 12,
+      "name": "DISTURBANCE SURGE",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "family": "DISTURBANCE_SURGE",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 12.3 — Surges (B.3.3)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_DISTURBANCE_SURGE",
+        "SECTION12_SURGE_PROCEDURE",
+        "SECTION12_DISTURBANCE_CLASSIFICATION",
+        "SECTION12_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:DISTURBANCE_SURGE"
+      }
+    },
+    {
+      "code": "DISTURBANCE_VEHICLE_SUPPLY",
+      "section": 12,
+      "name": "DISTURBANCE VEHICLE SUPPLY",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "family": "DISTURBANCE_VEHICLE_SUPPLY",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 12.7 — Road-vehicle power-supply disturbance tests (B.3.7)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_DISTURBANCE_VEHICLE_SUPPLY",
+        "SECTION12_VEHICLE_SUPPLY_PROCEDURE",
+        "SECTION12_DISTURBANCE_CLASSIFICATION",
+        "SECTION12_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:DISTURBANCE_VEHICLE_SUPPLY"
+      }
+    },
+    {
+      "code": "DISTURBANCE_VOLTAGE_DIP",
+      "section": 12,
+      "name": "DISTURBANCE VOLTAGE DIP",
+      "parent": "ELECTRICAL_DISTURBANCES",
+      "family": "DISTURBANCE_VOLTAGE_DIP",
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 12.1 — AC mains voltage dips and short interruptions (B.3.1)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_DISTURBANCE_VOLTAGE_DIP",
+        "SECTION12_VOLTAGE_DIP_PROCEDURE",
+        "SECTION12_DISTURBANCE_CLASSIFICATION",
+        "SECTION12_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:DISTURBANCE_VOLTAGE_DIP"
+      }
+    },
+    {
+      "code": "ELECTRICAL_DISTURBANCES",
+      "section": 12,
+      "name": "ELECTRICAL DISTURBANCES",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 12 — Electrical disturbances (B.3.1-B.3.7)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_ELECTRICAL_DISTURBANCES"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": false,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:ELECTRICAL_DISTURBANCES"
+      }
+    },
+    {
+      "code": "DAMP_HEAT",
+      "section": 13,
+      "name": "DAMP HEAT",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 13 — Damp heat, steady state (B.2)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_DAMP_HEAT",
+        "SECTION13_DAMP_HEAT_PROCEDURE",
+        "SECTION13_MPE",
+        "SECTION13_CLASSIFICATION",
+        "SECTION13_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:DAMP_HEAT"
+      }
+    },
+    {
+      "code": "SPAN_STABILITY",
+      "section": 14,
+      "name": "SPAN STABILITY",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 14 — Span stability (B.4)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_SPAN_STABILITY",
+        "SECTION14_SPAN_STABILITY_PROCEDURE",
+        "SECTION14_MPE",
+        "SECTION14_CLASSIFICATION",
+        "SECTION14_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:SPAN_STABILITY"
+      }
+    },
+    {
+      "code": "ENDURANCE",
+      "section": 15,
+      "name": "ENDURANCE",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 15 — Endurance (A.6)",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_ENDURANCE",
+        "SECTION15_ENDURANCE_PROCEDURE",
+        "SECTION15_MPE",
+        "SECTION15_CLASSIFICATION",
+        "SECTION15_CALIBRATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": true,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:ENDURANCE"
+      }
+    },
+    {
+      "code": "CONSTRUCTION_EXAMINATION",
+      "section": 16,
+      "name": "CONSTRUCTION EXAMINATION",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 16 — Examination of the construction of the instrument",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_CONSTRUCTION_EXAMINATION"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": false,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:CONSTRUCTION_EXAMINATION"
+      }
+    },
+    {
+      "code": "CHECKLIST",
+      "section": 17,
+      "name": "CHECKLIST",
+      "parent": null,
+      "family": null,
+      "source": {
+        "part": "R76-2",
+        "edition": "2007",
+        "identity": "OIML R 76-2:2007 (E) — Non-automatic weighing instruments — Part 2: Test report format",
+        "clause": "Section 17; 17.1-17.4 — Checklist",
+        "digest": "650b8ea9b1001499574f585f0eab0a097ba290118da312b6a05a17bc856a3820"
+      },
+      "dependencies": [
+        "APP_CHECKLIST"
+      ],
+      "applicability": "TODO_REGULATORY_VALIDATION",
+      "implemented": false,
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T00:37:46+05:30",
+        "evidence": "TEST-REVIEW:CHECKLIST"
+      }
+    }
+  ]
+}

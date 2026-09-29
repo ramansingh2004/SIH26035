@@ -1,0 +1,817 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "key": "APP_CHECKLIST",
+      "section": 17,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for CHECKLIST.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "clauses 4, 5, 7; Annex G; clause 6 for non-self-indicating instruments",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_CHECKLIST"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Section 17 checklist branch applies to self-indicating instruments.\",\"when\":{\"expected\":true,\"feature\":\"is_self_indicating\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Non-self-indicating instruments follow the R76-1 clause 6 branch instead.\",\"when\":{\"expected\":false,\"feature\":\"is_self_indicating\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"SECTION17_CHECKLIST\",\"scenario\":\"section-17 checklist branch\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_CONSTRUCTION_EXAMINATION",
+      "section": 16,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for CONSTRUCTION_EXAMINATION.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "A.1-A.3; clauses 4-7 as applicable",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_CONSTRUCTION_EXAMINATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Construction information must be addressed in the type-evaluation record.\",\"when\":{\"kind\":\"always\"}}],\"scenarios\":[{\"procedure_variant\":\"SECTION16_CONSTRUCTION\",\"scenario\":\"construction examination\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_CREEP",
+      "section": 6,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for CREEP.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.4.1; A.4.11.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_CREEP"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"R76 time-dependence requirement applies to classes II, III and IIII.\",\"when\":{\"conditions\":[{\"expected\":\"II\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"expected\":\"III\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"expected\":\"IIII\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"}],\"kind\":\"any\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Class I is excluded from this time-dependence procedure.\",\"when\":{\"expected\":\"I\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"}}],\"scenarios\":[{\"procedure_variant\":\"CREEP\",\"scenario\":\"creep\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_DAMP_HEAT",
+      "section": 13,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for DAMP_HEAT.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.3.2; B.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_DAMP_HEAT"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Class II electronic instrument is within damp-heat scope when e is at least 1 g.\",\"when\":{\"conditions\":[{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"},{\"expected\":\"II\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"feature\":\"verification_interval_e_g\",\"kind\":\"number\",\"operator\":\">=\",\"scope\":\"RANGE\",\"value\":\"1\"}],\"kind\":\"all\"}},{\"decision\":\"REQUIRED\",\"reason\":\"Classes III and IIII electronic instruments are within damp-heat scope.\",\"when\":{\"conditions\":[{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"},{\"conditions\":[{\"expected\":\"III\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"expected\":\"IIII\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"}],\"kind\":\"any\"}],\"kind\":\"all\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Damp-heat electronic-instrument procedure is not applicable.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Class I is excluded from the damp-heat procedure.\",\"when\":{\"expected\":\"I\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Class II with e below 1 g is excluded from the damp-heat procedure.\",\"when\":{\"conditions\":[{\"expected\":\"II\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"feature\":\"verification_interval_e_g\",\"kind\":\"number\",\"operator\":\"<\",\"scope\":\"RANGE\",\"value\":\"1\"}],\"kind\":\"all\"}}],\"scenarios\":[{\"procedure_variant\":\"DAMP_HEAT\",\"scenario\":\"damp heat steady state\"}],\"schema_version\":\"v1\",\"scope\":\"EACH_RANGE\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_DISCRIMINATION",
+      "section": 4,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for DISCRIMINATION.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.8; A.4.8",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_DISCRIMINATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Discrimination examination is part of the applicable performance examination.\",\"when\":{\"kind\":\"always\"}}],\"scenarios\":[{\"procedure_variant\":\"DISCRIMINATION\",\"scenario\":\"discrimination\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_DISCRIMINATION_SENSITIVITY",
+      "section": 4,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for DISCRIMINATION_SENSITIVITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.8; 6.1; A.4.8-A.4.9",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_DISCRIMINATION_SENSITIVITY"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"OPTIONAL\",\"reason\":\"Parent catalog entry; child discrimination and sensitivity applicability is resolved separately.\",\"when\":{\"kind\":\"always\"}}],\"scenarios\":[{\"procedure_variant\":\"DISCRIMINATION_SENSITIVITY\",\"scenario\":\"parent catalog coordination\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_DISTURBANCE_BURST",
+      "section": 12,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for DISTURBANCE_BURST.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.1-5.4; B.3.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_DISTURBANCE_BURST"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Electrical disturbance performance test applies to electronic instruments.\",\"when\":{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Electrical disturbance performance test is not applicable to a non-electronic instrument.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"DISTURBANCE_BURST\",\"scenario\":\"disturbance_burst\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_DISTURBANCE_CONDUCTED_RF",
+      "section": 12,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for DISTURBANCE_CONDUCTED_RF.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.1-5.4; B.3.6",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_DISTURBANCE_CONDUCTED_RF"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Conducted RF applies where the electronic instrument has an applicable conducting path.\",\"when\":{\"conditions\":[{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"},{\"expected\":true,\"feature\":\"conducted_rf_path_available\",\"kind\":\"boolean\"}],\"kind\":\"all\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Conducted RF disturbance procedure is not applicable to a non-electronic instrument.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"No applicable conducting path is declared for the conducted RF branch.\",\"when\":{\"expected\":false,\"feature\":\"conducted_rf_path_available\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"DISTURBANCE_CONDUCTED_RF\",\"scenario\":\"conducted RF disturbance\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_DISTURBANCE_ESD",
+      "section": 12,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for DISTURBANCE_ESD.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.1-5.4; B.3.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_DISTURBANCE_ESD"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Electrical disturbance performance test applies to electronic instruments.\",\"when\":{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Electrical disturbance performance test is not applicable to a non-electronic instrument.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"DISTURBANCE_ESD\",\"scenario\":\"disturbance_esd\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_DISTURBANCE_RADIATED_RF",
+      "section": 12,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for DISTURBANCE_RADIATED_RF.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.1-5.4; B.3.5",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_DISTURBANCE_RADIATED_RF"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Electrical disturbance performance test applies to electronic instruments.\",\"when\":{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Electrical disturbance performance test is not applicable to a non-electronic instrument.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"DISTURBANCE_RADIATED_RF\",\"scenario\":\"disturbance_radiated_rf\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_DISTURBANCE_SURGE",
+      "section": 12,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for DISTURBANCE_SURGE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.1-5.4; B.3.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_DISTURBANCE_SURGE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Electrical disturbance performance test applies to electronic instruments.\",\"when\":{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Electrical disturbance performance test is not applicable to a non-electronic instrument.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"DISTURBANCE_SURGE\",\"scenario\":\"disturbance_surge\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_DISTURBANCE_VEHICLE_SUPPLY",
+      "section": 12,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for DISTURBANCE_VEHICLE_SUPPLY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.1-5.4; B.3.7.1-B.3.7.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_DISTURBANCE_VEHICLE_SUPPLY"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Vehicle-supply disturbance procedure applies to an electronic vehicle-powered instrument.\",\"when\":{\"conditions\":[{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"},{\"expected\":true,\"feature\":\"vehicle_powered\",\"kind\":\"boolean\"}],\"kind\":\"all\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Vehicle-supply disturbance procedure is not applicable to a non-electronic instrument.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Instrument is not declared vehicle-powered.\",\"when\":{\"expected\":false,\"feature\":\"vehicle_powered\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"DISTURBANCE_VEHICLE_SUPPLY\",\"scenario\":\"vehicle supply disturbance\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_DISTURBANCE_VOLTAGE_DIP",
+      "section": 12,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for DISTURBANCE_VOLTAGE_DIP.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.1-5.4; B.3.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_DISTURBANCE_VOLTAGE_DIP"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Electrical disturbance performance test applies to electronic instruments.\",\"when\":{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Electrical disturbance performance test is not applicable to a non-electronic instrument.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"DISTURBANCE_VOLTAGE_DIP\",\"scenario\":\"disturbance_voltage_dip\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_ECCENTRICITY",
+      "section": 3,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for ECCENTRICITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.6.2.1-3.6.2.4; A.4.7.1-A.4.7.5",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_ECCENTRICITY"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Eccentricity examination is part of the applicable performance examination.\",\"when\":{\"kind\":\"always\"}}],\"scenarios\":[{\"procedure_variant\":\"ECCENTRICITY\",\"scenario\":\"eccentricity\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_ELECTRICAL_DISTURBANCES",
+      "section": 12,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for ELECTRICAL_DISTURBANCES.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.1-5.4; B.3",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_ELECTRICAL_DISTURBANCES"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"OPTIONAL\",\"reason\":\"Parent catalog entry; the seven disturbance child procedures are resolved separately.\",\"when\":{\"kind\":\"always\"}}],\"scenarios\":[{\"procedure_variant\":\"ELECTRICAL_DISTURBANCES\",\"scenario\":\"parent catalog coordination\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_ENDURANCE",
+      "section": 15,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for ENDURANCE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.4.3; A.6",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_ENDURANCE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Endurance procedure applies to classes II/III/IIII with Max not exceeding 100 kg.\",\"when\":{\"conditions\":[{\"conditions\":[{\"expected\":\"II\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"expected\":\"III\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"expected\":\"IIII\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"}],\"kind\":\"any\"},{\"feature\":\"max_capacity_g\",\"kind\":\"number\",\"operator\":\"<=\",\"scope\":\"INSTRUMENT\",\"value\":\"100000\"}],\"kind\":\"all\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Class I is excluded from the endurance procedure.\",\"when\":{\"expected\":\"I\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Instrument Max exceeds the 100 kg endurance applicability limit.\",\"when\":{\"feature\":\"max_capacity_g\",\"kind\":\"number\",\"operator\":\">\",\"scope\":\"INSTRUMENT\",\"value\":\"100000\"}}],\"scenarios\":[{\"procedure_variant\":\"ENDURANCE\",\"scenario\":\"endurance\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_REPEATABILITY",
+      "section": 5,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for REPEATABILITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.6.1; A.4.10",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_REPEATABILITY"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Repeatability examination is part of the applicable performance examination.\",\"when\":{\"kind\":\"always\"}}],\"scenarios\":[{\"procedure_variant\":\"REPEATABILITY\",\"scenario\":\"repeatability\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_SENSITIVITY",
+      "section": 4,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for SENSITIVITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "6.1; A.4.9",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_SENSITIVITY"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Sensitivity procedure applies to non-self-indicating instruments.\",\"when\":{\"expected\":false,\"feature\":\"is_self_indicating\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Sensitivity procedure is not the self-indicating discrimination branch.\",\"when\":{\"expected\":true,\"feature\":\"is_self_indicating\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"SENSITIVITY\",\"scenario\":\"non-self-indicating sensitivity\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_SPAN_STABILITY",
+      "section": 14,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for SPAN_STABILITY.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.3.3; 5.4.4; B.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_SPAN_STABILITY"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Span-stability procedure applies to electronic instruments other than class I.\",\"when\":{\"conditions\":[{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"},{\"conditions\":[{\"expected\":\"II\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"expected\":\"III\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"expected\":\"IIII\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"}],\"kind\":\"any\"}],\"kind\":\"all\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Span-stability procedure is not applicable to a non-electronic instrument.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Class I is excluded from the span-stability procedure.\",\"when\":{\"expected\":\"I\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"}}],\"scenarios\":[{\"procedure_variant\":\"SPAN_STABILITY\",\"scenario\":\"span stability\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_STABILITY_EQUILIBRIUM",
+      "section": 7,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for STABILITY_EQUILIBRIUM.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "4.4.2; A.4.12",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_STABILITY_EQUILIBRIUM"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Stability-of-equilibrium function checks apply to self-indicating instruments.\",\"when\":{\"expected\":true,\"feature\":\"is_self_indicating\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"The self-indicating stability-of-equilibrium branch is not applicable.\",\"when\":{\"expected\":false,\"feature\":\"is_self_indicating\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"STABILITY_EQUILIBRIUM\",\"scenario\":\"stability of equilibrium\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_TARE",
+      "section": 9,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for TARE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.5.3.3-3.5.3.4; 4.6; A.4.6",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_TARE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Instrument declares a positive tare capacity.\",\"when\":{\"feature\":\"maximum_tare_g\",\"kind\":\"number\",\"operator\":\">\",\"scope\":\"INSTRUMENT\",\"value\":\"0\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"No positive tare capacity is declared.\",\"when\":{\"feature\":\"maximum_tare_g\",\"kind\":\"number\",\"operator\":\"==\",\"scope\":\"INSTRUMENT\",\"value\":\"0\"}}],\"scenarios\":[{\"procedure_variant\":\"TARE\",\"scenario\":\"tare\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_TEMPERATURE_ZERO",
+      "section": 2,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for TEMPERATURE_ZERO.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.2.3; A.5.3.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_TEMPERATURE_ZERO"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Temperature effect on no-load indication must be examined for the applicable instrument.\",\"when\":{\"kind\":\"always\"}}],\"scenarios\":[{\"procedure_variant\":\"TEMPERATURE_ZERO\",\"scenario\":\"temperature zero\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_TILTING",
+      "section": 8,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for TILTING.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.1.1-3.9.1.2; A.5.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_TILTING"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Tilting procedure applies to portable/mobile instruments subject to tilt effects.\",\"when\":{\"conditions\":[{\"expected\":true,\"feature\":\"is_portable\",\"kind\":\"boolean\"},{\"expected\":true,\"feature\":\"is_mobile\",\"kind\":\"boolean\"}],\"kind\":\"any\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Instrument is declared neither portable nor mobile for this candidate branch.\",\"when\":{\"conditions\":[{\"expected\":false,\"feature\":\"is_portable\",\"kind\":\"boolean\"},{\"expected\":false,\"feature\":\"is_mobile\",\"kind\":\"boolean\"}],\"kind\":\"all\"}}],\"scenarios\":[{\"procedure_variant\":\"TILTING\",\"scenario\":\"tilting\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_TIME_DEPENDENCE",
+      "section": 6,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for TIME_DEPENDENCE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.4; A.4.11",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_TIME_DEPENDENCE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"OPTIONAL\",\"reason\":\"Parent catalog entry; creep and zero-return applicability is resolved separately.\",\"when\":{\"kind\":\"always\"}}],\"scenarios\":[{\"procedure_variant\":\"TIME_DEPENDENCE\",\"scenario\":\"parent catalog coordination\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_VOLTAGE_VARIATION",
+      "section": 11,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for VOLTAGE_VARIATION.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.3; A.5.4.1-A.5.4.4",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_VOLTAGE_VARIATION"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Supply-voltage variation examination applies to an electronic instrument.\",\"when\":{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Supply-voltage variation procedure is not applicable to a non-electronic instrument.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"VOLTAGE_VARIATION\",\"scenario\":\"supply voltage variation\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_WARM_UP",
+      "section": 10,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for WARM_UP.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "5.3.5; A.5.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_WARM_UP"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Warm-up behavior is an electronic-instrument requirement.\",\"when\":{\"expected\":true,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Warm-up procedure is not applicable to a non-electronic instrument.\",\"when\":{\"expected\":false,\"feature\":\"is_electronic\",\"kind\":\"boolean\"}}],\"scenarios\":[{\"procedure_variant\":\"WARM_UP\",\"scenario\":\"warm-up\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_WEIGHING_PERFORMANCE",
+      "section": 1,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for WEIGHING_PERFORMANCE.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.5; A.4.1; A.4.4.1-A.4.4.4; A.5.3.1",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_WEIGHING_PERFORMANCE"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"Weighing performance examination applies to the instrument under type examination.\",\"when\":{\"kind\":\"always\"}}],\"scenarios\":[{\"procedure_variant\":\"WEIGHING_PERFORMANCE\",\"scenario\":\"weighing performance\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    },
+    {
+      "key": "APP_ZERO_RETURN",
+      "section": 6,
+      "kind": "applicability_policy_v1",
+      "description": "Verified applicability policy for ZERO_RETURN.",
+      "source": {
+        "part": "R76-1",
+        "edition": "2006",
+        "identity": "OIML R 76-1:2006 (E) — Non-automatic weighing instruments — Part 1: Metrological and technical requirements - Tests",
+        "clause": "3.9.4.2; A.4.11.2",
+        "digest": "06d9674f4f557ea053482960472db560aaedcc7665e6dabb4b4012333f3e068b"
+      },
+      "verification": {
+        "status": "VERIFIED",
+        "verified_by": "Dr. Y.G prajapati",
+        "verified_at": "2026-09-29T09:58:00+05:30",
+        "evidence": "POLICY-PREP:SCHEMA-VALID:APP_ZERO_RETURN"
+      },
+      "dependencies": [],
+      "blockers": [],
+      "parameters": [
+        {
+          "name": "POLICY_JSON",
+          "value": "{\"cases\":[{\"decision\":\"REQUIRED\",\"reason\":\"R76 time-dependence requirement applies to classes II, III and IIII.\",\"when\":{\"conditions\":[{\"expected\":\"II\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"expected\":\"III\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"},{\"expected\":\"IIII\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"}],\"kind\":\"any\"}},{\"decision\":\"NOT_APPLICABLE\",\"reason\":\"Class I is excluded from this time-dependence procedure.\",\"when\":{\"expected\":\"I\",\"feature\":\"accuracy_class\",\"kind\":\"choice\"}}],\"scenarios\":[{\"procedure_variant\":\"ZERO_RETURN\",\"scenario\":\"zero return\"}],\"schema_version\":\"v1\",\"scope\":\"INSTRUMENT\"}",
+          "unit": null,
+          "numeric": false
+        }
+      ]
+    }
+  ]
+}

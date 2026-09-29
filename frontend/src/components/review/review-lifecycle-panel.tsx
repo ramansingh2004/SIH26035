@@ -124,7 +124,10 @@ export function ReviewLifecyclePanel({
     onError: capture,
   });
 
+  const isSyntheticDemo = session.evaluation_context === "SIH_DEMO";
+
   const canSubmit =
+    !isSyntheticDemo &&
     hasPermission("review:submit") &&
     ["TESTING", "EXAMINATION"].includes(session.workflow_status) &&
     !openCorrection &&
@@ -219,6 +222,17 @@ export function ReviewLifecyclePanel({
             complete current record is review-ready. COMPLIANT and
             NONCOMPLIANT are both determined outcomes.
           </p>
+
+          {isSyntheticDemo ? (
+            <div className="information-banner">
+              <strong>Synthetic demonstration session</strong>
+              <span>
+                Regulatory review and final approval are intentionally disabled
+                for SIH demo data. Use the simulated approved report to
+                demonstrate the final reporting experience.
+              </span>
+            </div>
+          ) : null}
 
           {canSubmit ? (
             <button
