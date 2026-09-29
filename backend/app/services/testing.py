@@ -20,6 +20,7 @@ from app.compliance.full_demo import (
     full_demo_registry,
     is_full_demo_run_ruleset,
 )
+from app.compliance.full_demo_execution import is_full_demo_execution_ruleset
 from app.compliance.planning import RequirementPlanner
 from app.compliance.ruleset import RuleSet
 from app.compliance.suite import implemented_registry
@@ -111,7 +112,10 @@ class TestingService:
 
     def engine_for(self, session):
         rules = RuleSet.model_validate(session.ruleset_snapshot)
-        if is_full_demo_run_ruleset(rules):
+        if (
+            is_full_demo_run_ruleset(rules)
+            or is_full_demo_execution_ruleset(rules)
+        ):
             return R76Engine(full_demo_registry())
         return R76Engine(demo_registry()) if is_demo_ruleset(rules) else self.engine
 

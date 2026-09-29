@@ -188,7 +188,7 @@ def test_stage2c3b_section2_resolves_v2_temperature_policy():
         procedure_context=type(
             "Context",
             (),
-            {"evaluation_context": "TYPE_EVALUATION"},
+            {"evaluation_context": "TYPE_EVALUATION", "range_no": 1},
         )(),
         ruleset=ruleset(
             "SECTION2_TEMPERATURE_ZERO_PROCEDURE",

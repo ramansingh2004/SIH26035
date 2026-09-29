@@ -277,6 +277,8 @@ def test_stage3c3a_tilting_resolves_per_load_mpe_and_tilt_facts():
                     basis="SELECTED_E",
                     multiplier="2",
                 ),
+                unloaded_operator="<=",
+                unloaded_semantics="ABSOLUTE",
                 loaded_limit=LimitTarget(basis="MPE", multiplier="1"),
                 require_reference_position=True,
                 require_zero_tracking_disabled=True,

@@ -26,6 +26,7 @@ VERIFIED_ARTIFACT = "oiml_r76_2006/verified-v1"
 VERIFIED_VERSION = "verified-v1"
 VERIFIED_ROOT = Path(__file__).parent / "rules" / "oiml_r76_2006_verified"
 MANIFEST_NAME = "stage7_verification_manifest.json"
+INDEPENDENT_HUMAN_SIGNOFF_MARKER = "independent_human_signoff.marker"
 REQUIRED_RULESET_FILES = (
     "metadata.yaml",
     "classes.yaml",
@@ -508,7 +509,11 @@ def inspect_verified_artifact(
     candidate = load_ruleset(candidate_directory)
     missing = [
         name
-        for name in (*REQUIRED_RULESET_FILES, MANIFEST_NAME)
+        for name in (
+            *REQUIRED_RULESET_FILES,
+            MANIFEST_NAME,
+            INDEPENDENT_HUMAN_SIGNOFF_MARKER,
+        )
         if not (directory / name).is_file()
     ]
     if missing:
@@ -574,6 +579,7 @@ def load_verified_ruleset(
 
 
 __all__ = [
+    "INDEPENDENT_HUMAN_SIGNOFF_MARKER",
     "MANIFEST_NAME",
     "REQUIRED_REGISTERS",
     "REQUIRED_SOURCE_IDS",

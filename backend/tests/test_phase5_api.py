@@ -225,7 +225,7 @@ async def test_incomplete_procedure_returns_422_without_result(client, synthetic
     _, path, _ = await started_run(client, synthetic)
     response = await evaluation(client, path)
     assert response.status_code == 422
-    assert response.json()["error"]["code"] == "MISSING_REQUIRED_OBSERVATIONS"
+    assert response.json()["error"]["code"] == "EVALUATION_NOT_POSSIBLE"
     assert (await client.get(path)).json()["evaluation_status"] == "INCOMPLETE"
     assert (await client.get(path + "/results")).json() == []
 

@@ -286,7 +286,7 @@ def test_stage7_current_production_intake_is_fail_closed():
     assert readiness.ready is False
     assert readiness.blockers
     assert any(
-        "stage7_verification_manifest.json" in item
+        "independent_human_signoff.marker" in item
         for item in readiness.blockers
     )
 

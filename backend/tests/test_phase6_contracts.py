@@ -32,9 +32,9 @@ def test_phase6_registry_contains_phase6_mechanics():
     }
 
     assert phase6_versions == {
-        "section1-v1",
-        "section3-v1",
-        "section5-v1",
+        "section1-fix12-v2",
+        "section3-fix12-v2",
+        "section5-fix12-v2",
         "section9-v1",
     }
 

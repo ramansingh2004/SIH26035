@@ -303,6 +303,8 @@ def test_stage3b_stability_tilting_tare_and_warmup_models_are_parameterized():
                     basis="SELECTED_E",
                     multiplier="2",
                 ),
+                unloaded_operator="<=",
+                unloaded_semantics="ABSOLUTE",
                 loaded_limit=LimitTarget(
                     basis="MPE",
                     multiplier="1",

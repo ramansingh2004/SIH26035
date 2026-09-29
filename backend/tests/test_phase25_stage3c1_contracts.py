@@ -14,6 +14,7 @@ from app.compliance.phase7 import (
 )
 from app.compliance.phase8 import (
     TiltingEvaluator,
+    _tilting_policy,
     WarmUpEvaluator,
     tilting_registration,
     warm_up_registration,
@@ -82,7 +83,7 @@ def test_stage3c1_sections_8_to_10_registrations_advertise_v1_and_v2():
     } <= _kinds(warm_up_registration())
 
 
-def test_stage3c1_runtime_execution_is_still_on_v1_policy_path():
+def test_stage3c1_runtime_execution_keeps_legacy_paths_and_tilting_dispatch():
     checks = (
         (ZeroReturnEvaluator.validate_procedure, "zero_return_procedure_v1"),
         (CreepEvaluator.validate_procedure, "creep_procedure_v1"),
@@ -90,13 +91,17 @@ def test_stage3c1_runtime_execution_is_still_on_v1_policy_path():
             StabilityEvaluator.validate_procedure,
             "stability_equilibrium_procedure_v1",
         ),
-        (TiltingEvaluator.validate_procedure, "tilting_procedure_v1"),
         (TareEvaluator.validate_procedure, "tare_procedure_v1"),
         (WarmUpEvaluator.validate_procedure, "warm_up_procedure_v1"),
     )
 
     for method, expected_kind in checks:
         assert expected_kind in inspect.getsource(method)
+
+    assert "_tilting_policy" in inspect.getsource(
+        TiltingEvaluator.validate_procedure
+    )
+    assert "rule_policy_variant" in inspect.getsource(_tilting_policy)
 
 
 def test_stage3c1_candidate_ruleset_remains_unpromoted():

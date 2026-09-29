@@ -107,19 +107,10 @@ class SelectRun(ReasonRequest):
     run_id: UUID
 
 
-WeighingObservationV2Payload = Annotated[
-    WeighingObservationV2 | StaticTemperatureWeighingObservation,
-    Field(discriminator="protocol"),
-]
-
-WeighingObservationPayload = Annotated[
-    WeighingObservation | WeighingObservationV2Payload,
-    Field(discriminator="observation_schema_version"),
-]
-
-
-ObservationPayload = Annotated[
-    WeighingObservationPayload
+ObservationPayload = (
+    WeighingObservation
+    | WeighingObservationV2
+    | StaticTemperatureWeighingObservation
     | TemperatureZeroObservation
     | EccentricityObservation
     | RepeatabilityObservation
@@ -141,9 +132,8 @@ ObservationPayload = Annotated[
     | VehicleSupplyObservation
     | DampHeatObservation
     | SpanStabilityObservation
-    | EnduranceObservation,
-    Field(discriminator="test_code"),
-]
+    | EnduranceObservation
+)
 
 
 class ObservationData(Schema):
@@ -364,19 +354,10 @@ class ApplicabilityView(Schema):
     confirmable: bool
 
 
-DigitalWeighingProcedurePayload = Annotated[
-    WeighingContext | WeighingContextV2,
-    Field(discriminator="procedure_schema_version"),
-]
-
-WeighingProcedurePayload = Annotated[
-    DigitalWeighingProcedurePayload | StaticTemperatureWeighingContext,
-    Field(discriminator="procedure_variant"),
-]
-
-
-ProcedurePayload = Annotated[
-    WeighingProcedurePayload
+ProcedurePayload = (
+    WeighingContext
+    | WeighingContextV2
+    | StaticTemperatureWeighingContext
     | TemperatureZeroContext
     | EccentricityContext
     | RepeatabilityContext
@@ -398,9 +379,8 @@ ProcedurePayload = Annotated[
     | VehicleSupplyContext
     | DampHeatContext
     | SpanStabilityContext
-    | EnduranceContext,
-    Field(discriminator="test_code"),
-]
+    | EnduranceContext
+)
 
 
 class ProcedureUpdate(Schema):

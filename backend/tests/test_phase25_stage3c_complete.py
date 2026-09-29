@@ -9,7 +9,7 @@ import pytest
 
 from app.compliance import stage3_dispatch
 from app.compliance.phase7 import CreepEvaluator, StabilityEvaluator, ZeroReturnEvaluator
-from app.compliance.phase8 import TiltingEvaluator, WarmUpEvaluator
+from app.compliance.phase8 import TiltingEvaluator, WarmUpEvaluator, _tilting_policy
 from app.compliance.regulatory import RegulatoryBlocked
 from app.compliance.tare import TareEvaluator
 
@@ -66,22 +66,27 @@ def test_stage3c_dispatch_blocks_v2_instead_of_coercing_to_v1(monkeypatch):
 
 
 def test_stage3c_sections_6_to_10_use_dual_policy_dispatch_boundary():
-    methods = (
+    direct_methods = (
         ZeroReturnEvaluator.validate_procedure,
         ZeroReturnEvaluator.evaluate,
         CreepEvaluator.validate_procedure,
         CreepEvaluator.evaluate,
         StabilityEvaluator.validate_procedure,
         StabilityEvaluator.evaluate,
-        TiltingEvaluator.validate_procedure,
-        TiltingEvaluator.evaluate,
         TareEvaluator.validate_procedure,
         WarmUpEvaluator.validate_procedure,
         WarmUpEvaluator.evaluate,
     )
 
-    for method in methods:
+    for method in direct_methods:
         assert "load_stage3_policy_for_runtime" in inspect.getsource(method)
+
+    for method in (
+        TiltingEvaluator.validate_procedure,
+        TiltingEvaluator.evaluate,
+    ):
+        assert "_tilting_policy" in inspect.getsource(method)
+    assert "rule_policy_variant" in inspect.getsource(_tilting_policy)
 
 
 def test_stage3c_mpe_consumers_use_compatible_v1_v2_mpe_path():

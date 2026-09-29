@@ -34,7 +34,7 @@ def test_fix6_policy_has_no_regulatory_defaults():
 
 
 def test_fix6_bumps_section1_implementation_identity():
-    assert section1_registration().implementation_version == "section1-v3"
+    assert section1_registration().implementation_version == "section1-fix12-v2"
 
 
 def test_fix6_candidate_ruleset_remains_unpromoted():

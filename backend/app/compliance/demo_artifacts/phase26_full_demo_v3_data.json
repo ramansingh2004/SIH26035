@@ -1,0 +1,3341 @@
+{
+  "artifact": "sih26035_full_flow_demo_v3",
+  "datasets": [
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "CREEP_V1",
+        "rows": [
+          {
+            "elapsed_s": "0",
+            "indication_g": "10000",
+            "measured_at": "2000-01-01T00:00:00Z",
+            "observation_schema_version": "v1",
+            "protocol": "CREEP_V1",
+            "sequence_no": 1,
+            "test_code": "CREEP"
+          },
+          {
+            "elapsed_s": "900",
+            "indication_g": "10003",
+            "measured_at": "2000-01-01T00:15:00Z",
+            "observation_schema_version": "v1",
+            "protocol": "CREEP_V1",
+            "sequence_no": 2,
+            "test_code": "CREEP"
+          },
+          {
+            "elapsed_s": "1800",
+            "indication_g": "10005",
+            "measured_at": "2000-01-01T00:30:00Z",
+            "observation_schema_version": "v1",
+            "protocol": "CREEP_V1",
+            "sequence_no": 3,
+            "test_code": "CREEP"
+          }
+        ],
+        "test_code": "CREEP"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_WEIGHT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        ],
+        "planned_duration_s": "1800",
+        "procedure_schema_version": "v1",
+        "procedure_variant": "SHORT",
+        "protocol": "CREEP_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "stabilized": true,
+        "test_code": "CREEP",
+        "test_load_g": "10000"
+      },
+      "section": 6,
+      "test_code": "CREEP"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "DAMP_HEAT_V1",
+        "rows": [
+          {
+            "additional_load_g": "5",
+            "exposure_elapsed_s": "10",
+            "functions_operational": true,
+            "indication_g": "1010",
+            "load_g": "1000",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "DAMP_HEAT_V1",
+            "relative_humidity_percent": "50",
+            "sequence_no": 1,
+            "stabilized": true,
+            "stage": "INITIAL",
+            "stage_elapsed_s": "10",
+            "temperature_c": "20",
+            "test_code": "DAMP_HEAT",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "exposure_elapsed_s": "10",
+            "functions_operational": true,
+            "indication_g": "10010",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "DAMP_HEAT_V1",
+            "relative_humidity_percent": "50",
+            "sequence_no": 2,
+            "stabilized": true,
+            "stage": "INITIAL",
+            "stage_elapsed_s": "10",
+            "temperature_c": "20",
+            "test_code": "DAMP_HEAT",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "exposure_elapsed_s": "20",
+            "functions_operational": true,
+            "indication_g": "1010",
+            "load_g": "1000",
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "protocol": "DAMP_HEAT_V1",
+            "relative_humidity_percent": "85",
+            "sequence_no": 3,
+            "stabilized": true,
+            "stage": "HIGH_HUMIDITY",
+            "stage_elapsed_s": "20",
+            "temperature_c": "40",
+            "test_code": "DAMP_HEAT",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "exposure_elapsed_s": "20",
+            "functions_operational": true,
+            "indication_g": "10010",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "protocol": "DAMP_HEAT_V1",
+            "relative_humidity_percent": "85",
+            "sequence_no": 4,
+            "stabilized": true,
+            "stage": "HIGH_HUMIDITY",
+            "stage_elapsed_s": "20",
+            "temperature_c": "40",
+            "test_code": "DAMP_HEAT",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "exposure_elapsed_s": "10",
+            "functions_operational": true,
+            "indication_g": "1010",
+            "load_g": "1000",
+            "measured_at": "2000-01-01T00:00:05Z",
+            "observation_schema_version": "v1",
+            "protocol": "DAMP_HEAT_V1",
+            "relative_humidity_percent": "50",
+            "sequence_no": 5,
+            "stabilized": true,
+            "stage": "FINAL",
+            "stage_elapsed_s": "10",
+            "temperature_c": "20",
+            "test_code": "DAMP_HEAT",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "exposure_elapsed_s": "10",
+            "functions_operational": true,
+            "indication_g": "10010",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:06Z",
+            "observation_schema_version": "v1",
+            "protocol": "DAMP_HEAT_V1",
+            "relative_humidity_percent": "50",
+            "sequence_no": 6,
+            "stabilized": true,
+            "stage": "FINAL",
+            "stage_elapsed_s": "10",
+            "temperature_c": "20",
+            "test_code": "DAMP_HEAT",
+            "zero_error_g": "0"
+          }
+        ],
+        "test_code": "DAMP_HEAT"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": "1000",
+            "relative_humidity_percent": "50",
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_PHASE9_EQUIPMENT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "9999999999999999999999999999999999999999999999999999999999999999"
+        ],
+        "loads_g": [
+          "1000",
+          "10000"
+        ],
+        "procedure_schema_version": "v1",
+        "procedure_variant": "STEADY_STATE",
+        "protocol": "DAMP_HEAT_V1",
+        "range_no": 1,
+        "same_reference_weights_confirmed": true,
+        "scenario": "fixture",
+        "stages": [
+          "INITIAL",
+          "HIGH_HUMIDITY",
+          "FINAL"
+        ],
+        "test_code": "DAMP_HEAT"
+      },
+      "section": 13,
+      "test_code": "DAMP_HEAT"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "DISCRIMINATION_V1",
+        "rows": [
+          {
+            "displacement_mm": null,
+            "extra_load_g": "10",
+            "indication_after_g": "5010",
+            "indication_before_g": "5000",
+            "load_g": "5000",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISCRIMINATION_V1",
+            "sequence_no": 1,
+            "test_code": "DISCRIMINATION"
+          }
+        ],
+        "test_code": "DISCRIMINATION"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_WEIGHT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        ],
+        "indication_mode": "DIGITAL",
+        "procedure_schema_version": "v1",
+        "procedure_variant": "DIGITAL",
+        "protocol": "DISCRIMINATION_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "stabilized": true,
+        "test_code": "DISCRIMINATION"
+      },
+      "section": 4,
+      "test_code": "DISCRIMINATION"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "DISTURBANCE_V1",
+        "rows": [
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 1,
+            "severity_id": "burst-power-positive",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_BURST"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 2,
+            "severity_id": "burst-power-positive",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_BURST"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 3,
+            "severity_id": "burst-io-negative",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_BURST"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 4,
+            "severity_id": "burst-io-negative",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_BURST"
+          }
+        ],
+        "test_code": "DISTURBANCE_BURST"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": "SYNTHETIC_PHASE10",
+            "pressure_hpa": "1000",
+            "relative_humidity_percent": "50",
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "environment_stabilized": true,
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_PHASE10_GENERATOR",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        ],
+        "no_load_deviation_g": "0",
+        "peripherals_connected": true,
+        "procedure_schema_version": "v1",
+        "procedure_variant": "BURST_LINES",
+        "protocol": "DISTURBANCE_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "severity_cases": [
+          {
+            "amplitude_v": "100",
+            "application_type": null,
+            "battery_voltage_v": null,
+            "case": null,
+            "conducted_voltage_v": null,
+            "coupling_mode": null,
+            "cycles": null,
+            "discharge_mode": null,
+            "duration_s": "1",
+            "field_strength_v_per_m": null,
+            "frequency_hz": null,
+            "line_type": "POWER",
+            "location": null,
+            "modulation_frequency_hz": null,
+            "modulation_percent": null,
+            "phase_angle_deg": null,
+            "polarity": "POSITIVE",
+            "port": null,
+            "pulse": null,
+            "reduction_percent": null,
+            "severity_id": "burst-power-positive",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": null,
+            "waveform_reference": "SYNTHETIC_TRACE_burst-power-positive"
+          },
+          {
+            "amplitude_v": "50",
+            "application_type": null,
+            "battery_voltage_v": null,
+            "case": null,
+            "conducted_voltage_v": null,
+            "coupling_mode": null,
+            "cycles": null,
+            "discharge_mode": null,
+            "duration_s": "1",
+            "field_strength_v_per_m": null,
+            "frequency_hz": null,
+            "line_type": "IO",
+            "location": null,
+            "modulation_frequency_hz": null,
+            "modulation_percent": null,
+            "phase_angle_deg": null,
+            "polarity": "NEGATIVE",
+            "port": "SYNTHETIC_IO",
+            "pulse": null,
+            "reduction_percent": null,
+            "severity_id": "burst-io-negative",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": null,
+            "waveform_reference": "SYNTHETIC_TRACE_burst-io-negative"
+          }
+        ],
+        "test_code": "DISTURBANCE_BURST",
+        "test_load_g": "1000",
+        "warm_up_completed": true
+      },
+      "section": 12,
+      "test_code": "DISTURBANCE_BURST"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "DISTURBANCE_V1",
+        "rows": [
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 1,
+            "severity_id": "conducted-power",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_CONDUCTED_RF"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 2,
+            "severity_id": "conducted-power",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_CONDUCTED_RF"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 3,
+            "severity_id": "conducted-data",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_CONDUCTED_RF"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 4,
+            "severity_id": "conducted-data",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_CONDUCTED_RF"
+          }
+        ],
+        "test_code": "DISTURBANCE_CONDUCTED_RF"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": "SYNTHETIC_PHASE10",
+            "pressure_hpa": "1000",
+            "relative_humidity_percent": "50",
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "environment_stabilized": true,
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_PHASE10_GENERATOR",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        ],
+        "no_load_deviation_g": "0",
+        "peripherals_connected": true,
+        "procedure_schema_version": "v1",
+        "procedure_variant": "CONDUCTED_RF",
+        "protocol": "DISTURBANCE_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "severity_cases": [
+          {
+            "amplitude_v": "2",
+            "application_type": null,
+            "battery_voltage_v": null,
+            "case": null,
+            "conducted_voltage_v": null,
+            "coupling_mode": null,
+            "cycles": null,
+            "discharge_mode": null,
+            "duration_s": null,
+            "field_strength_v_per_m": null,
+            "frequency_hz": "100000",
+            "line_type": null,
+            "location": null,
+            "modulation_frequency_hz": "100",
+            "modulation_percent": "25",
+            "phase_angle_deg": null,
+            "polarity": null,
+            "port": "SYNTHETIC_POWER",
+            "pulse": null,
+            "reduction_percent": null,
+            "severity_id": "conducted-power",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": null,
+            "waveform_reference": "SYNTHETIC_TRACE_conducted-power"
+          },
+          {
+            "amplitude_v": "2",
+            "application_type": null,
+            "battery_voltage_v": null,
+            "case": null,
+            "conducted_voltage_v": null,
+            "coupling_mode": null,
+            "cycles": null,
+            "discharge_mode": null,
+            "duration_s": null,
+            "field_strength_v_per_m": null,
+            "frequency_hz": "200000",
+            "line_type": null,
+            "location": null,
+            "modulation_frequency_hz": "100",
+            "modulation_percent": "25",
+            "phase_angle_deg": null,
+            "polarity": null,
+            "port": "SYNTHETIC_DATA",
+            "pulse": null,
+            "reduction_percent": null,
+            "severity_id": "conducted-data",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": null,
+            "waveform_reference": "SYNTHETIC_TRACE_conducted-data"
+          }
+        ],
+        "test_code": "DISTURBANCE_CONDUCTED_RF",
+        "test_load_g": "1000",
+        "warm_up_completed": true
+      },
+      "section": 12,
+      "test_code": "DISTURBANCE_CONDUCTED_RF"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "DISTURBANCE_V1",
+        "rows": [
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 1,
+            "severity_id": "esd-direct-contact",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_ESD"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 2,
+            "severity_id": "esd-direct-contact",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_ESD"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 3,
+            "severity_id": "esd-indirect-air",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_ESD"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 4,
+            "severity_id": "esd-indirect-air",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_ESD"
+          }
+        ],
+        "test_code": "DISTURBANCE_ESD"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": "SYNTHETIC_PHASE10",
+            "pressure_hpa": "1000",
+            "relative_humidity_percent": "50",
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "environment_stabilized": true,
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_PHASE10_GENERATOR",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        ],
+        "no_load_deviation_g": "0",
+        "peripherals_connected": true,
+        "procedure_schema_version": "v1",
+        "procedure_variant": "ESD",
+        "protocol": "DISTURBANCE_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "severity_cases": [
+          {
+            "amplitude_v": null,
+            "application_type": "DIRECT",
+            "battery_voltage_v": null,
+            "case": null,
+            "conducted_voltage_v": null,
+            "coupling_mode": null,
+            "cycles": null,
+            "discharge_mode": "CONTACT",
+            "duration_s": null,
+            "field_strength_v_per_m": null,
+            "frequency_hz": null,
+            "line_type": null,
+            "location": "SYNTHETIC_PANEL",
+            "modulation_frequency_hz": null,
+            "modulation_percent": null,
+            "phase_angle_deg": null,
+            "polarity": "POSITIVE",
+            "port": null,
+            "pulse": null,
+            "reduction_percent": null,
+            "severity_id": "esd-direct-contact",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": "2",
+            "waveform_reference": "SYNTHETIC_TRACE_esd-direct-contact"
+          },
+          {
+            "amplitude_v": null,
+            "application_type": "INDIRECT",
+            "battery_voltage_v": null,
+            "case": null,
+            "conducted_voltage_v": null,
+            "coupling_mode": null,
+            "cycles": null,
+            "discharge_mode": "AIR",
+            "duration_s": null,
+            "field_strength_v_per_m": null,
+            "frequency_hz": null,
+            "line_type": null,
+            "location": "SYNTHETIC_PLANE",
+            "modulation_frequency_hz": null,
+            "modulation_percent": null,
+            "phase_angle_deg": null,
+            "polarity": "NEGATIVE",
+            "port": null,
+            "pulse": null,
+            "reduction_percent": null,
+            "severity_id": "esd-indirect-air",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": "3",
+            "waveform_reference": "SYNTHETIC_TRACE_esd-indirect-air"
+          }
+        ],
+        "test_code": "DISTURBANCE_ESD",
+        "test_load_g": "1000",
+        "warm_up_completed": true
+      },
+      "section": 12,
+      "test_code": "DISTURBANCE_ESD"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "DISTURBANCE_V1",
+        "rows": [
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 1,
+            "severity_id": "radiated-low",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_RADIATED_RF"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 2,
+            "severity_id": "radiated-low",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_RADIATED_RF"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 3,
+            "severity_id": "radiated-high",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_RADIATED_RF"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 4,
+            "severity_id": "radiated-high",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_RADIATED_RF"
+          }
+        ],
+        "test_code": "DISTURBANCE_RADIATED_RF"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": "SYNTHETIC_PHASE10",
+            "pressure_hpa": "1000",
+            "relative_humidity_percent": "50",
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "environment_stabilized": true,
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_PHASE10_GENERATOR",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        ],
+        "no_load_deviation_g": "0",
+        "peripherals_connected": true,
+        "procedure_schema_version": "v1",
+        "procedure_variant": "RADIATED_RF",
+        "protocol": "DISTURBANCE_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "severity_cases": [
+          {
+            "amplitude_v": null,
+            "application_type": null,
+            "battery_voltage_v": null,
+            "case": null,
+            "conducted_voltage_v": null,
+            "coupling_mode": null,
+            "cycles": null,
+            "discharge_mode": null,
+            "duration_s": null,
+            "field_strength_v_per_m": "2",
+            "frequency_hz": "1000000",
+            "line_type": null,
+            "location": null,
+            "modulation_frequency_hz": "100",
+            "modulation_percent": "25",
+            "phase_angle_deg": null,
+            "polarity": null,
+            "port": null,
+            "pulse": null,
+            "reduction_percent": null,
+            "severity_id": "radiated-low",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": null,
+            "waveform_reference": "SYNTHETIC_TRACE_radiated-low"
+          },
+          {
+            "amplitude_v": null,
+            "application_type": null,
+            "battery_voltage_v": null,
+            "case": null,
+            "conducted_voltage_v": null,
+            "coupling_mode": null,
+            "cycles": null,
+            "discharge_mode": null,
+            "duration_s": null,
+            "field_strength_v_per_m": "2",
+            "frequency_hz": "2000000",
+            "line_type": null,
+            "location": null,
+            "modulation_frequency_hz": "100",
+            "modulation_percent": "25",
+            "phase_angle_deg": null,
+            "polarity": null,
+            "port": null,
+            "pulse": null,
+            "reduction_percent": null,
+            "severity_id": "radiated-high",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": null,
+            "waveform_reference": "SYNTHETIC_TRACE_radiated-high"
+          }
+        ],
+        "test_code": "DISTURBANCE_RADIATED_RF",
+        "test_load_g": "1000",
+        "warm_up_completed": true
+      },
+      "section": 12,
+      "test_code": "DISTURBANCE_RADIATED_RF"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "DISTURBANCE_V1",
+        "rows": [
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 1,
+            "severity_id": "surge-ll-positive",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_SURGE"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 2,
+            "severity_id": "surge-ll-positive",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_SURGE"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 3,
+            "severity_id": "surge-le-negative",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_SURGE"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 4,
+            "severity_id": "surge-le-negative",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_SURGE"
+          }
+        ],
+        "test_code": "DISTURBANCE_SURGE"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": "SYNTHETIC_PHASE10",
+            "pressure_hpa": "1000",
+            "relative_humidity_percent": "50",
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "environment_stabilized": true,
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_PHASE10_GENERATOR",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        ],
+        "no_load_deviation_g": "0",
+        "peripherals_connected": true,
+        "procedure_schema_version": "v1",
+        "procedure_variant": "SURGE_LINES",
+        "protocol": "DISTURBANCE_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "severity_cases": [
+          {
+            "amplitude_v": null,
+            "application_type": null,
+            "battery_voltage_v": null,
+            "case": null,
+            "conducted_voltage_v": null,
+            "coupling_mode": "LINE_TO_LINE",
+            "cycles": null,
+            "discharge_mode": null,
+            "duration_s": null,
+            "field_strength_v_per_m": null,
+            "frequency_hz": null,
+            "line_type": "POWER",
+            "location": null,
+            "modulation_frequency_hz": null,
+            "modulation_percent": null,
+            "phase_angle_deg": "0",
+            "polarity": "POSITIVE",
+            "port": null,
+            "pulse": null,
+            "reduction_percent": null,
+            "severity_id": "surge-ll-positive",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": "0.25",
+            "waveform_reference": "SYNTHETIC_TRACE_surge-ll-positive"
+          },
+          {
+            "amplitude_v": null,
+            "application_type": null,
+            "battery_voltage_v": null,
+            "case": null,
+            "conducted_voltage_v": null,
+            "coupling_mode": "LINE_TO_EARTH",
+            "cycles": null,
+            "discharge_mode": null,
+            "duration_s": null,
+            "field_strength_v_per_m": null,
+            "frequency_hz": null,
+            "line_type": "POWER",
+            "location": null,
+            "modulation_frequency_hz": null,
+            "modulation_percent": null,
+            "phase_angle_deg": "90",
+            "polarity": "NEGATIVE",
+            "port": null,
+            "pulse": null,
+            "reduction_percent": null,
+            "severity_id": "surge-le-negative",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": "0.5",
+            "waveform_reference": "SYNTHETIC_TRACE_surge-le-negative"
+          }
+        ],
+        "test_code": "DISTURBANCE_SURGE",
+        "test_load_g": "1000",
+        "warm_up_completed": true
+      },
+      "section": 12,
+      "test_code": "DISTURBANCE_SURGE"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "DISTURBANCE_V1",
+        "rows": [
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 1,
+            "severity_id": "vehicle-supply-1",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_VEHICLE_SUPPLY"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 2,
+            "severity_id": "vehicle-supply-1",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_VEHICLE_SUPPLY"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 3,
+            "severity_id": "vehicle-supply-2",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_VEHICLE_SUPPLY"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 4,
+            "severity_id": "vehicle-supply-2",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_VEHICLE_SUPPLY"
+          }
+        ],
+        "test_code": "DISTURBANCE_VEHICLE_SUPPLY"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": "SYNTHETIC_PHASE10",
+            "pressure_hpa": "1000",
+            "relative_humidity_percent": "50",
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "environment_stabilized": true,
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_PHASE10_GENERATOR",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        ],
+        "no_load_deviation_g": "0",
+        "peripherals_connected": true,
+        "procedure_schema_version": "v1",
+        "procedure_variant": "SUPPLY_LINE_CONDUCTION",
+        "protocol": "DISTURBANCE_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "severity_cases": [
+          {
+            "amplitude_v": null,
+            "application_type": null,
+            "battery_voltage_v": "12",
+            "case": null,
+            "conducted_voltage_v": "8",
+            "coupling_mode": null,
+            "cycles": null,
+            "discharge_mode": null,
+            "duration_s": null,
+            "field_strength_v_per_m": null,
+            "frequency_hz": null,
+            "line_type": "SUPPLY",
+            "location": null,
+            "modulation_frequency_hz": null,
+            "modulation_percent": null,
+            "phase_angle_deg": null,
+            "polarity": null,
+            "port": null,
+            "pulse": "SYNTHETIC_1",
+            "reduction_percent": null,
+            "severity_id": "vehicle-supply-1",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": null,
+            "waveform_reference": "SYNTHETIC_TRACE_vehicle-supply-1"
+          },
+          {
+            "amplitude_v": null,
+            "application_type": null,
+            "battery_voltage_v": "12",
+            "case": null,
+            "conducted_voltage_v": "-8",
+            "coupling_mode": null,
+            "cycles": null,
+            "discharge_mode": null,
+            "duration_s": null,
+            "field_strength_v_per_m": null,
+            "frequency_hz": null,
+            "line_type": "SUPPLY",
+            "location": null,
+            "modulation_frequency_hz": null,
+            "modulation_percent": null,
+            "phase_angle_deg": null,
+            "polarity": null,
+            "port": null,
+            "pulse": "SYNTHETIC_2",
+            "reduction_percent": null,
+            "severity_id": "vehicle-supply-2",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": null,
+            "waveform_reference": "SYNTHETIC_TRACE_vehicle-supply-2"
+          }
+        ],
+        "test_code": "DISTURBANCE_VEHICLE_SUPPLY",
+        "test_load_g": "1000",
+        "warm_up_completed": true
+      },
+      "section": 12,
+      "test_code": "DISTURBANCE_VEHICLE_SUPPLY"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "DISTURBANCE_V1",
+        "rows": [
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 1,
+            "severity_id": "dip-a",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_VOLTAGE_DIP"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 2,
+            "severity_id": "dip-a",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_VOLTAGE_DIP"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 1,
+            "sequence_no": 3,
+            "severity_id": "interrupt-a",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_VOLTAGE_DIP"
+          },
+          {
+            "disturbed_indication_g": "1010",
+            "fault_detected": false,
+            "fault_response": null,
+            "fault_response_evidence_hash": null,
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "protocol": "DISTURBANCE_V1",
+            "reference_indication_g": "1000",
+            "repetition_no": 2,
+            "sequence_no": 4,
+            "severity_id": "interrupt-a",
+            "state_after": "SYNTHETIC_AFTER",
+            "state_before": "SYNTHETIC_BEFORE",
+            "state_during": "SYNTHETIC_DURING",
+            "test_code": "DISTURBANCE_VOLTAGE_DIP"
+          }
+        ],
+        "test_code": "DISTURBANCE_VOLTAGE_DIP"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": "SYNTHETIC_PHASE10",
+            "pressure_hpa": "1000",
+            "relative_humidity_percent": "50",
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "environment_stabilized": true,
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_PHASE10_GENERATOR",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        ],
+        "no_load_deviation_g": "0",
+        "peripherals_connected": true,
+        "procedure_schema_version": "v1",
+        "procedure_variant": "AC_MAINS_DIPS_INTERRUPTION",
+        "protocol": "DISTURBANCE_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "severity_cases": [
+          {
+            "amplitude_v": null,
+            "application_type": null,
+            "battery_voltage_v": null,
+            "case": "SYNTHETIC_DIP_A",
+            "conducted_voltage_v": null,
+            "coupling_mode": null,
+            "cycles": "2",
+            "discharge_mode": null,
+            "duration_s": null,
+            "field_strength_v_per_m": null,
+            "frequency_hz": null,
+            "line_type": null,
+            "location": null,
+            "modulation_frequency_hz": null,
+            "modulation_percent": null,
+            "phase_angle_deg": null,
+            "polarity": null,
+            "port": null,
+            "pulse": null,
+            "reduction_percent": "25",
+            "severity_id": "dip-a",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": null,
+            "waveform_reference": "SYNTHETIC_TRACE_dip-a"
+          },
+          {
+            "amplitude_v": null,
+            "application_type": null,
+            "battery_voltage_v": null,
+            "case": "SYNTHETIC_INTERRUPTION",
+            "conducted_voltage_v": null,
+            "coupling_mode": null,
+            "cycles": "3",
+            "discharge_mode": null,
+            "duration_s": null,
+            "field_strength_v_per_m": null,
+            "frequency_hz": null,
+            "line_type": null,
+            "location": null,
+            "modulation_frequency_hz": null,
+            "modulation_percent": null,
+            "phase_angle_deg": null,
+            "polarity": null,
+            "port": null,
+            "pulse": null,
+            "reduction_percent": "0",
+            "severity_id": "interrupt-a",
+            "standard_profile_reference": "SYNTHETIC_PROFILE_ONLY",
+            "voltage_kv": null,
+            "waveform_reference": "SYNTHETIC_TRACE_interrupt-a"
+          }
+        ],
+        "test_code": "DISTURBANCE_VOLTAGE_DIP",
+        "test_load_g": "1000",
+        "warm_up_completed": true
+      },
+      "section": 12,
+      "test_code": "DISTURBANCE_VOLTAGE_DIP"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "ECCENTRICITY_V1",
+        "rows": [
+          {
+            "additional_load_g": "5",
+            "indication_g": "5000",
+            "load_g": "5000",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "position_code": "Q1",
+            "protocol": "ECCENTRICITY_V1",
+            "rolling_direction": null,
+            "sequence_no": 1,
+            "test_code": "ECCENTRICITY",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "5005",
+            "load_g": "5000",
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "position_code": "Q2",
+            "protocol": "ECCENTRICITY_V1",
+            "rolling_direction": null,
+            "sequence_no": 2,
+            "test_code": "ECCENTRICITY",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "4995",
+            "load_g": "5000",
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "position_code": "Q3",
+            "protocol": "ECCENTRICITY_V1",
+            "rolling_direction": null,
+            "sequence_no": 3,
+            "test_code": "ECCENTRICITY",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "5010",
+            "load_g": "5000",
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "position_code": "Q4",
+            "protocol": "ECCENTRICITY_V1",
+            "rolling_direction": null,
+            "sequence_no": 4,
+            "test_code": "ECCENTRICITY",
+            "zero_error_g": "0"
+          }
+        ],
+        "test_code": "ECCENTRICITY"
+      },
+      "procedure_context": {
+        "display_location": null,
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_WEIGHT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        "load_receptor_type": "RECTANGULAR",
+        "positions": [
+          {
+            "description": null,
+            "position_code": "Q1",
+            "x_mm": "-100",
+            "y_mm": "100"
+          },
+          {
+            "description": null,
+            "position_code": "Q2",
+            "x_mm": "100",
+            "y_mm": "100"
+          },
+          {
+            "description": null,
+            "position_code": "Q3",
+            "x_mm": "100",
+            "y_mm": "-100"
+          },
+          {
+            "description": null,
+            "position_code": "Q4",
+            "x_mm": "-100",
+            "y_mm": "-100"
+          }
+        ],
+        "procedure_schema_version": "v1",
+        "procedure_variant": "WEIGHTS",
+        "protocol": "ECCENTRICITY_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "support_count": 4,
+        "test_code": "ECCENTRICITY"
+      },
+      "section": 3,
+      "test_code": "ECCENTRICITY"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "ENDURANCE_V1",
+        "rows": [
+          {
+            "additional_load_g": "5",
+            "indication_g": "5000",
+            "load_g": "5000",
+            "measured_at": "2000-01-01T00:01:00Z",
+            "observation_schema_version": "v1",
+            "phase": "INITIAL",
+            "point_id": "P25",
+            "protocol": "ENDURANCE_V1",
+            "sequence_no": 1,
+            "test_code": "ENDURANCE",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "20000",
+            "load_g": "20000",
+            "measured_at": "2000-01-01T00:02:00Z",
+            "observation_schema_version": "v1",
+            "phase": "INITIAL",
+            "point_id": "PMAX",
+            "protocol": "ENDURANCE_V1",
+            "sequence_no": 2,
+            "test_code": "ENDURANCE",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "5010",
+            "load_g": "5000",
+            "measured_at": "2000-01-03T00:03:00Z",
+            "observation_schema_version": "v1",
+            "phase": "FINAL",
+            "point_id": "P25",
+            "protocol": "ENDURANCE_V1",
+            "sequence_no": 3,
+            "test_code": "ENDURANCE",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "20010",
+            "load_g": "20000",
+            "measured_at": "2000-01-03T00:04:00Z",
+            "observation_schema_version": "v1",
+            "phase": "FINAL",
+            "point_id": "PMAX",
+            "protocol": "ENDURANCE_V1",
+            "sequence_no": 4,
+            "test_code": "ENDURANCE",
+            "zero_error_g": "0"
+          }
+        ],
+        "test_code": "ENDURANCE"
+      },
+      "procedure_context": {
+        "abnormal_events": [],
+        "abnormal_events_resolved": true,
+        "completed_cycles": 10,
+        "cycle_ended_at": "2000-01-02T00:10:00Z",
+        "cycle_started_at": "2000-01-02T00:00:00Z",
+        "cycling_target_load_g": "8000",
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": "SYNTHETIC_PHASE11",
+            "pressure_hpa": "1000",
+            "relative_humidity_percent": "50",
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": "SYNTHETIC-CERT",
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_ENDURANCE_MACHINE",
+            "serial_number": null
+          },
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": "SYNTHETIC-WEIGHT-CERT",
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_REFERENCE_WEIGHTS",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        ],
+        "planned_cycles": 10,
+        "procedure_schema_version": "v1",
+        "procedure_variant": "MECHANICAL_CYCLING",
+        "protocol": "ENDURANCE_V1",
+        "range_no": 1,
+        "same_reference_weights_confirmed": true,
+        "scenario": "fixture",
+        "test_code": "ENDURANCE"
+      },
+      "section": 15,
+      "test_code": "ENDURANCE"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "REPEATABILITY_V1",
+        "rows": [
+          {
+            "additional_load_g": "5",
+            "indication_g": "5000",
+            "load_g": "5000",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "REPEATABILITY_V1",
+            "repetition_no": 1,
+            "sequence_no": 1,
+            "series_code": "MID",
+            "test_code": "REPEATABILITY",
+            "zero_error_g": "0",
+            "zero_reset_performed": true
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "5005",
+            "load_g": "5000",
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "REPEATABILITY_V1",
+            "repetition_no": 2,
+            "sequence_no": 2,
+            "series_code": "MID",
+            "test_code": "REPEATABILITY",
+            "zero_error_g": "0",
+            "zero_reset_performed": true
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "5010",
+            "load_g": "5000",
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "protocol": "REPEATABILITY_V1",
+            "repetition_no": 3,
+            "sequence_no": 3,
+            "series_code": "MID",
+            "test_code": "REPEATABILITY",
+            "zero_error_g": "0",
+            "zero_reset_performed": true
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "10000",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "protocol": "REPEATABILITY_V1",
+            "repetition_no": 1,
+            "sequence_no": 4,
+            "series_code": "HIGH",
+            "test_code": "REPEATABILITY",
+            "zero_error_g": "0",
+            "zero_reset_performed": true
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "9995",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:05Z",
+            "observation_schema_version": "v1",
+            "protocol": "REPEATABILITY_V1",
+            "repetition_no": 2,
+            "sequence_no": 5,
+            "series_code": "HIGH",
+            "test_code": "REPEATABILITY",
+            "zero_error_g": "0",
+            "zero_reset_performed": true
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "10005",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:06Z",
+            "observation_schema_version": "v1",
+            "protocol": "REPEATABILITY_V1",
+            "repetition_no": 3,
+            "sequence_no": 6,
+            "series_code": "HIGH",
+            "test_code": "REPEATABILITY",
+            "zero_error_g": "0",
+            "zero_reset_performed": true
+          }
+        ],
+        "test_code": "REPEATABILITY"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_WEIGHT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        ],
+        "procedure_schema_version": "v1",
+        "procedure_variant": "DIGITAL_PRE_ROUNDING",
+        "protocol": "REPEATABILITY_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "stabilized": true,
+        "test_code": "REPEATABILITY"
+      },
+      "section": 5,
+      "test_code": "REPEATABILITY"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "SENSITIVITY_V1",
+        "rows": [
+          {
+            "extra_load_g": "10",
+            "load_g": "5000",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "permanent_displacement_mm": "2",
+            "protocol": "SENSITIVITY_V1",
+            "sequence_no": 1,
+            "test_code": "SENSITIVITY"
+          }
+        ],
+        "test_code": "SENSITIVITY"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_WEIGHT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        ],
+        "procedure_schema_version": "v1",
+        "procedure_variant": "NON_SELF_INDICATING",
+        "protocol": "SENSITIVITY_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "stabilized": true,
+        "test_code": "SENSITIVITY"
+      },
+      "section": 4,
+      "test_code": "SENSITIVITY"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "SPAN_STABILITY_V1",
+        "rows": [
+          {
+            "barometric_pressure_hpa": "1000",
+            "damp_heat_event": false,
+            "elapsed_s": "0",
+            "event_since_previous_measurement": null,
+            "extension_measurement": false,
+            "influence_correction_g": "0",
+            "load_g": "10000",
+            "loaded_additional_load_g": "5",
+            "loaded_indication_g": "10000",
+            "location": "SYNTHETIC LAB",
+            "measured_at": "2000-01-01T00:00:00Z",
+            "measurement_no": 1,
+            "observation_schema_version": "v1",
+            "power_disconnection_duration_s": null,
+            "power_disconnection_event": false,
+            "protocol": "SPAN_STABILITY_V1",
+            "relative_humidity_percent": "50",
+            "sequence_no": 1,
+            "temperature_c": "20",
+            "temperature_test_event": false,
+            "test_code": "SPAN_STABILITY",
+            "zero_additional_load_g": "5",
+            "zero_indication_g": "0"
+          },
+          {
+            "barometric_pressure_hpa": "1000",
+            "damp_heat_event": false,
+            "elapsed_s": "100",
+            "event_since_previous_measurement": "SYNTHETIC POWER EVENT",
+            "extension_measurement": false,
+            "influence_correction_g": "0",
+            "load_g": "10000",
+            "loaded_additional_load_g": "5",
+            "loaded_indication_g": "10003",
+            "location": "SYNTHETIC LAB",
+            "measured_at": "2000-01-01T00:01:40Z",
+            "measurement_no": 2,
+            "observation_schema_version": "v1",
+            "power_disconnection_duration_s": "50",
+            "power_disconnection_event": true,
+            "protocol": "SPAN_STABILITY_V1",
+            "relative_humidity_percent": "50",
+            "sequence_no": 2,
+            "temperature_c": "20",
+            "temperature_test_event": false,
+            "test_code": "SPAN_STABILITY",
+            "zero_additional_load_g": "5",
+            "zero_indication_g": "0"
+          },
+          {
+            "barometric_pressure_hpa": "1000",
+            "damp_heat_event": false,
+            "elapsed_s": "200",
+            "event_since_previous_measurement": "SYNTHETIC POWER EVENT",
+            "extension_measurement": false,
+            "influence_correction_g": "0",
+            "load_g": "10000",
+            "loaded_additional_load_g": "5",
+            "loaded_indication_g": "10006",
+            "location": "SYNTHETIC LAB",
+            "measured_at": "2000-01-01T00:03:20Z",
+            "measurement_no": 3,
+            "observation_schema_version": "v1",
+            "power_disconnection_duration_s": "50",
+            "power_disconnection_event": true,
+            "protocol": "SPAN_STABILITY_V1",
+            "relative_humidity_percent": "50",
+            "sequence_no": 3,
+            "temperature_c": "20",
+            "temperature_test_event": false,
+            "test_code": "SPAN_STABILITY",
+            "zero_additional_load_g": "5",
+            "zero_indication_g": "0"
+          },
+          {
+            "barometric_pressure_hpa": "1000",
+            "damp_heat_event": false,
+            "elapsed_s": "300",
+            "event_since_previous_measurement": null,
+            "extension_measurement": false,
+            "influence_correction_g": "0",
+            "load_g": "10000",
+            "loaded_additional_load_g": "5",
+            "loaded_indication_g": "10010",
+            "location": "SYNTHETIC LAB",
+            "measured_at": "2000-01-01T00:05:00Z",
+            "measurement_no": 4,
+            "observation_schema_version": "v1",
+            "power_disconnection_duration_s": null,
+            "power_disconnection_event": false,
+            "protocol": "SPAN_STABILITY_V1",
+            "relative_humidity_percent": "50",
+            "sequence_no": 4,
+            "temperature_c": "20",
+            "temperature_test_event": false,
+            "test_code": "SPAN_STABILITY",
+            "zero_additional_load_g": "5",
+            "zero_indication_g": "0"
+          }
+        ],
+        "test_code": "SPAN_STABILITY"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": "1000",
+            "relative_humidity_percent": "50",
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_PHASE9_EQUIPMENT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "9999999999999999999999999999999999999999999999999999999999999999"
+        ],
+        "extension_completed": false,
+        "planned_duration_s": "300",
+        "procedure_schema_version": "v1",
+        "procedure_variant": "LONG_DURATION",
+        "protocol": "SPAN_STABILITY_V1",
+        "range_no": 1,
+        "same_reference_weights_confirmed": true,
+        "scenario": "fixture",
+        "test_code": "SPAN_STABILITY",
+        "test_load_g": "10000"
+      },
+      "section": 14,
+      "test_code": "SPAN_STABILITY"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "STABILITY_EQUILIBRIUM_V1",
+        "rows": [
+          {
+            "adjacent_values_consistent": true,
+            "equilibrium_stable": false,
+            "function": "PRINTING",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "operation_performed": false,
+            "protocol": "STABILITY_EQUILIBRIUM_V1",
+            "sequence_no": 1,
+            "test_code": "STABILITY_EQUILIBRIUM",
+            "trial_no": 1
+          },
+          {
+            "adjacent_values_consistent": true,
+            "equilibrium_stable": true,
+            "function": "PRINTING",
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "operation_performed": true,
+            "protocol": "STABILITY_EQUILIBRIUM_V1",
+            "sequence_no": 2,
+            "test_code": "STABILITY_EQUILIBRIUM",
+            "trial_no": 2
+          },
+          {
+            "adjacent_values_consistent": true,
+            "equilibrium_stable": false,
+            "function": "STORAGE",
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "operation_performed": false,
+            "protocol": "STABILITY_EQUILIBRIUM_V1",
+            "sequence_no": 3,
+            "test_code": "STABILITY_EQUILIBRIUM",
+            "trial_no": 1
+          },
+          {
+            "adjacent_values_consistent": true,
+            "equilibrium_stable": true,
+            "function": "STORAGE",
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "operation_performed": true,
+            "protocol": "STABILITY_EQUILIBRIUM_V1",
+            "sequence_no": 4,
+            "test_code": "STABILITY_EQUILIBRIUM",
+            "trial_no": 2
+          },
+          {
+            "adjacent_values_consistent": null,
+            "equilibrium_stable": false,
+            "function": "ZERO",
+            "measured_at": "2000-01-01T00:00:05Z",
+            "observation_schema_version": "v1",
+            "operation_performed": false,
+            "protocol": "STABILITY_EQUILIBRIUM_V1",
+            "sequence_no": 5,
+            "test_code": "STABILITY_EQUILIBRIUM",
+            "trial_no": 1
+          },
+          {
+            "adjacent_values_consistent": null,
+            "equilibrium_stable": true,
+            "function": "ZERO",
+            "measured_at": "2000-01-01T00:00:06Z",
+            "observation_schema_version": "v1",
+            "operation_performed": true,
+            "protocol": "STABILITY_EQUILIBRIUM_V1",
+            "sequence_no": 6,
+            "test_code": "STABILITY_EQUILIBRIUM",
+            "trial_no": 2
+          },
+          {
+            "adjacent_values_consistent": null,
+            "equilibrium_stable": false,
+            "function": "TARE",
+            "measured_at": "2000-01-01T00:00:07Z",
+            "observation_schema_version": "v1",
+            "operation_performed": false,
+            "protocol": "STABILITY_EQUILIBRIUM_V1",
+            "sequence_no": 7,
+            "test_code": "STABILITY_EQUILIBRIUM",
+            "trial_no": 1
+          },
+          {
+            "adjacent_values_consistent": null,
+            "equilibrium_stable": true,
+            "function": "TARE",
+            "measured_at": "2000-01-01T00:00:08Z",
+            "observation_schema_version": "v1",
+            "operation_performed": true,
+            "protocol": "STABILITY_EQUILIBRIUM_V1",
+            "sequence_no": 8,
+            "test_code": "STABILITY_EQUILIBRIUM",
+            "trial_no": 2
+          }
+        ],
+        "test_code": "STABILITY_EQUILIBRIUM"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_WEIGHT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        ],
+        "functions_under_test": [
+          "PRINTING",
+          "STORAGE",
+          "TARE",
+          "ZERO"
+        ],
+        "procedure_schema_version": "v1",
+        "procedure_variant": "FUNCTIONAL",
+        "protocol": "STABILITY_EQUILIBRIUM_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "stabilized": true,
+        "test_code": "STABILITY_EQUILIBRIUM"
+      },
+      "section": 7,
+      "test_code": "STABILITY_EQUILIBRIUM"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "TARE_V1",
+        "rows": [
+          {
+            "additional_load_g": "5",
+            "direction": "UP",
+            "gross_load_g": "2000",
+            "indication_g": "1000",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "net_load_g": "1000",
+            "observation_schema_version": "v1",
+            "protocol": "TARE_V1",
+            "sequence_no": 1,
+            "tare_scenario_code": "T1",
+            "tare_type": "SUBTRACTIVE",
+            "tare_value_g": "1000",
+            "test_code": "TARE",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "UP",
+            "gross_load_g": "6000",
+            "indication_g": "5005",
+            "measured_at": "2000-01-01T00:00:02Z",
+            "net_load_g": "5000",
+            "observation_schema_version": "v1",
+            "protocol": "TARE_V1",
+            "sequence_no": 2,
+            "tare_scenario_code": "T1",
+            "tare_type": "SUBTRACTIVE",
+            "tare_value_g": "1000",
+            "test_code": "TARE",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "DOWN",
+            "gross_load_g": "6000",
+            "indication_g": "5005",
+            "measured_at": "2000-01-01T00:00:03Z",
+            "net_load_g": "5000",
+            "observation_schema_version": "v1",
+            "protocol": "TARE_V1",
+            "sequence_no": 3,
+            "tare_scenario_code": "T1",
+            "tare_type": "SUBTRACTIVE",
+            "tare_value_g": "1000",
+            "test_code": "TARE",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "DOWN",
+            "gross_load_g": "2000",
+            "indication_g": "1000",
+            "measured_at": "2000-01-01T00:00:04Z",
+            "net_load_g": "1000",
+            "observation_schema_version": "v1",
+            "protocol": "TARE_V1",
+            "sequence_no": 4,
+            "tare_scenario_code": "T1",
+            "tare_type": "SUBTRACTIVE",
+            "tare_value_g": "1000",
+            "test_code": "TARE",
+            "zero_error_g": "0"
+          }
+        ],
+        "test_code": "TARE"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_WEIGHT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        ],
+        "procedure_schema_version": "v1",
+        "procedure_variant": "DIGITAL_PRE_ROUNDING",
+        "protocol": "TARE_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "stabilized": true,
+        "stages": [
+          "UP",
+          "DOWN"
+        ],
+        "tare_scenarios": [
+          {
+            "scenario_code": "T1",
+            "tare_type": "SUBTRACTIVE",
+            "tare_value_g": "1000"
+          }
+        ],
+        "test_code": "TARE"
+      },
+      "section": 9,
+      "test_code": "TARE"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "TEMPERATURE_ZERO_V1",
+        "rows": [
+          {
+            "additional_load_g": "5",
+            "indication_g": "0",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "TEMPERATURE_ZERO_V1",
+            "sequence_no": 1,
+            "stabilized": true,
+            "temperature_c": "0",
+            "test_code": "TEMPERATURE_ZERO",
+            "zero_tracking_active": false
+          },
+          {
+            "additional_load_g": "5",
+            "indication_g": "9",
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "TEMPERATURE_ZERO_V1",
+            "sequence_no": 2,
+            "stabilized": true,
+            "temperature_c": "5",
+            "test_code": "TEMPERATURE_ZERO",
+            "zero_tracking_active": false
+          }
+        ],
+        "test_code": "TEMPERATURE_ZERO"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_INFLUENCE_EQUIPMENT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "procedure_schema_version": "v1",
+        "procedure_variant": "TEMPERATURE_SEQUENCE",
+        "protocol": "TEMPERATURE_ZERO_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "temperature_sequence_c": [
+          "0",
+          "5"
+        ],
+        "test_code": "TEMPERATURE_ZERO",
+        "zero_tracking_disabled": true
+      },
+      "section": 2,
+      "test_code": "TEMPERATURE_ZERO"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "TILTING_V1",
+        "rows": [
+          {
+            "additional_load_g": "5",
+            "direction": "FORWARD",
+            "display_operational": null,
+            "indication_g": "0",
+            "load_g": "0",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "printing_inhibited": null,
+            "protocol": "TILTING_V1",
+            "sequence_no": 1,
+            "stage": "REFERENCE",
+            "test_code": "TILTING",
+            "tilt_value": "0",
+            "transmission_inhibited": null,
+            "warning_generated": null,
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "FORWARD",
+            "display_operational": null,
+            "indication_g": "20",
+            "load_g": "0",
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "printing_inhibited": null,
+            "protocol": "TILTING_V1",
+            "sequence_no": 2,
+            "stage": "TILTED",
+            "test_code": "TILTING",
+            "tilt_value": "0.05",
+            "transmission_inhibited": null,
+            "warning_generated": null,
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "FORWARD",
+            "display_operational": null,
+            "indication_g": "10000",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "printing_inhibited": null,
+            "protocol": "TILTING_V1",
+            "sequence_no": 3,
+            "stage": "REFERENCE",
+            "test_code": "TILTING",
+            "tilt_value": "0",
+            "transmission_inhibited": null,
+            "warning_generated": null,
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "FORWARD",
+            "display_operational": null,
+            "indication_g": "10010",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "printing_inhibited": null,
+            "protocol": "TILTING_V1",
+            "sequence_no": 4,
+            "stage": "TILTED",
+            "test_code": "TILTING",
+            "tilt_value": "0.05",
+            "transmission_inhibited": null,
+            "warning_generated": null,
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "LEFT",
+            "display_operational": null,
+            "indication_g": "0",
+            "load_g": "0",
+            "measured_at": "2000-01-01T00:00:05Z",
+            "observation_schema_version": "v1",
+            "printing_inhibited": null,
+            "protocol": "TILTING_V1",
+            "sequence_no": 5,
+            "stage": "REFERENCE",
+            "test_code": "TILTING",
+            "tilt_value": "0",
+            "transmission_inhibited": null,
+            "warning_generated": null,
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "LEFT",
+            "display_operational": null,
+            "indication_g": "20",
+            "load_g": "0",
+            "measured_at": "2000-01-01T00:00:06Z",
+            "observation_schema_version": "v1",
+            "printing_inhibited": null,
+            "protocol": "TILTING_V1",
+            "sequence_no": 6,
+            "stage": "TILTED",
+            "test_code": "TILTING",
+            "tilt_value": "0.05",
+            "transmission_inhibited": null,
+            "warning_generated": null,
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "LEFT",
+            "display_operational": null,
+            "indication_g": "10000",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:07Z",
+            "observation_schema_version": "v1",
+            "printing_inhibited": null,
+            "protocol": "TILTING_V1",
+            "sequence_no": 7,
+            "stage": "REFERENCE",
+            "test_code": "TILTING",
+            "tilt_value": "0",
+            "transmission_inhibited": null,
+            "warning_generated": null,
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "LEFT",
+            "display_operational": null,
+            "indication_g": "10010",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:08Z",
+            "observation_schema_version": "v1",
+            "printing_inhibited": null,
+            "protocol": "TILTING_V1",
+            "sequence_no": 8,
+            "stage": "TILTED",
+            "test_code": "TILTING",
+            "tilt_value": "0.05",
+            "transmission_inhibited": null,
+            "warning_generated": null,
+            "zero_error_g": "0"
+          }
+        ],
+        "test_code": "TILTING"
+      },
+      "procedure_context": {
+        "directions": [
+          "FORWARD",
+          "LEFT"
+        ],
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_INFLUENCE_EQUIPMENT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "procedure_schema_version": "v1",
+        "procedure_variant": "NO_LEVEL_DEVICE",
+        "protection_behavior_checked": false,
+        "protocol": "TILTING_V1",
+        "range_no": 1,
+        "reference_position_confirmed": true,
+        "reference_tilt_value": "0",
+        "scenario": "fixture",
+        "test_code": "TILTING",
+        "test_tilt_value": "0.05",
+        "tilt_mode": "NO_LEVEL_DEVICE"
+      },
+      "section": 8,
+      "test_code": "TILTING"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "VOLTAGE_VARIATION_V1",
+        "rows": [
+          {
+            "additional_load_g": "5",
+            "applied_voltage_v": "200",
+            "functions_operational": true,
+            "indication_g": "110",
+            "load_g": "100",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "operational_state": "INDICATING",
+            "protocol": "VOLTAGE_VARIATION_V1",
+            "sequence_no": 1,
+            "test_code": "VOLTAGE_VARIATION",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "applied_voltage_v": "230",
+            "functions_operational": true,
+            "indication_g": "110",
+            "load_g": "100",
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "operational_state": "INDICATING",
+            "protocol": "VOLTAGE_VARIATION_V1",
+            "sequence_no": 2,
+            "test_code": "VOLTAGE_VARIATION",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "applied_voltage_v": "250",
+            "functions_operational": true,
+            "indication_g": "110",
+            "load_g": "100",
+            "measured_at": "2000-01-01T00:00:03Z",
+            "observation_schema_version": "v1",
+            "operational_state": "INDICATING",
+            "protocol": "VOLTAGE_VARIATION_V1",
+            "sequence_no": 3,
+            "test_code": "VOLTAGE_VARIATION",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "applied_voltage_v": "200",
+            "functions_operational": true,
+            "indication_g": "10010",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:04Z",
+            "observation_schema_version": "v1",
+            "operational_state": "INDICATING",
+            "protocol": "VOLTAGE_VARIATION_V1",
+            "sequence_no": 4,
+            "test_code": "VOLTAGE_VARIATION",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "applied_voltage_v": "230",
+            "functions_operational": true,
+            "indication_g": "10010",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:05Z",
+            "observation_schema_version": "v1",
+            "operational_state": "INDICATING",
+            "protocol": "VOLTAGE_VARIATION_V1",
+            "sequence_no": 5,
+            "test_code": "VOLTAGE_VARIATION",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "applied_voltage_v": "250",
+            "functions_operational": true,
+            "indication_g": "10010",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:06Z",
+            "observation_schema_version": "v1",
+            "operational_state": "INDICATING",
+            "protocol": "VOLTAGE_VARIATION_V1",
+            "sequence_no": 6,
+            "test_code": "VOLTAGE_VARIATION",
+            "zero_error_g": "0"
+          }
+        ],
+        "test_code": "VOLTAGE_VARIATION"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_INFLUENCE_EQUIPMENT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "power_supply_profile": "AC_MAINS",
+        "procedure_schema_version": "v1",
+        "procedure_variant": "AC_MAINS",
+        "protection_behavior_checked": true,
+        "protocol": "VOLTAGE_VARIATION_V1",
+        "range_no": 1,
+        "reference_voltage_v": "230",
+        "scenario": "fixture",
+        "test_code": "VOLTAGE_VARIATION"
+      },
+      "section": 11,
+      "test_code": "VOLTAGE_VARIATION"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "WARM_UP_V1",
+        "rows": [
+          {
+            "elapsed_s": "0",
+            "load_g": "10000",
+            "loaded_additional_load_g": "5",
+            "loaded_indication_g": "10010",
+            "measured_at": "2000-01-01T00:00:00Z",
+            "observation_schema_version": "v1",
+            "protocol": "WARM_UP_V1",
+            "sequence_no": 1,
+            "stabilized": true,
+            "temperature_c": "20",
+            "test_code": "WARM_UP",
+            "zero_additional_load_g": "5",
+            "zero_indication_g": "0"
+          },
+          {
+            "elapsed_s": "300",
+            "load_g": "10000",
+            "loaded_additional_load_g": "5",
+            "loaded_indication_g": "10010",
+            "measured_at": "2000-01-01T00:05:00Z",
+            "observation_schema_version": "v1",
+            "protocol": "WARM_UP_V1",
+            "sequence_no": 2,
+            "stabilized": true,
+            "temperature_c": "20",
+            "test_code": "WARM_UP",
+            "zero_additional_load_g": "5",
+            "zero_indication_g": "0"
+          },
+          {
+            "elapsed_s": "900",
+            "load_g": "10000",
+            "loaded_additional_load_g": "5",
+            "loaded_indication_g": "10010",
+            "measured_at": "2000-01-01T00:15:00Z",
+            "observation_schema_version": "v1",
+            "protocol": "WARM_UP_V1",
+            "sequence_no": 3,
+            "stabilized": true,
+            "temperature_c": "20",
+            "test_code": "WARM_UP",
+            "zero_additional_load_g": "5",
+            "zero_indication_g": "0"
+          },
+          {
+            "elapsed_s": "1800",
+            "load_g": "10000",
+            "loaded_additional_load_g": "5",
+            "loaded_indication_g": "10010",
+            "measured_at": "2000-01-01T00:30:00Z",
+            "observation_schema_version": "v1",
+            "protocol": "WARM_UP_V1",
+            "sequence_no": 4,
+            "stabilized": true,
+            "temperature_c": "20",
+            "test_code": "WARM_UP",
+            "zero_additional_load_g": "5",
+            "zero_indication_g": "0"
+          }
+        ],
+        "test_code": "WARM_UP"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_INFLUENCE_EQUIPMENT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "first_stable_indication_observed": true,
+        "power_off_seconds": "100",
+        "procedure_schema_version": "v1",
+        "procedure_variant": "WARM_UP",
+        "protocol": "WARM_UP_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "test_code": "WARM_UP",
+        "test_load_g": "10000",
+        "zero_set_after_power_on": true
+      },
+      "section": 10,
+      "test_code": "WARM_UP"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "WEIGHING_V1",
+        "rows": [
+          {
+            "additional_load_g": "5",
+            "direction": "UP",
+            "indication_g": "10000",
+            "load_g": "10000",
+            "measured_at": "2000-01-01T00:00:01Z",
+            "observation_schema_version": "v1",
+            "protocol": "WEIGHING_V1",
+            "sequence_no": 1,
+            "test_code": "WEIGHING_PERFORMANCE",
+            "zero_error_g": "0"
+          },
+          {
+            "additional_load_g": "5",
+            "direction": "DOWN",
+            "indication_g": "0",
+            "load_g": "0",
+            "measured_at": "2000-01-01T00:00:02Z",
+            "observation_schema_version": "v1",
+            "protocol": "WEIGHING_V1",
+            "sequence_no": 2,
+            "test_code": "WEIGHING_PERFORMANCE",
+            "zero_error_g": "0"
+          }
+        ],
+        "test_code": "WEIGHING_PERFORMANCE"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_WEIGHT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        "preloaded": true,
+        "procedure_schema_version": "v1",
+        "procedure_variant": "DIGITAL_PRE_ROUNDING",
+        "protocol": "WEIGHING_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "stabilized": true,
+        "stages": [
+          "UP",
+          "DOWN"
+        ],
+        "test_code": "WEIGHING_PERFORMANCE",
+        "warmed_up_seconds": "2",
+        "zero_condition": "SYNTHETIC_ZERO"
+      },
+      "section": 1,
+      "test_code": "WEIGHING_PERFORMANCE"
+    },
+    {
+      "expected_compliance_outcome": "COMPLIANT",
+      "expected_evaluation_status": "COMPLETE",
+      "observation_batch": {
+        "observation_schema_version": "v1",
+        "protocol": "ZERO_RETURN_V1",
+        "rows": [
+          {
+            "measured_at": "2000-01-01T00:01:00Z",
+            "observation_schema_version": "v1",
+            "protocol": "ZERO_RETURN_V1",
+            "sequence_no": 1,
+            "test_code": "ZERO_RETURN",
+            "zero_after_g": "5",
+            "zero_before_g": "0"
+          }
+        ],
+        "test_code": "ZERO_RETURN"
+      },
+      "procedure_context": {
+        "environment": [
+          {
+            "measured_at": "2000-01-01T00:00:00Z",
+            "phase": null,
+            "pressure_hpa": null,
+            "relative_humidity_percent": null,
+            "temperature_c": "20",
+            "voltage_v": null
+          }
+        ],
+        "equipment": [
+          {
+            "accuracy_or_class": null,
+            "calibration_certificate_no": null,
+            "calibration_date": null,
+            "calibration_due_date": null,
+            "category": "SYNTHETIC",
+            "certificate_content_hash": null,
+            "manufacturer": null,
+            "model": null,
+            "nominal_mass_g": null,
+            "reference": "SYNTHETIC_WEIGHT",
+            "serial_number": null
+          }
+        ],
+        "evaluation_context": "SYNTHETIC",
+        "evidence_hashes": [
+          "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        ],
+        "hold_seconds": "60",
+        "procedure_schema_version": "v1",
+        "procedure_variant": "ZERO_RETURN",
+        "protocol": "ZERO_RETURN_V1",
+        "range_no": 1,
+        "scenario": "fixture",
+        "stabilized": true,
+        "test_code": "ZERO_RETURN",
+        "test_load_g": "10000"
+      },
+      "section": 6,
+      "test_code": "ZERO_RETURN"
+    }
+  ],
+  "evaluation_context": "SYNTHETIC",
+  "instrument_snapshot": {
+    "accuracy_class": "III",
+    "automatic_tilt_sensor": false,
+    "battery_charging_during_operation": false,
+    "components": [],
+    "conducted_rf_path_available": true,
+    "data_storage_device_present": true,
+    "declared_installation": "SYNTHETIC LABORATORY DEMONSTRATION",
+    "declared_operating_conditions": "SYNTHETIC SIH DEMO ONLY",
+    "declared_temp_max_c": "40",
+    "declared_temp_min_c": "-10",
+    "embedded_software_present": true,
+    "extended_indication_available": true,
+    "geometry": null,
+    "indication_type": "DIGITAL",
+    "interfaces": [],
+    "is_direct_sales": false,
+    "is_electronic": true,
+    "is_labeling": false,
+    "is_mobile": false,
+    "is_portable": false,
+    "is_price_computing": false,
+    "is_self_indicating": false,
+    "is_software_controlled": true,
+    "level_indicator_available": false,
+    "load_receptor_type": "RECTANGULAR",
+    "loadable_software_present": false,
+    "max_capacity_g": "20000",
+    "max_voltage": "250",
+    "maximum_tare_g": "5000",
+    "min_capacity_g": "0",
+    "min_voltage": "200",
+    "nominal_voltage": "230",
+    "peripherals": [],
+    "power_supply_type": "AC",
+    "printing_device_present": true,
+    "range_type": "SINGLE",
+    "ranges": [
+      {
+        "max_capacity_g": "20000",
+        "min_capacity_g": "0",
+        "range_no": 1,
+        "scale_interval_d_g": "10",
+        "verification_interval_e_g": "10",
+        "verification_intervals_n": "2000"
+      }
+    ],
+    "scale_interval_d_g": "10",
+    "software_identifier": "SIH26035-V3-DEMO",
+    "support_point_count": 4,
+    "tare_type": "SUBTRACTIVE",
+    "vehicle_power_details": "SYNTHETIC SOFTWARE EXERCISE MATRIX",
+    "vehicle_powered": true,
+    "verification_interval_e_g": "10",
+    "verification_intervals_n": "2000",
+    "zero_setting_type": "AUTOMATIC",
+    "zero_tracking_available": true
+  },
+  "notice": "SYNTHETIC SOFTWARE EXERCISE MATRIX ONLY; NOT A PHYSICALLY COHERENT REGULATORY TEST PROGRAM AND NOT AN OIML CONCLUSION.",
+  "ruleset_version": "SYNTHETIC_TEST_SIH26035_FULL_FLOW_V3",
+  "schema_version": 1,
+  "verified_results": [
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "bc10c42d336df33710f8f92dcc1b58079251a2246be0b588fe49b438ea143dc5",
+      "synthetic_fixture": true,
+      "test_code": "CREEP"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "fda776c9f0ec1c2c8184933667fcc01ca9d21da10264a9b33595c216a4e23e21",
+      "synthetic_fixture": true,
+      "test_code": "DAMP_HEAT"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "73a57284b1164405be6ed2460f03290c8c1eb9aea5e8879e90469be84ab34027",
+      "synthetic_fixture": true,
+      "test_code": "DISCRIMINATION"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "cae55f8425bfec66be30243cc8eb9327539edad95a610a9bbff68fd1bc0c01ad",
+      "synthetic_fixture": true,
+      "test_code": "DISTURBANCE_BURST"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "81e98fa215602466256f067275cd7186818484d37519253c592ed4298d3b6c7e",
+      "synthetic_fixture": true,
+      "test_code": "DISTURBANCE_CONDUCTED_RF"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "8a7b6a93d40b32c76b68db5f3961fec75b6e9f31c2bb5b001f083b568f9a75fc",
+      "synthetic_fixture": true,
+      "test_code": "DISTURBANCE_ESD"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "8a4029a4e4b7d0b1bb28bec4235ab388f3195162af9de18ebda4651a24812860",
+      "synthetic_fixture": true,
+      "test_code": "DISTURBANCE_RADIATED_RF"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "d54686e7aa4db94e683ef10a503004ffb28ed9570634c0d98cb0157666cd84c9",
+      "synthetic_fixture": true,
+      "test_code": "DISTURBANCE_SURGE"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "b842aaa77981b1f8fc9d19d87fa863d0a13198c294feae56d0f42ebae8cbfc6a",
+      "synthetic_fixture": true,
+      "test_code": "DISTURBANCE_VEHICLE_SUPPLY"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "f8130569bdc197a0b76d272cc30583902d80db75b313278316dfd3cb6fafd706",
+      "synthetic_fixture": true,
+      "test_code": "DISTURBANCE_VOLTAGE_DIP"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "30949d68f602396ad0027f4e17704dfc709d76fb4b737b8d654155a81c482955",
+      "synthetic_fixture": true,
+      "test_code": "ECCENTRICITY"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "a7935d92341bce184ff166d672172c90a2a476ba1cc52325fab107a6cf64640c",
+      "synthetic_fixture": true,
+      "test_code": "ENDURANCE"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "871b7f19d24f20dcbf33a01c829f3dc10b09226cf716c56ba35b78d15c010cf2",
+      "synthetic_fixture": true,
+      "test_code": "REPEATABILITY"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "f1ae91254ec1ceb72f4e2238ebbe6a2946de1ae108e8fd52c9e3ef90943451aa",
+      "synthetic_fixture": true,
+      "test_code": "SENSITIVITY"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "5ac3c013d1460bac49e25cba02232eceb1cd9911a8f07b96b68d252bad45a8d5",
+      "synthetic_fixture": true,
+      "test_code": "SPAN_STABILITY"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "f15274d51d5746957bf9be84355cdf20bc9386c1047e94768ffa9a9dfd7b559c",
+      "synthetic_fixture": true,
+      "test_code": "STABILITY_EQUILIBRIUM"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "9e4e6f171708c82c02620357d30190e55449e49307caaa2516bdb58f1459e596",
+      "synthetic_fixture": true,
+      "test_code": "TARE"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "a6e66da45ac362f923e99498fd5a213232542d585789bf7b39aac623307bb43d",
+      "synthetic_fixture": true,
+      "test_code": "TEMPERATURE_ZERO"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "1a1523d8089ea51357a65a9ad55cb07fc4b4bc677c3883b94e1cd8b1e3f53894",
+      "synthetic_fixture": true,
+      "test_code": "TILTING"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "e1a0e0113d42496b17baf0f6630d19ec916e3b2ea32bab147594c705f7409812",
+      "synthetic_fixture": true,
+      "test_code": "VOLTAGE_VARIATION"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "d7567a19288060209c72beab5118d9dde6de162e8efa46a1a9b66a97e9c8b69e",
+      "synthetic_fixture": true,
+      "test_code": "WARM_UP"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "e1de136dc6339aab7f494a99c29b288271a161a6e87e01d29fd0d88ba84ca8c9",
+      "synthetic_fixture": true,
+      "test_code": "WEIGHING_PERFORMANCE"
+    },
+    {
+      "compliance_outcome": "COMPLIANT",
+      "evaluation_status": "COMPLETE",
+      "input_hash": "c9539df062b5d26bb15c3c45811877434e8c5b66e26dfa8409f1560307400c63",
+      "synthetic_fixture": true,
+      "test_code": "ZERO_RETURN"
+    }
+  ]
+}
