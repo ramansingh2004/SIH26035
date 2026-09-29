@@ -127,6 +127,21 @@ export async function confirmApplicability(
   return { item: response.data, etag: response.etag };
 }
 
+export async function completeFullDemoEvaluation(
+  id: string,
+  etag: string,
+): Promise<EvaluationDashboard> {
+  return (
+    await apiRequest<EvaluationDashboard>(
+      `/api/v1/test-sessions/${id}/demo-complete-evaluation`,
+      {
+        method: "POST",
+        etag,
+      },
+    )
+  ).data;
+}
+
 export async function startTesting(
   id: string,
   etag: string,

@@ -258,6 +258,24 @@ async def session_start_testing(
     )
 
 
+@router.post(
+    "/test-sessions/{identifier}/demo-complete-evaluation",
+    response_model=Dashboard,
+    dependencies=[Depends(no_body)],
+)
+async def session_demo_complete_evaluation(
+    identifier: UUID,
+    service: Service,
+    actor: Actor,
+    if_match: Match = None,
+):
+    return await service.demo_complete_evaluation(
+        actor,
+        identifier,
+        if_match,
+    )
+
+
 @router.post("/test-sessions/{identifier}/cancel", response_model=SessionView)
 async def session_cancel(
     identifier: UUID,

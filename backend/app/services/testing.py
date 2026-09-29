@@ -20,7 +20,10 @@ from app.compliance.full_demo import (
     full_demo_registry,
     is_full_demo_run_ruleset,
 )
-from app.compliance.full_demo_execution import is_full_demo_execution_ruleset
+from app.compliance.full_demo_execution import (
+    full_demo_execution_instrument,
+    is_full_demo_execution_ruleset,
+)
 from app.compliance.planning import RequirementPlanner
 from app.compliance.ruleset import RuleSet
 from app.compliance.suite import implemented_registry
@@ -67,6 +70,7 @@ from app.services.idempotency import IdempotencyService
 from app.services.review_scope import (
     enforce_correction_scope,
     invalidate_technical_approvals,
+    open_corrections,
 )
 
 EDITABLE = {"DRAFT", "INSTRUMENT_CONFIGURATION", "APPLICABILITY_CONFIRMED", "TESTING"}
@@ -1364,6 +1368,562 @@ class TestingService:
             422,
             {"issues": normalize(result.procedure_issues)},
         )
+
+    async def demo_complete_evaluation(self, actor, identifier, match):
+        """Persist and execute the complete V3 17-section software demo."""
+
+        from app.compliance.full_demo_session import full_demo_run_seeds
+        from app.services.checklist import ChecklistService
+        from app.services.construction import ConstructionService
+
+        seeds = {item.test_code: item for item in full_demo_run_seeds()}
+
+        # Phase A: authorize once and materialize server-owned synthetic sources.
+        async with self.session.begin():
+            row = await self.scoped(
+                actor,
+                identifier,
+                "test:execute",
+                mutation=True,
+            )
+            rules = RuleSet.model_validate(row.ruleset_snapshot)
+            lab = await self.repo.lab(row.laboratory_id)
+            if (
+                not is_full_demo_execution_ruleset(rules)
+                or lab is None
+                or lab.code != DEMO_LAB_CODE
+                or row.evaluation_context != "SYNTHETIC"
+            ):
+                reject(
+                    "SYNTHETIC_DEMO_STAGE6_FORBIDDEN",
+                    "Full-session demo completion is restricted to the V3 "
+                    "synthetic demo session in the dedicated demo laboratory",
+                )
+            if (
+                row.workflow_status == "EXAMINATION"
+                and row.evaluation_status == "COMPLETE"
+                and row.compliance_outcome == "COMPLIANT"
+            ):
+                reject(
+                    "SYNTHETIC_DEMO_STAGE6_ALREADY_COMPLETE",
+                    "The full 17-section synthetic demonstration is already complete",
+                )
+            if row.workflow_status != "TESTING":
+                reject(
+                    "SYNTHETIC_DEMO_STAGE6_REQUIRES_FRESH_TESTING",
+                    "Stage 6 requires a fresh V3 session in TESTING workflow",
+                )
+            require_match(match, etag(row.lock_version))
+
+            expected_instrument = full_demo_execution_instrument()
+            actual_instrument = InstrumentSnapshot.model_validate(
+                row.instrument_snapshot
+            )
+            if actual_instrument != expected_instrument:
+                reject(
+                    "SYNTHETIC_DEMO_STAGE6_INSTRUMENT_REQUIRED",
+                    "Stage 6 requires the canonical V3 synthetic instrument "
+                    "snapshot configured before applicability confirmation",
+                    409,
+                )
+
+            _, grants = await self.authz.current(actor, lock=True)
+            for permission in (
+                "test:execute",
+                "test:evaluate",
+                "test:complete",
+                "construction:update",
+                "construction:complete",
+                "checklist:update",
+                "checklist:complete",
+            ):
+                if row.laboratory_id not in grants.labs_for(permission):
+                    raise denied()
+
+            if await open_corrections(self.repo, row.id):
+                reject(
+                    "CORRECTION_RESOLUTION_REQUIRED",
+                    "Resolve bounded corrections before full-demo completion",
+                )
+
+            definitions = {
+                item.id: item
+                for item in await self.repo.catalog(
+                    TestDefinitionRecord,
+                    row.rule_set_id,
+                )
+            }
+            requirements = await self.repo.requirements(row.id)
+            runs = await self.repo.runs(row.id)
+            selected_ids = {
+                requirement.selected_run_id
+                for requirement in requirements
+                if requirement.selected_run_id is not None
+            }
+            selected = [run for run in runs if run.id in selected_ids]
+            run_by_code = {
+                definitions[run.test_definition_id].code: run
+                for run in selected
+            }
+
+            if (
+                set(run_by_code) != set(seeds)
+                or len(selected) != 23
+                or any(
+                    run.started_at is not None
+                    or run.completed_at is not None
+                    or run.current_result_id is not None
+                    for run in selected
+                )
+            ):
+                reject(
+                    "SYNTHETIC_DEMO_STAGE6_REQUIRES_FRESH_TESTING",
+                    "Stage 6 requires exactly 23 untouched selected V3 runs",
+                )
+
+            existing_sources = 0
+            for run in selected:
+                existing_sources += len(
+                    await self.repo.rows(
+                        TestObservation,
+                        test_run_id=run.id,
+                    )
+                )
+                existing_sources += len(
+                    await self.repo.rows(
+                        EnvironmentReading,
+                        test_run_id=run.id,
+                    )
+                )
+                existing_sources += len(
+                    await self.repo.rows(
+                        TestRunEquipment,
+                        test_run_id=run.id,
+                    )
+                )
+            if existing_sources:
+                reject(
+                    "SYNTHETIC_DEMO_STAGE6_REQUIRES_FRESH_TESTING",
+                    "Stage 6 requires runs without pre-existing source records",
+                )
+
+            engine = self.engine_for(row)
+            now = datetime.now(UTC)
+            observation_count = 0
+            environment_count = 0
+            equipment_count = 0
+            evidence_count = 0
+
+            for test_code in sorted(seeds):
+                seed = seeds[test_code]
+                run = run_by_code[test_code]
+                requirement = await self.repo.get(
+                    SessionTestRequirement,
+                    run.requirement_id,
+                )
+                registration = engine.registry.find(test_code)
+                if registration is None:
+                    reject(
+                        "SYNTHETIC_DEMO_STAGE6_EVALUATOR_MISSING",
+                        "V3 persisted run has no evaluator registration",
+                        500,
+                        {"test_code": test_code},
+                    )
+
+                context = registration.contexts.parse(
+                    seed.procedure_context
+                )
+                slot = requirement.slot_snapshot
+                if (
+                    context.test_code != test_code
+                    or context.procedure_schema_version
+                    != run.procedure_schema_version
+                    or context.range_no != slot["range_no"]
+                    or context.scenario != slot["scenario"]
+                    or context.procedure_variant
+                    != slot["procedure_variant"]
+                    or context.evaluation_context
+                    != row.evaluation_context
+                ):
+                    reject(
+                        "SYNTHETIC_DEMO_STAGE6_DATA_MISMATCH",
+                        "V3 persisted procedure does not match the pinned slot",
+                        500,
+                        {"test_code": test_code},
+                    )
+
+                client_context = registration.contexts.parse(
+                    seed.client_procedure_context
+                )
+                run.procedure_context = normalize(client_context)
+
+                batch = registration.observations.parse(
+                    test_code=test_code,
+                    protocol=context.protocol,
+                    version=run.observation_schema_version,
+                    rows=seed.observation_batch["rows"],
+                )
+                for observation in batch.rows:
+                    self.repo.add(
+                        TestObservation(
+                            id=uuid4(),
+                            test_run_id=run.id,
+                            sequence_no=observation.sequence_no,
+                            observation_type=test_code,
+                            payload_schema_version=(
+                                observation.observation_schema_version
+                            ),
+                            payload=normalize(observation),
+                            recorded_by=actor.user_id,
+                        )
+                    )
+                    observation_count += 1
+
+                for environment in context.environment:
+                    self.repo.add(
+                        EnvironmentReading(
+                            id=uuid4(),
+                            test_session_id=row.id,
+                            test_run_id=run.id,
+                            measured_at=environment.measured_at,
+                            temperature_c=environment.temperature_c,
+                            relative_humidity_percent=(
+                                environment.relative_humidity_percent
+                            ),
+                            barometric_pressure_hpa=(
+                                environment.pressure_hpa
+                            ),
+                            phase=environment.phase,
+                            notes="SYNTHETIC PHASE26 STAGE6 DEMO ONLY",
+                            recorded_by=actor.user_id,
+                        )
+                    )
+                    environment_count += 1
+
+                for index, equipment in enumerate(
+                    context.equipment,
+                    start=1,
+                ):
+                    equipment_row = TestEquipment(
+                        id=uuid4(),
+                        laboratory_id=row.laboratory_id,
+                        category=equipment.category,
+                        manufacturer=equipment.manufacturer,
+                        model=equipment.model,
+                        serial_number=equipment.serial_number,
+                        reference_number=equipment.reference,
+                        calibration_certificate_no=(
+                            equipment.calibration_certificate_no
+                        ),
+                        calibration_date=equipment.calibration_date,
+                        calibration_due_date=(
+                            equipment.calibration_due_date
+                        ),
+                        accuracy_or_class=equipment.accuracy_or_class,
+                        metadata_schema_version=1,
+                        metadata_json={
+                            "schema_version": 1,
+                            "synthetic_demo": True,
+                            "metadata_only": True,
+                            "phase": "PHASE26_STAGE6",
+                            "test_code": test_code,
+                            "nominal_mass_g": normalize(
+                                equipment.nominal_mass_g
+                            ),
+                        },
+                        created_by=actor.user_id,
+                    )
+                    self.repo.add(equipment_row)
+                    await self.repo.flush()
+
+                    certificate = None
+                    if equipment.certificate_content_hash:
+                        certificate = Attachment(
+                            id=uuid4(),
+                            laboratory_id=row.laboratory_id,
+                            attachment_type="CALIBRATION_CERTIFICATE",
+                            file_name=(
+                                f"{test_code.lower()}-equipment-{index}-"
+                                "synthetic-calibration.txt"
+                            ),
+                            content_type="text/plain",
+                            file_size=1,
+                            storage_provider="synthetic-demo",
+                            storage_key=(
+                                "synthetic-demo/stage6/calibration/"
+                                f"{row.id}/{run.id}/{index}"
+                            ),
+                            object_version="phase26-stage6-v1",
+                            sha256=equipment.certificate_content_hash,
+                            uploaded_by=actor.user_id,
+                            metadata_json={
+                                "synthetic_demo": True,
+                                "metadata_only": True,
+                                "phase": "PHASE26_STAGE6",
+                                "test_code": test_code,
+                                "kind": "calibration",
+                            },
+                        )
+                        self.repo.add(certificate)
+                        await self.repo.flush()
+                        evidence_count += 1
+
+                    snapshot = {
+                        "category": equipment.category,
+                        "manufacturer": equipment.manufacturer,
+                        "model": equipment.model,
+                        "serial_number": equipment.serial_number,
+                        "reference_number": equipment.reference,
+                        "calibration_certificate_no": (
+                            equipment.calibration_certificate_no
+                        ),
+                        "calibration_date": normalize(
+                            equipment.calibration_date
+                        ),
+                        "calibration_due_date": normalize(
+                            equipment.calibration_due_date
+                        ),
+                        "accuracy_or_class": equipment.accuracy_or_class,
+                        "nominal_mass_g": normalize(
+                            equipment.nominal_mass_g
+                        ),
+                        "calibration_attachment_id": (
+                            str(certificate.id) if certificate else None
+                        ),
+                        "calibration_attachment_sha256": (
+                            certificate.sha256 if certificate else None
+                        ),
+                        "calibration_attachment_object_version": (
+                            certificate.object_version
+                            if certificate
+                            else None
+                        ),
+                    }
+                    run_equipment = TestRunEquipment(
+                        id=uuid4(),
+                        test_run_id=run.id,
+                        equipment_id=equipment_row.id,
+                        equipment_snapshot=snapshot,
+                        calibration_attachment_id=(
+                            certificate.id if certificate else None
+                        ),
+                        linked_by=actor.user_id,
+                    )
+                    self.repo.add(run_equipment)
+                    await self.repo.flush()
+                    equipment_count += 1
+
+                    if certificate is not None:
+                        self.repo.add(
+                            AttachmentLink(
+                                id=uuid4(),
+                                attachment_id=certificate.id,
+                                entity_type="test_run_equipment",
+                                entity_id=run_equipment.id,
+                                purpose="calibration",
+                                linked_by=actor.user_id,
+                            )
+                        )
+
+                for index, sha256 in enumerate(
+                    context.evidence_hashes,
+                    start=1,
+                ):
+                    attachment = Attachment(
+                        id=uuid4(),
+                        laboratory_id=row.laboratory_id,
+                        attachment_type="EVIDENCE",
+                        file_name=(
+                            f"{test_code.lower()}-synthetic-evidence-{index}.txt"
+                        ),
+                        content_type="text/plain",
+                        file_size=1,
+                        storage_provider="synthetic-demo",
+                        storage_key=(
+                            "synthetic-demo/stage6/run-evidence/"
+                            f"{row.id}/{run.id}/{index}"
+                        ),
+                        object_version="phase26-stage6-v1",
+                        sha256=sha256,
+                        uploaded_by=actor.user_id,
+                        metadata_json={
+                            "synthetic_demo": True,
+                            "metadata_only": True,
+                            "phase": "PHASE26_STAGE6",
+                            "test_code": test_code,
+                            "kind": "run_evidence",
+                        },
+                    )
+                    self.repo.add(attachment)
+                    await self.repo.flush()
+                    self.repo.add(
+                        AttachmentLink(
+                            id=uuid4(),
+                            attachment_id=attachment.id,
+                            entity_type="test_runs",
+                            entity_id=run.id,
+                            purpose=(
+                                f"synthetic_demo_traceability_{index}"
+                            ),
+                            linked_by=actor.user_id,
+                        )
+                    )
+                    evidence_count += 1
+
+                run.started_at = now
+                run.started_by = actor.user_id
+                run.evaluation_status = "IN_PROGRESS"
+                run.compliance_outcome = "UNDETERMINED"
+                run.lock_version += 1
+
+            if (
+                observation_count != 92
+                or environment_count != 23
+                or equipment_count != 24
+                or evidence_count != 25
+            ):
+                reject(
+                    "SYNTHETIC_DEMO_STAGE6_DATA_MISMATCH",
+                    "V3 persisted source counts are not deterministic",
+                    500,
+                    {
+                        "observations": observation_count,
+                        "environment": environment_count,
+                        "equipment": equipment_count,
+                        "evidence": evidence_count,
+                    },
+                )
+
+            row.regulatory_revision += 1
+            row.lock_version += 1
+            await invalidate_technical_approvals(
+                self.repo,
+                actor,
+                row,
+                reason="Synthetic full-session Stage 6 sources materialized",
+                scope={
+                    "entity_type": "test_sessions",
+                    "entity_id": str(row.id),
+                    "field_paths": ["synthetic_demo_stage6_sources"],
+                },
+                audit=self.audit,
+            )
+            await self.aggregate(row)
+            await self.repo.flush()
+            self.audit.record(
+                "session.demo_stage6_sources_materialized",
+                actor.user_id,
+                "test_sessions",
+                row.id,
+                lab=row.laboratory_id,
+                after={
+                    "runs": 23,
+                    "observations": observation_count,
+                    "environment": environment_count,
+                    "equipment": equipment_count,
+                    "evidence": evidence_count,
+                },
+                target=row.lock_version,
+            )
+            run_ids = [
+                run_by_code[test_code].id
+                for test_code in sorted(run_by_code)
+            ]
+
+        # Phase B: use the normal immutable evaluator/result path for each run.
+        for run_id in run_ids:
+            run_state = await self.run_detail(actor, run_id)
+            await self.evaluate(
+                actor,
+                run_id,
+                etag(run_state["lock_version"]),
+                f"phase26-stage6-evaluate-{identifier}-{run_id}",
+            )
+            run_state = await self.run_detail(actor, run_id)
+            await self.mutate_run(
+                actor,
+                run_id,
+                etag(run_state["lock_version"]),
+                "complete",
+            )
+
+        # Phase C: use existing specialized Section 16 and 17 services.
+        session_state = await self.detail(actor, identifier)
+        construction = ConstructionService(
+            self.session,
+            self.audit.context,
+        )
+        await construction.start_examination(
+            actor,
+            identifier,
+            etag(session_state["lock_version"]),
+        )
+        examination = await construction.detail(actor, identifier)
+        await construction.demo_complete(
+            actor,
+            identifier,
+            etag(examination["lock_version"]),
+        )
+
+        checklist = ChecklistService(
+            self.session,
+            self.audit.context,
+        )
+        checklist_summary = await checklist.summary(actor, identifier)
+        await checklist.demo_complete(
+            actor,
+            identifier,
+            etag(checklist_summary["lock_version"]),
+        )
+
+        dashboard = await self.detail(
+            actor,
+            identifier,
+            "dashboard",
+        )
+        session_state = dashboard["session"]
+        sections = dashboard["sections"]
+        if (
+            session_state["workflow_status"] != "EXAMINATION"
+            or session_state["evaluation_status"] != "COMPLETE"
+            or session_state["compliance_outcome"] != "COMPLIANT"
+            or len(sections) != 17
+            or any(
+                section["applicability_status"] != "REQUIRED"
+                or section["evaluation_status"] != "COMPLETE"
+                or section["compliance_outcome"] != "COMPLIANT"
+                for section in sections
+            )
+        ):
+            reject(
+                "SYNTHETIC_DEMO_STAGE6_AGGREGATION_INVALID",
+                "Full synthetic demo did not close all 17 sections",
+                500,
+            )
+
+        async with self.session.begin():
+            final = await self.scoped(
+                actor,
+                identifier,
+                "session:read",
+            )
+            self.audit.record(
+                "session.demo_full_flow_completed",
+                actor.user_id,
+                "test_sessions",
+                final.id,
+                lab=final.laboratory_id,
+                after={
+                    "workflow_status": final.workflow_status,
+                    "evaluation_status": final.evaluation_status,
+                    "compliance_outcome": final.compliance_outcome,
+                    "sections_complete": 17,
+                    "synthetic_demo": True,
+                },
+                target=final.lock_version,
+            )
+
+        return dashboard
 
     async def revision(self, actor, identifier, match, key, data):
         async with self.session.begin():

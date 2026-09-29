@@ -17,6 +17,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { ApiError, friendlyApiMessage } from "@/lib/api/errors";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
+  completeFullDemoEvaluation,
   configureEvaluation,
   evaluationDashboard,
   evaluationDetail,
@@ -95,6 +96,21 @@ export default function EvaluationWorkspacePage() {
     onError: captureError,
   });
 
+  const completeDemo = useMutation({
+    mutationFn: async () => {
+      if (!detail.data?.etag) {
+        throw new Error("Reload the evaluation before running the demo.");
+      }
+      return completeFullDemoEvaluation(sessionId, detail.data.etag);
+    },
+    onSuccess: async () => {
+      setConflict(false);
+      setActionError(null);
+      await refresh();
+    },
+    onError: captureError,
+  });
+
   if (detail.isPending || dashboard.isPending) {
     return <LoadingState label="Loading evaluation workspace" />;
   }
@@ -106,6 +122,20 @@ export default function EvaluationWorkspacePage() {
   const sections = dashboard.data.sections;
   const canUpdate = hasPermission("session:update");
   const canExecute = hasPermission("test:execute");
+  const metadata = session.ruleset_snapshot.metadata;
+  const fullDemoV3 =
+    Boolean(metadata) &&
+    typeof metadata === "object" &&
+    (metadata as Record<string, unknown>).version ===
+      "SYNTHETIC_TEST_SIH26035_FULL_FLOW_V3";
+  const canCompleteFullDemo =
+    canExecute &&
+    hasPermission("test:evaluate") &&
+    hasPermission("test:complete") &&
+    hasPermission("construction:update") &&
+    hasPermission("construction:complete") &&
+    hasPermission("checklist:update") &&
+    hasPermission("checklist:complete");
 
   const requiredSections = sections.filter(
     (section) => section.applicability_status === "REQUIRED",
@@ -285,6 +315,35 @@ export default function EvaluationWorkspacePage() {
                 ) : null}
               </div>
             </div>
+
+            {fullDemoV3 &&
+            session.workflow_status === "TESTING" &&
+            canCompleteFullDemo ? (
+              <div className="run-panel">
+                <div className="panel-heading">
+                  <p className="page-eyebrow">Synthetic demo only</p>
+                  <h3>Complete all 17 synthetic demo sections</h3>
+                  <p>
+                    One controlled action materializes and evaluates all 23
+                    typed evaluator runs, then completes Sections 16 and 17
+                    through their existing specialized services. It stops in
+                    EXAMINATION and does not submit for review or approve.
+                  </p>
+                </div>
+                <div className="form-actions">
+                  <button
+                    className="button button-secondary"
+                    type="button"
+                    disabled={completeDemo.isPending}
+                    onClick={() => completeDemo.mutate()}
+                  >
+                    {completeDemo.isPending
+                      ? "Completing 17-section synthetic demo…"
+                      : "Complete all 17 synthetic demo sections"}
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </section>
 
           <InstrumentSnapshotPanel snapshot={session.instrument_snapshot} />
