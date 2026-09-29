@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { StatusAxes } from "@/components/evaluations/status-axes";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { friendlyApiMessage } from "@/lib/api/errors";
 import { useAuth } from "@/lib/auth/auth-context";
@@ -60,18 +59,22 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
   const officialGateReason = useMemo(() => {
     if (!session.data) return "Reload the evaluation.";
     const item = session.data.item;
+
     if (item.workflow_status !== "APPROVED") {
       return `workflow is ${item.workflow_status.replaceAll("_", " ")}, not APPROVED`;
     }
+
     if (item.evaluation_status !== "COMPLETE") {
       return `evaluation status is ${item.evaluation_status.replaceAll("_", " ")}, not COMPLETE`;
     }
+
     if (
       item.compliance_outcome !== "COMPLIANT" &&
       item.compliance_outcome !== "NONCOMPLIANT"
     ) {
       return `outcome is ${item.compliance_outcome.replaceAll("_", " ")}, not determined`;
     }
+
     return null;
   }, [session.data]);
 
@@ -82,7 +85,10 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
       }
       return createReportPreview(sessionId, session.data.etag);
     },
-    onSuccess: setPreview,
+    onSuccess: (value) => {
+      setError(null);
+      setPreview(value);
+    },
     onError: (cause) => setError(friendlyApiMessage(cause)),
   });
 
@@ -95,7 +101,10 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
       }
       return createSimulatedApprovedReport(sessionId, session.data.etag);
     },
-    onSuccess: setSimulation,
+    onSuccess: (value) => {
+      setError(null);
+      setSimulation(value);
+    },
     onError: (cause) => setError(friendlyApiMessage(cause)),
   });
 
@@ -104,6 +113,7 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
       if (!session.data?.etag || !user) {
         throw new Error("Reload the evaluation before report generation.");
       }
+
       return generateReport(
         sessionId,
         {
@@ -114,6 +124,7 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
       );
     },
     onSuccess: async (value) => {
+      setError(null);
       setGenerated(value);
       await queryClient.invalidateQueries({ queryKey: ["reports"] });
     },
@@ -122,6 +133,7 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
 
   async function download(format: ReportFormat) {
     if (!preview) return;
+
     setDownloadBusy(format);
     try {
       await downloadPreview(preview.id, format);
@@ -134,6 +146,7 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
 
   async function downloadSimulationFile(format: ReportFormat) {
     if (!simulation) return;
+
     setSimulationDownloadBusy(format);
     try {
       await downloadSimulation(simulation.id, format);
@@ -148,67 +161,74 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
   const item = session.data.item;
 
   return (
-    <section className="report-session-panel">
-      <div className="panel-heading-row">
+    <section
+      className="report-session-panel report-workflow-panel"
+      id="reporting"
+      tabIndex={-1}
+    >
+      <div className="report-workflow-header">
         <div className="panel-heading">
           <p className="page-eyebrow">Reporting</p>
-          <h2>Preview and official report</h2>
+          <h2>Report workflow</h2>
           <p>
-            Preview is non-authoritative. Official generation reads the frozen
-            approval snapshot and never recalculates regulatory decisions.
+            Working previews, SIH demonstration files and official report
+            generation remain separate controlled paths.
           </p>
         </div>
-        <StatusAxes
-          workflow={item.workflow_status}
-          evaluation={item.evaluation_status}
-          outcome={item.compliance_outcome}
-        />
+
+        <div
+          className="report-stored-state"
+          aria-label="Stored evaluation state"
+        >
+          <div>
+            <span>Workflow</span>
+            <strong>{item.workflow_status.replaceAll("_", " ")}</strong>
+          </div>
+          <div>
+            <span>Evaluation</span>
+            <strong>{item.evaluation_status.replaceAll("_", " ")}</strong>
+          </div>
+          <div>
+            <span>Outcome</span>
+            <StatusBadge value={item.compliance_outcome} />
+          </div>
+        </div>
       </div>
 
-      {error ? <div className="form-alert">{error}</div> : null}
+      {error ? (
+        <div className="form-alert" role="alert">
+          {error}
+        </div>
+      ) : null}
 
-      <div className="report-action-grid">
-        <div className="report-action-card">
-          <span className="report-kicker">Unofficial</span>
-          <h3>Watermarked preview</h3>
-          <p>
-            Captures the current working revision, including incomplete, stale
-            and regulatory-review state.
-          </p>
-          {hasPermission("report:preview") ? (
-            <button
-              className="button button-secondary"
-              type="button"
-              disabled={previewMutation.isPending}
-              onClick={() => previewMutation.mutate()}
-            >
-              {previewMutation.isPending
-                ? "Creating preview…"
-                : "Create unofficial preview"}
-            </button>
-          ) : null}
-          {preview ? (
-            <div className="report-result-box">
-              <div className="report-result-heading">
-                <strong>Preview {preview.id.slice(0, 8)}</strong>
+      <div className="report-workflow-list">
+        <article className="report-workflow-step">
+          <div className="report-step-number">01</div>
+
+          <div className="report-step-copy">
+            <span className="report-kicker">Working copy</span>
+            <h3>Unofficial preview</h3>
+            <p>
+              Preview files are unofficial. Captures the current persisted
+              revision for internal review. It is watermarked and is never an
+              issued regulatory report.
+            </p>
+
+            {preview ? (
+              <div className="report-output-row">
+                <div>
+                  <strong>Preview {preview.id.slice(0, 8)}</strong>
+                  <span>
+                    Regulatory revision {preview.source_regulatory_revision}
+                    {" · "}
+                    expires {new Date(preview.expires_at).toLocaleString()}
+                  </span>
+                </div>
+
                 <StatusBadge value={preview.preview_status} />
-              </div>
-              {preview.preview_status === "READY" ? (
-                <>
-                  <div className="preview-file-guide">
-                    <strong>Preview files are unofficial</strong>
-                    <span>
-                      Source regulatory revision{" "}
-                      {preview.source_regulatory_revision}
-                      {" · "}expires{" "}
-                      {new Date(preview.expires_at).toLocaleString()}
-                    </span>
-                    <small>
-                      PDF is the fixed-layout presentation copy. DOCX is the
-                      editable working copy. Neither file is an issued report.
-                    </small>
-                  </div>
-                  <div className="run-actions">
+
+                {preview.preview_status === "READY" ? (
+                  <div className="report-output-actions">
                     {(["pdf", "docx"] as ReportFormat[]).map((format) => (
                       <button
                         className="button button-secondary button-compact"
@@ -217,65 +237,69 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
                         disabled={downloadBusy === format}
                         onClick={() => void download(format)}
                       >
-                        Download {format.toUpperCase()}
+                        {downloadBusy === format
+                          ? "Preparing…"
+                          : format.toUpperCase()}
                       </button>
                     ))}
                   </div>
-                </>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
-
-        <div className="report-action-card">
-          <span className="report-kicker">Simulation</span>
-          <h3>Simulated approved report</h3>
-          <p>
-            Demonstrates the intended APPROVED + COMPLETE report experience
-            without changing the stored evaluation or bypassing production
-            regulatory gates.
-          </p>
-          <div className="report-gate-explanation">
-            <strong>DEMONSTRATION ONLY</strong>
-            <span>
-              The generated PDF/DOCX is watermarked and is not a regulatory
-              approval, certificate, or issued report.
-            </span>
-          </div>
-          {hasPermission("report:preview") ? (
-            <button
-              className="button button-secondary"
-              type="button"
-              disabled={simulationMutation.isPending}
-              onClick={() => simulationMutation.mutate()}
-            >
-              {simulationMutation.isPending
-                ? "Generating simulation…"
-                : "Generate simulated approved report"}
-            </button>
-          ) : null}
-          {simulation ? (
-            <div className="report-result-box">
-              <div className="report-result-heading">
-                <strong>Simulation {simulation.id.slice(0, 8)}</strong>
-                <StatusBadge value={simulation.preview_status} />
+                ) : null}
               </div>
-              {simulation.preview_status === "READY" ? (
-                <>
-                  <div className="preview-file-guide">
-                    <strong>Watermarked simulation files are ready</strong>
-                    <span>
-                      Source regulatory revision{" "}
-                      {simulation.source_regulatory_revision}
-                      {" · "}expires{" "}
-                      {new Date(simulation.expires_at).toLocaleString()}
-                    </span>
-                    <small>
-                      Actual stored statuses remain unchanged. The target
-                      APPROVED state exists only inside this demo document.
-                    </small>
-                  </div>
-                  <div className="run-actions">
+            ) : null}
+          </div>
+
+          <div className="report-step-action">
+            <span className="report-step-state">Non-authoritative</span>
+            {hasPermission("report:preview") ? (
+              <button
+                className="button button-secondary"
+                type="button"
+                disabled={previewMutation.isPending}
+                onClick={() => previewMutation.mutate()}
+              >
+                {previewMutation.isPending ? "Creating…" : "Create preview"}
+              </button>
+            ) : null}
+          </div>
+        </article>
+
+        <article className="report-workflow-step is-demo">
+          <div className="report-step-number">02</div>
+
+          <div className="report-step-copy">
+            <div className="report-step-title-row">
+              <div>
+                <span className="report-kicker">SIH demonstration</span>
+                <h3>Simulated approved report</h3>
+              </div>
+              <span className="demo-only-label">DEMONSTRATION ONLY</span>
+            </div>
+
+            <p>
+              Demonstrates the final approved-report experience without changing
+              the stored workflow, approval state or regulatory decision.
+            </p>
+
+            <div className="report-demo-notice">
+              Watermarked PDF/DOCX · not a regulatory approval, certificate or
+              issued report.
+            </div>
+
+            {simulation ? (
+              <div className="report-output-row">
+                <div>
+                  <strong>Simulation {simulation.id.slice(0, 8)}</strong>
+                  <span>
+                    Regulatory revision {simulation.source_regulatory_revision}
+                    {" · "}
+                    expires {new Date(simulation.expires_at).toLocaleString()}
+                  </span>
+                </div>
+
+                <StatusBadge value={simulation.preview_status} />
+
+                {simulation.preview_status === "READY" ? (
+                  <div className="report-output-actions">
                     {(["pdf", "docx"] as ReportFormat[]).map((format) => (
                       <button
                         className="button button-secondary button-compact"
@@ -284,75 +308,124 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
                         disabled={simulationDownloadBusy === format}
                         onClick={() => void downloadSimulationFile(format)}
                       >
-                        Download {format.toUpperCase()}
+                        {simulationDownloadBusy === format
+                          ? "Preparing…"
+                          : format.toUpperCase()}
                       </button>
                     ))}
                   </div>
-                </>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
-
-        <div className="report-action-card">
-          <span className="report-kicker">Official</span>
-          <h3>Generate immutable report bytes</h3>
-          <p>
-            Requires APPROVED + COMPLETE and a determined outcome. Generation
-            does not issue the report.
-          </p>
-          <div className="report-gate-row">
-            <span>Official generation gate</span>
-            <strong>{officialGate ? "OPEN" : "BLOCKED"}</strong>
-          </div>
-          {!officialGate && officialGateReason ? (
-            <div className="report-gate-explanation">
-              <strong>Official generation is blocked because:</strong>
-              <span>{officialGateReason}.</span>
-            </div>
-          ) : null}
-          <label className="form-field">
-            <span>Planned issue date (UTC)</span>
-            <input
-              type="date"
-              value={plannedIssueDate}
-              onChange={(event) => setPlannedIssueDate(event.target.value)}
-            />
-          </label>
-          <div className="report-issuer-note">
-            Intended issuer:{" "}
-            <strong>{user?.full_name ?? "Current user"}</strong>
-          </div>
-          {hasPermission("report:generate") ? (
-            <button
-              className="button button-primary"
-              type="button"
-              disabled={!officialGate || generateMutation.isPending || !user}
-              onClick={() => generateMutation.mutate()}
-            >
-              {generateMutation.isPending
-                ? "Generating…"
-                : "Generate official report"}
-            </button>
-          ) : null}
-          {generated ? (
-            <div className="report-result-box">
-              <div className="report-result-heading">
-                <strong>
-                  {generated.report.report_number} · revision{" "}
-                  {generated.report.revision_no}
-                </strong>
-                <StatusBadge value={generated.generation.generation_status} />
+                ) : null}
               </div>
-              <Link
-                className="button button-secondary button-compact"
-                href={`/reports/${generated.report.id}`}
+            ) : null}
+          </div>
+
+          <div className="report-step-action">
+            <span className="report-step-state">Demonstration path</span>
+            {hasPermission("report:preview") ? (
+              <button
+                className="button button-primary"
+                type="button"
+                disabled={simulationMutation.isPending}
+                onClick={() => simulationMutation.mutate()}
               >
-                Open report record
-              </Link>
+                {simulationMutation.isPending
+                  ? "Generating…"
+                  : "Generate simulated approved report"}
+              </button>
+            ) : null}
+          </div>
+        </article>
+
+        <article className="report-workflow-step is-official">
+          <div className="report-step-number">03</div>
+
+          <div className="report-step-copy">
+            <div className="report-step-title-row">
+              <div>
+                <span className="report-kicker">Controlled output</span>
+                <h3>Official report generation</h3>
+              </div>
+              <span
+                aria-label="Official generation gate"
+                className={`official-gate-label ${
+                  officialGate ? "is-open" : "is-blocked"
+                }`}
+              >
+                {officialGate ? "GATE OPEN" : "GATE BLOCKED"}
+              </span>
             </div>
-          ) : null}
-        </div>
+
+            <p>
+              Reads the frozen approval snapshot. Generation does not issue the
+              report and never recalculates the compliance outcome.
+            </p>
+
+            {!officialGate && officialGateReason ? (
+              <div className="official-gate-reason">
+                <strong>Official generation is blocked because:</strong>
+                <span>{officialGateReason}.</span>
+              </div>
+            ) : null}
+
+            <div className="official-report-fields">
+              <label className="form-field">
+                <span>Planned issue date (UTC)</span>
+                <input
+                  type="date"
+                  value={plannedIssueDate}
+                  disabled={!officialGate}
+                  onChange={(event) => setPlannedIssueDate(event.target.value)}
+                />
+              </label>
+
+              <div className="official-issuer-field">
+                <span>Intended issuer</span>
+                <strong>{user?.full_name ?? "Current user"}</strong>
+              </div>
+            </div>
+
+            {generated ? (
+              <div className="report-output-row">
+                <div>
+                  <strong>
+                    {generated.report.report_number} · revision{" "}
+                    {generated.report.revision_no}
+                  </strong>
+                  <span>
+                    Immutable report generation record created successfully.
+                  </span>
+                </div>
+
+                <StatusBadge value={generated.generation.generation_status} />
+
+                <Link
+                  className="button button-secondary button-compact"
+                  href={`/reports/${generated.report.id}`}
+                >
+                  Open record
+                </Link>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="report-step-action">
+            <span className="report-step-state">
+              {officialGate ? "Authorized state" : "Requires approval"}
+            </span>
+            {hasPermission("report:generate") ? (
+              <button
+                className="button button-primary"
+                type="button"
+                disabled={!officialGate || generateMutation.isPending || !user}
+                onClick={() => generateMutation.mutate()}
+              >
+                {generateMutation.isPending
+                  ? "Generating…"
+                  : "Generate official report"}
+              </button>
+            ) : null}
+          </div>
+        </article>
       </div>
     </section>
   );

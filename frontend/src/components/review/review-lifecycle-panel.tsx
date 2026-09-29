@@ -140,7 +140,7 @@ export function ReviewLifecyclePanel({
     changedAfterReturn;
 
   return (
-    <section className="evaluation-card review-lifecycle-card">
+    <section className="evaluation-card review-lifecycle-card" id="governance">
       <div className="panel-heading-row">
         <div className="panel-heading">
           <p className="page-eyebrow">Governance</p>
@@ -199,9 +199,7 @@ export function ReviewLifecyclePanel({
                 <textarea
                   rows={3}
                   value={resolutionNote}
-                  onChange={(event) =>
-                    setResolutionNote(event.target.value)
-                  }
+                  onChange={(event) => setResolutionNote(event.target.value)}
                 />
               </label>
               <button
@@ -219,8 +217,8 @@ export function ReviewLifecyclePanel({
         <>
           <p className="muted-copy">
             A session can be submitted only when the backend determines the
-            complete current record is review-ready. COMPLIANT and
-            NONCOMPLIANT are both determined outcomes.
+            complete current record is review-ready. COMPLIANT and NONCOMPLIANT
+            are both determined outcomes.
           </p>
 
           {isSyntheticDemo ? (
@@ -241,17 +239,13 @@ export function ReviewLifecyclePanel({
               disabled={submit.isPending}
               onClick={() => submit.mutate()}
             >
-              {submit.isPending
-                ? "Submitting…"
-                : "Submit for technical review"}
+              {submit.isPending ? "Submitting…" : "Submit for technical review"}
             </button>
           ) : null}
 
           {session.workflow_status === "UNDER_REVIEW" ? (
             <div className="review-links">
-              <Link href={`/reviews/${session.id}`}>
-                Technical review case
-              </Link>
+              <Link href={`/reviews/${session.id}`}>Technical review case</Link>
               {hasPermission("approval:finalize") ? (
                 <Link href={`/approvals/${session.id}`}>
                   Final approval case

@@ -13,7 +13,7 @@ export function InstrumentSnapshotPanel({
   snapshot: InstrumentSnapshot;
 }) {
   return (
-    <section className="evaluation-card">
+    <section className="evaluation-card" id="overview">
       <div className="panel-heading">
         <p className="page-eyebrow">Frozen session input</p>
         <h2>Instrument snapshot</h2>

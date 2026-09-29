@@ -19,11 +19,7 @@ function scopeCount(scope: Record<string, unknown>): number {
   return Array.isArray(targets) ? targets.length : 0;
 }
 
-export function EvaluationHistoryPanel({
-  sessionId,
-}: {
-  sessionId: string;
-}) {
+export function EvaluationHistoryPanel({ sessionId }: { sessionId: string }) {
   const { hasPermission } = useAuth();
   const canReadApprovals = hasPermission("approval:read");
 
@@ -45,7 +41,7 @@ export function EvaluationHistoryPanel({
   });
 
   return (
-    <section className="traceability-panel">
+    <section className="traceability-panel" id="history">
       <div className="panel-heading">
         <p className="page-eyebrow">Traceability</p>
         <h2>Evaluation lifecycle history</h2>
@@ -56,7 +52,10 @@ export function EvaluationHistoryPanel({
         </p>
       </div>
 
-      <div className="traceability-summary" aria-label="Append-only traceability">
+      <div
+        className="traceability-summary"
+        aria-label="Append-only traceability"
+      >
         <div>
           <span>Session revisions</span>
           <strong>
@@ -105,10 +104,7 @@ export function EvaluationHistoryPanel({
                     right.session_revision_no - left.session_revision_no,
                 )
                 .map((revision) => (
-                  <article
-                    className="traceability-row"
-                    key={revision.id}
-                  >
+                  <article className="traceability-row" key={revision.id}>
                     <div>
                       <strong>
                         Session revision {revision.session_revision_no}
@@ -165,9 +161,7 @@ export function EvaluationHistoryPanel({
                 .map((action) => (
                   <article className="traceability-row" key={action.id}>
                     <div>
-                      <strong>
-                        {action.stage.replaceAll("_", " ")}
-                      </strong>
+                      <strong>{action.stage.replaceAll("_", " ")}</strong>
                       <span>
                         Regulatory revision {action.regulatory_revision}
                         {" · "}
@@ -208,12 +202,15 @@ export function EvaluationHistoryPanel({
                     <div>
                       <strong>{request.reason}</strong>
                       <span>
-                        Return to {request.target_workflow_status.replaceAll("_", " ")}
+                        Return to{" "}
+                        {request.target_workflow_status.replaceAll("_", " ")}
                         {" · "}
-                        {scopeCount(request.requested_scope_json)} scoped target(s)
+                        {scopeCount(request.requested_scope_json)} scoped
+                        target(s)
                       </span>
                       <small>
-                        Requested {new Date(request.requested_at).toLocaleString()}
+                        Requested{" "}
+                        {new Date(request.requested_at).toLocaleString()}
                         {request.resolved_at
                           ? ` · resolved ${new Date(
                               request.resolved_at,

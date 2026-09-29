@@ -162,6 +162,15 @@ export default function EvaluationWorkspacePage() {
 
       <EvaluationProgressOverview session={session} sections={sections} />
 
+      <nav className="evaluation-jump-nav" aria-label="Evaluation workspace">
+        <span>Jump to</span>
+        <a href="#overview">Overview</a>
+        <a href="#governance">Governance</a>
+        <a href="#readiness">Readiness</a>
+        <a href="#reporting">Reporting</a>
+        <a href="#history">History</a>
+      </nav>
+
       {conflict ? (
         <div className="conflict-banner">
           <strong>This evaluation changed on the server.</strong>
@@ -298,7 +307,10 @@ export default function EvaluationWorkspacePage() {
             />
           ) : null}
 
-          <section className="evaluation-card section-readiness-panel">
+          <section
+            className="evaluation-card section-readiness-panel"
+            id="readiness"
+          >
             <div className="panel-heading">
               <p className="page-eyebrow">Section readiness</p>
               <h2>Readiness and exceptions</h2>
