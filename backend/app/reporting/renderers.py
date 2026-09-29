@@ -432,10 +432,12 @@ def build_plan(context: dict) -> ReportPlan:
 
     document_kind = context["document_kind"]
     preview = document_kind == "UNOFFICIAL_PREVIEW"
-    simulation = document_kind == "SIMULATED_APPROVED_REPORT"
+    compact_simulation = document_kind == "SIMULATED_APPROVED_REPORT"
+    full_demo = document_kind == "FULL_DEMO_REPORT"
+    simulation = compact_simulation or full_demo
     report_number = control.get("report_number")
 
-    if simulation:
+    if compact_simulation:
         return _build_simulation_plan(context)
 
     cover = ReportSection(
@@ -444,10 +446,16 @@ def build_plan(context: dict) -> ReportPlan:
             "This document is an unofficial working preview and does not imply approval or issue."
             if preview
             else (
-                "This is a simulated approved report for SIH demonstration only. "
-                "It is not a regulatory approval, certificate, or issued report."
-                if simulation
-                else "This document was rendered from an immutable approved report context."
+                "SIMULATED / DEMONSTRATION REPORT - NOT AN OFFICIAL OIML "
+                "CERTIFICATE. This document is permanently non-authoritative "
+                "and cannot be issued as a regulatory report."
+                if full_demo
+                else (
+                    "This is a simulated approved report for SIH demonstration only. "
+                    "It is not a regulatory approval, certificate, or issued report."
+                    if simulation
+                    else "This document was rendered from an immutable approved report context."
+                )
             ),
         ),
         tables=(
@@ -475,11 +483,16 @@ def build_plan(context: dict) -> ReportPlan:
 
     simulation_section = None
     if simulation:
-        simulation_data = context.get("simulation", {})
+        simulation_data = context.get("simulation", context.get("demonstration", {}))
         simulation_section = ReportSection(
-            "Simulation Declaration",
+            "Demonstration Declaration" if full_demo else "Simulation Declaration",
             paragraphs=(
-                "SIMULATED / DEMONSTRATION ONLY — NOT FOR REGULATORY USE.",
+                (
+                    "SIMULATED / DEMONSTRATION REPORT - "
+                    "NOT AN OFFICIAL OIML CERTIFICATE."
+                    if full_demo
+                    else "SIMULATED / DEMONSTRATION ONLY — NOT FOR REGULATORY USE."
+                ),
                 (
                     "The target state below demonstrates the intended approved-report "
                     "experience without changing the stored evaluation or bypassing "
@@ -719,12 +732,23 @@ def build_plan(context: dict) -> ReportPlan:
     runs = record.get("runs", [])
     observations = record.get("observations", [])
     results = record.get("results", [])
+    requirement_map = {
+        str(item.get("id")): item
+        for item in record.get("requirements", [])
+    }
     run_tables = []
     for run in runs:
         run_id = run.get("id")
+        requirement = requirement_map.get(str(run.get("requirement_id")), {})
+        slot = requirement.get("slot_snapshot") or {}
+        test_code = (
+            run.get("test_code")
+            or slot.get("test_code")
+            or run.get("test_definition_id")
+        )
         run_tables.append(
             ReportTable(
-                f"Run {run.get('run_no')} -{run.get('test_code') or run.get('test_definition_id')}",
+                f"Run {run.get('run_no')} - {test_code}",
                 ("Field", "Stored Value"),
                 (
                     ("Run ID", _text(run_id)),
@@ -767,11 +791,22 @@ def build_plan(context: dict) -> ReportPlan:
             ),
             ReportTable(
                 "Construction items",
-                ("Item", "Stored Record"),
+                (
+                    "Category",
+                    "Item",
+                    "Description",
+                    "State",
+                    "Result",
+                    "Remarks",
+                ),
                 tuple(
                     (
-                        _text(row.get("requirement_key") or row.get("id")),
-                        _text(row),
+                        _text(row.get("category")),
+                        _text(row.get("item_key")),
+                        _text(row.get("description_snapshot")),
+                        _text(row.get("examination_state")),
+                        _text(row.get("conformance_result")),
+                        _text(row.get("remarks")),
                     )
                     for row in construction.get("items", [])
                 ),
@@ -784,12 +819,19 @@ def build_plan(context: dict) -> ReportPlan:
         tables=(
             ReportTable(
                 "Versioned checklist wording and response",
-                ("Requirement", "Wording", "Response", "Remarks"),
+                (
+                    "Requirement",
+                    "Wording",
+                    "Applicability",
+                    "Response",
+                    "Remarks",
+                ),
                 tuple(
                     (
                         _text(item.get("rule", {}).get("requirement_key")),
                         _text(item.get("rule", {}).get("display_text")),
-                        _text(item.get("response", {}).get("result")),
+                        _text(item.get("response", {}).get("applicability_status")),
+                        _text(item.get("response", {}).get("response_result")),
                         _text(item.get("response", {}).get("remarks")),
                     )
                     for item in record.get("checklist", [])
@@ -876,17 +918,26 @@ def build_plan(context: dict) -> ReportPlan:
 
     return ReportPlan(
         title=(
-            "SIMULATED OIML R 76 - Demonstration Type-Evaluation Report"
-            if simulation
-            else "OIML R 76 - Non-Automatic Weighing Instrument Type-Evaluation Test Report"
+            "SIH26035 - Full 17-Section Simulated OIML R 76 Demonstration Report"
+            if full_demo
+            else (
+                "SIMULATED OIML R 76 - Demonstration Type-Evaluation Report"
+                if simulation
+                else "OIML R 76 - Non-Automatic Weighing Instrument Type-Evaluation Test Report"
+            )
         ),
         status=(
             "UNOFFICIAL PREVIEW"
             if preview
             else (
-                "SIMULATED APPROVED — DEMONSTRATION ONLY"
-                if simulation
-                else _text(control.get("report_status"))
+                "SIMULATED / DEMONSTRATION REPORT - "
+                "NOT AN OFFICIAL OIML CERTIFICATE"
+                if full_demo
+                else (
+                    "SIMULATED APPROVED — DEMONSTRATION ONLY"
+                    if simulation
+                    else _text(control.get("report_status"))
+                )
             )
         ),
         watermark=(
@@ -989,6 +1040,13 @@ def render_pdf(plan: ReportPlan) -> bytes:
         canvas.setFont("Helvetica", 7)
         canvas.setFillGray(0.35)
         canvas.drawCentredString(width / 2, 8 * mm, f"Page {document.page}")
+        if "NOT AN OFFICIAL OIML CERTIFICATE" in plan.status:
+            canvas.setFont("Helvetica-Bold", 6.5)
+            canvas.drawCentredString(
+                width / 2,
+                5 * mm,
+                "SIMULATED / DEMONSTRATION REPORT - NOT AN OFFICIAL OIML CERTIFICATE",
+            )
         if plan.watermark:
             canvas.setFillGray(0.90)
             canvas.setFont("Helvetica-Bold", 46)
@@ -1069,6 +1127,12 @@ def render_docx(plan: ReportPlan) -> bytes:
         run = header.add_run(plan.watermark)
         run.bold = True
         run.font.size = Pt(18)
+        if "NOT AN OFFICIAL OIML CERTIFICATE" in plan.status:
+            disclaimer = header.add_run(
+                "\nNOT AN OFFICIAL OIML CERTIFICATE"
+            )
+            disclaimer.bold = True
+            disclaimer.font.size = Pt(11)
 
     title = document.add_paragraph()
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER

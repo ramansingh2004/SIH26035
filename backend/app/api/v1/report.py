@@ -79,6 +79,25 @@ async def create_simulated_approved_report(
     )
 
 
+@router.post(
+    "/test-sessions/{identifier}/full-demo-report-previews",
+    response_model=ReportPreviewView,
+    status_code=201,
+    dependencies=[Depends(no_body)],
+)
+async def create_full_demo_report(
+    identifier: UUID,
+    service: Service,
+    actor: Actor,
+    if_match: Match = None,
+):
+    return await service.create_full_demo_report_preview(
+        actor,
+        identifier,
+        if_match,
+    )
+
+
 @router.get(
     "/report-previews/{identifier}",
     response_model=ReportPreviewView,

@@ -5,8 +5,9 @@ import hashlib
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
-from app.compliance.canonical import content_hash
-from app.compliance.demo import is_demo_ruleset
+from app.compliance.canonical import content_hash, normalize
+from app.compliance.demo import DEMO_LAB_CODE, is_demo_ruleset
+from app.compliance.full_demo_execution import is_full_demo_execution_ruleset
 from app.compliance.ruleset import RuleSet
 from app.core.concurrency import etag, require_match
 from app.core.errors import AppError, denied, missing
@@ -19,6 +20,7 @@ from app.models.report import (
 )
 from app.reporting.context import (
     TEMPLATE_VERSION,
+    full_demo_report_context,
     issuance_manifest,
     official_context,
     preview_context,
@@ -26,6 +28,7 @@ from app.reporting.context import (
     report_hash,
     simulated_approved_context,
 )
+from app.reporting.full_demo import validate_full_demo_record
 from app.reporting.renderers import DOCX_MIME, PDF_MIME, render_pair
 from app.repositories.report import ReportRepository
 from app.schemas.report import (
@@ -279,7 +282,15 @@ class ReportService:
         except Exception:
             return
 
-    async def create_preview(self, actor, identifier, match, *, simulation=False):
+    async def create_preview(
+        self,
+        actor,
+        identifier,
+        match,
+        *,
+        simulation=False,
+        full_demo=False,
+    ):
         async with self.session.begin():
             test_session = await self.scoped_session(
                 actor,
@@ -290,12 +301,43 @@ class ReportService:
             require_match(match, etag(test_session.lock_version))
 
             regulatory_record = await ApprovalSnapshotBuilder(self.session).build(test_session)
-            context_builder = simulated_approved_context if simulation else preview_context
+
+            if full_demo:
+                ruleset = RuleSet.model_validate(test_session.ruleset_snapshot)
+                laboratory = await self.repo.lab(test_session.laboratory_id)
+                if (
+                    not is_full_demo_execution_ruleset(ruleset)
+                    or laboratory is None
+                    or laboratory.code != DEMO_LAB_CODE
+                ):
+                    raise AppError(
+                        409,
+                        "SYNTHETIC_DEMO_STAGE7_FORBIDDEN",
+                        "The complete Stage 7 report is restricted to the V3 "
+                        "synthetic demo session in the dedicated demo laboratory",
+                    )
+                try:
+                    source_counts = validate_full_demo_record(regulatory_record)
+                except ValueError as exc:
+                    raise AppError(
+                        409,
+                        "SYNTHETIC_DEMO_STAGE7_SOURCE_INCOMPLETE",
+                        str(exc),
+                    ) from exc
+                context_builder = full_demo_report_context
+            else:
+                source_counts = None
+                context_builder = (
+                    simulated_approved_context if simulation else preview_context
+                )
             context = context_builder(
                 regulatory_record,
                 requested_by=str(actor.user_id),
                 source_regulatory_revision=test_session.regulatory_revision,
             )
+            if full_demo:
+                context["demonstration"]["source_counts"] = source_counts
+                context = normalize(context)
             digest = content_hash(context)
             row = ReportPreview(
                 id=uuid4(),
@@ -313,10 +355,25 @@ class ReportService:
             preview_id = row.id
             laboratory_id = test_session.laboratory_id
             preview_file_prefix = (
-                "SIMULATED_APPROVED_REPORT" if simulation else "UNOFFICIAL_PREVIEW"
+                "FULL_17_SECTION_DEMO_REPORT"
+                if full_demo
+                else (
+                    "SIMULATED_APPROVED_REPORT"
+                    if simulation
+                    else "UNOFFICIAL_PREVIEW"
+                )
+            )
+            started_action = (
+                "report.full_demo_started"
+                if full_demo
+                else (
+                    "report.simulation_started"
+                    if simulation
+                    else "report.preview_started"
+                )
             )
             self.audit.record(
-                "report.simulation_started" if simulation else "report.preview_started",
+                started_action,
                 actor.user_id,
                 "report_previews",
                 row.id,
@@ -326,7 +383,9 @@ class ReportService:
                     "source_regulatory_revision": test_session.regulatory_revision,
                     "context_hash": digest,
                     "expires_at": row.expires_at.isoformat(),
-                    "simulation_demo": simulation,
+                    "simulation_demo": simulation or full_demo,
+                    "full_demo_report": full_demo,
+                    "source_counts": source_counts,
                 },
                 source=test_session.regulatory_revision,
                 target=test_session.regulatory_revision,
@@ -390,7 +449,9 @@ class ReportService:
                             "report_preview_id": str(preview_id),
                             "format": file_format.upper(),
                             "unofficial": True,
-                            "simulation_demo": simulation,
+                            "simulation_demo": simulation or full_demo,
+                            "full_demo_report": full_demo,
+                            "not_an_official_oiml_certificate": full_demo,
                         },
                     )
                     self.repo.add(attachment)
@@ -403,8 +464,17 @@ class ReportService:
                 await self.session.refresh(row)
 
                 result = preview_view(row)
+                ready_action = (
+                    "report.full_demo_ready"
+                    if full_demo
+                    else (
+                        "report.simulation_ready"
+                        if simulation
+                        else "report.preview_ready"
+                    )
+                )
                 self.audit.record(
-                    "report.simulation_ready" if simulation else "report.preview_ready",
+                    ready_action,
                     actor.user_id,
                     "report_previews",
                     row.id,
@@ -437,6 +507,15 @@ class ReportService:
             identifier,
             match,
             simulation=True,
+        )
+
+    async def create_full_demo_report_preview(self, actor, identifier, match):
+        """Create the complete Stage 7 report without creating official report state."""
+        return await self.create_preview(
+            actor,
+            identifier,
+            match,
+            full_demo=True,
         )
 
     async def preview_detail(self, actor, identifier):

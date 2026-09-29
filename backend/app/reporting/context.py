@@ -6,6 +6,7 @@ from app.compliance.canonical import content_hash, normalize
 
 CONTEXT_SCHEMA_VERSION = 1
 TEMPLATE_VERSION = "r76-report-v1"
+FULL_DEMO_TEMPLATE_VERSION = "r76-full-demo-v1"
 
 
 def _package_version(name: str) -> str:
@@ -93,6 +94,61 @@ def simulated_approved_context(
         "template_version": TEMPLATE_VERSION,
         "renderer_manifest": renderer_manifest(),
         "regulatory_record": regulatory_record,
+    }
+    return normalize(context)
+
+
+def full_demo_report_context(
+    regulatory_record: dict,
+    *,
+    requested_by: str,
+    source_regulatory_revision: int,
+) -> dict:
+    """Compose the complete, permanently non-official Stage 7 demo report."""
+    session = regulatory_record.get("session", {})
+    session_id = str(session.get("id") or "DEMO")
+    record = dict(regulatory_record)
+    ruleset = record.get("ruleset_record") or {}
+
+    # Keep the human-readable demo report reproducible without dumping the
+    # complete internal ruleset payload into the document.
+    record["ruleset_snapshot"] = {
+        "human_readable_demo_omission": True,
+        "configuration_hash": ruleset.get("configuration_hash"),
+        "source_reference": ruleset.get("source_reference"),
+        "version": ruleset.get("version"),
+    }
+
+    manifest = renderer_manifest()
+    manifest["template_version"] = FULL_DEMO_TEMPLATE_VERSION
+
+    context = {
+        "context_schema_version": CONTEXT_SCHEMA_VERSION,
+        "document_kind": "FULL_DEMO_REPORT",
+        "document_control": {
+            "report_number": f"SIM-DEMO-{session_id[:8].upper()}",
+            "revision_no": 1,
+            "report_status": "DEMONSTRATION_ONLY",
+            "planned_issue_date": None,
+            "intended_issuer_id": None,
+            "source_regulatory_revision": source_regulatory_revision,
+            "requested_by": requested_by,
+        },
+        "demonstration": {
+            "demo_only": True,
+            "not_for_regulatory_use": True,
+            "not_an_official_oiml_certificate": True,
+            "full_evidence_report": True,
+            "actual_workflow_status": session.get("workflow_status"),
+            "actual_evaluation_status": session.get("evaluation_status"),
+            "actual_compliance_outcome": session.get("compliance_outcome"),
+            "target_workflow_status": session.get("workflow_status"),
+            "target_evaluation_status": session.get("evaluation_status"),
+            "target_compliance_outcome": session.get("compliance_outcome"),
+        },
+        "template_version": FULL_DEMO_TEMPLATE_VERSION,
+        "renderer_manifest": manifest,
+        "regulatory_record": record,
     }
     return normalize(context)
 

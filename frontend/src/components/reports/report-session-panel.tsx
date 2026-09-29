@@ -9,6 +9,7 @@ import { friendlyApiMessage } from "@/lib/api/errors";
 import { useAuth } from "@/lib/auth/auth-context";
 import { evaluationDetail } from "@/lib/evaluations/api";
 import {
+  createFullDemoReport,
   createReportPreview,
   createSimulatedApprovedReport,
   downloadPreview,
@@ -99,7 +100,20 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
           "Reload the evaluation before creating a simulated report.",
         );
       }
-      return createSimulatedApprovedReport(sessionId, session.data.etag);
+      const item = session.data.item;
+      const metadata = item.ruleset_snapshot.metadata;
+      const fullDemoReady =
+        Boolean(metadata) &&
+        typeof metadata === "object" &&
+        (metadata as Record<string, unknown>).version ===
+          "SYNTHETIC_TEST_SIH26035_FULL_FLOW_V3" &&
+        item.workflow_status === "EXAMINATION" &&
+        item.evaluation_status === "COMPLETE" &&
+        item.compliance_outcome === "COMPLIANT";
+
+      return fullDemoReady
+        ? createFullDemoReport(sessionId, session.data.etag)
+        : createSimulatedApprovedReport(sessionId, session.data.etag);
     },
     onSuccess: (value) => {
       setError(null);
@@ -159,6 +173,15 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
 
   if (!session.data) return null;
   const item = session.data.item;
+  const metadata = item.ruleset_snapshot.metadata;
+  const fullDemoReady =
+    Boolean(metadata) &&
+    typeof metadata === "object" &&
+    (metadata as Record<string, unknown>).version ===
+      "SYNTHETIC_TEST_SIH26035_FULL_FLOW_V3" &&
+    item.workflow_status === "EXAMINATION" &&
+    item.evaluation_status === "COMPLETE" &&
+    item.compliance_outcome === "COMPLIANT";
 
   return (
     <section
@@ -270,19 +293,25 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
             <div className="report-step-title-row">
               <div>
                 <span className="report-kicker">SIH demonstration</span>
-                <h3>Simulated approved report</h3>
+                <h3>
+                  {fullDemoReady
+                    ? "Complete 17-section demonstration report"
+                    : "Simulated approved report"}
+                </h3>
               </div>
               <span className="demo-only-label">DEMONSTRATION ONLY</span>
             </div>
 
             <p>
-              Demonstrates the final approved-report experience without changing
-              the stored workflow, approval state or regulatory decision.
+              {fullDemoReady
+                ? "Renders the completed V3 evaluation into one evidence-rich PDF/DOCX pair: 17 sections, 23 typed runs, Sections 16 and 17, 60 unique synthetic evidence files, and 85 immutable evidence links."
+                : "Demonstrates the final approved-report experience without changing the stored workflow, approval state or regulatory decision."}
             </p>
 
             <div className="report-demo-notice">
-              Watermarked PDF/DOCX · not a regulatory approval, certificate or
-              issued report.
+              {fullDemoReady
+                ? "SIMULATED / DEMONSTRATION REPORT - NOT AN OFFICIAL OIML CERTIFICATE"
+                : "Watermarked PDF/DOCX · not a regulatory approval, certificate or issued report."}
             </div>
 
             {simulation ? (
@@ -330,7 +359,9 @@ export function ReportSessionPanel({ sessionId }: { sessionId: string }) {
               >
                 {simulationMutation.isPending
                   ? "Generating…"
-                  : "Generate simulated approved report"}
+                  : fullDemoReady
+                    ? "Generate complete 17-section demo report"
+                    : "Generate simulated approved report"}
               </button>
             ) : null}
           </div>

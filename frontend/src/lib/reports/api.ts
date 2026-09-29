@@ -50,6 +50,18 @@ export async function createSimulatedApprovedReport(
   ).data;
 }
 
+export async function createFullDemoReport(
+  sessionId: string,
+  etag: string,
+): Promise<ReportPreviewView> {
+  return (
+    await apiRequest<ReportPreviewView>(
+      `/api/v1/test-sessions/${sessionId}/full-demo-report-previews`,
+      { method: "POST", etag },
+    )
+  ).data;
+}
+
 export async function generateReport(
   sessionId: string,
   data: { intended_issuer_id: string; planned_issue_date: string },
