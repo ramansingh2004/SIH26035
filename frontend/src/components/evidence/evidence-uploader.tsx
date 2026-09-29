@@ -43,11 +43,10 @@ export function EvidenceUploader({
   const [status, setStatus] = useState<UploadState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [recent, setRecent] = useState<CompletedAttachment[]>([]);
-  const [currentEtag, setCurrentEtag] = useState<string | null>(targetEtag);
   const [removingLinkId, setRemovingLinkId] = useState<string | null>(null);
 
   async function upload() {
-    if (!file || !currentEtag) return;
+    if (!file || !targetEtag) return;
     setError(null);
 
     try {
@@ -60,11 +59,10 @@ export function EvidenceUploader({
         entityType,
         entityId,
         purpose: purpose.trim(),
-        targetEtag: currentEtag,
+        targetEtag,
       });
       setStatus("verifying");
       setRecent((items) => [attachment, ...items]);
-      setCurrentEtag(attachment.target_etag);
       setFile(null);
       setStatus("complete");
       onTargetChanged?.();
@@ -88,7 +86,7 @@ export function EvidenceUploader({
   }
 
   async function unlink(attachment: LinkedEvidence) {
-    if (!currentEtag) {
+    if (!targetEtag) {
       setError("Reload this record before unlinking evidence.");
       return;
     }
@@ -102,13 +100,12 @@ export function EvidenceUploader({
     setError(null);
     setRemovingLinkId(attachment.link_id);
     try {
-      const result = await unlinkEvidence({
+      await unlinkEvidence({
         attachmentId: attachment.id,
         linkId: attachment.link_id,
-        targetEtag: currentEtag,
+        targetEtag,
         reason: reason.trim(),
       });
-      setCurrentEtag(result.target_etag);
       setStatus("idle");
       setFile(null);
       setRecent((items) =>
@@ -139,7 +136,7 @@ export function EvidenceUploader({
       </div>
 
       {canUpload ? (
-        !currentEtag ? (
+        !targetEtag ? (
           <div className="form-alert">
             Reload this record before uploading evidence so its current ETag is
             available.
